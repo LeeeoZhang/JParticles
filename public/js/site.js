@@ -1,0 +1,2 @@
+$(function(){function n(n,i){n.find(".active").removeClass("active"),i.addClass("active")}function i(){function i(i){n(a,i),t(i)}function t(n){var i=n.position().left+parseInt(n.css("paddingLeft"))+.5;s.css({width:n.width(),transform:"translate("+i+"px,0)"})}var a=$(".header .nav"),e=a.find(".active"),s=a.find(".slideblock");t(e),setTimeout(function(){s.addClass("animation").removeClass("hidden")},0),a.find("a").hover(function(){i($(this))},function(){i(e)})}i()});
+//# sourceMappingURL=map/site.js.map
