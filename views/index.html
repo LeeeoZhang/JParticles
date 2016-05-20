@@ -8,22 +8,17 @@
     </head>
     <body class="overflow-hidden">
         <section id="i-bg"></section>
+        {% include 'common/header.html' %}
         <section id="i-profile" class="text-center-vertical text-center">
             <h1>Particleground.js</h1>
-            <p>仅仅是一个惊喜！简单，简洁，高效！</p>
-            <nav id="i-nav" class="bigger-text">
-                <a href="/">首页</a>
-                <a href="/examples/preface">实例及API</a>
-                <a href="/download">下载</a>
-                <a href="https://github.com/Barrior/Particleground.js" target="_blank">Github</a>
-                <a href="http://shang.qq.com/wpa/qunwpa?idkey=f548e3f94e0040a2ac5adfe4fec6915ef67c8c1b6ba5784ff6d5049c6135a759"
-                   title="172839150" target="_blank">QQ群</a>
-            </nav>
+            <p>仅仅是一个惊喜！简单，高效，轻量级 canvas粒子背景运动插件。</p>
         </section>
         <footer id="i-footer" class="pa gray-text">
             {% include 'common/footer-text.html' %}
         </footer>
 
+        <script src="/js/jquery.js"></script>
+        <script src="/js/site.js"></script>
         <script src="/js/pjs/particleground.js"></script>
         <script src="/js/pjs/particle.js"></script>
         <script>

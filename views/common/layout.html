@@ -12,28 +12,25 @@
 
         <section class="eg-container cf">
             <aside class="menu fl pr">
-                <h5>
-                    <a href="preface.html">前言</a>
-                </h5>
-                <h5>
-                    <a href="quick-getting.html">5分钟上手Particleground.js</a>
-                </h5>
+                {% for key, val in preface %}
+                    <h5>
+                        <a {% if key == pageName %} class="active" {% endif %}
+                           href="/examples/{{key}}">{{val.title}}</a>
+                    </h5>
+                {% endfor %}
                 <h5>实例及API</h5>
                 <ul class="list-unstyled">
-                    <li class="active">
-                        <a href="particle.html">粒子运动</a>
-                    </li>
-                    <li>
-                        <a href="wave.html">波浪运动</a>
-                    </li>
-                    <li>
-                        <a href="snow.html">雪花飘落</a>
-                    </li>
+                    {% for key, val in list %}
+                        <li {% if key == pageName %} class="active" {% endif %}>
+                            <a href="/examples/{{key}}">{{val.title}}</a>
+                        </li>
+                    {% endfor %}
                 </ul>
             </aside>
             {% block main %}{% endblock %}
         </section>
 
         {% include 'footer.html' %}
+        {% block script %}{% endblock %}
     </body>
 </html>

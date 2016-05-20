@@ -82,8 +82,11 @@ pre{
     }
   }
   .logo{
-    font-size: rem(26);
-    font-weight: 100;
+    a{
+      font-size: rem(26);
+      font-weight: 100;
+      color: $green;
+    }
   }
   .nav{
     margin-right: rem(-8);
@@ -139,7 +142,7 @@ pre{
   height: 100%;
 }
 #i-profile{
-  top: calc( 50% - 6rem );
+  top: calc( 50% - 10rem );
   color: $green;
   > h1{
       font-size: 6.6rem;
@@ -147,23 +150,8 @@ pre{
   }
   > p{
       font-size: rem(21);
-      margin: 1.1em 0 1em;
+      margin-top: .8em;
       color: #008850;
-  }
-}
-#i-nav a{
-  margin-right: 1.1em;
-  padding-bottom: .2rem;
-  border-bottom: .2rem solid transparent;
-  text-decoration: none;
-  color: #003C23;
-  transition: .4s cubic-bezier(.175,.885,.32,1);
-  &:last-child{
-    margin-right: 0;
-  }
-  &:hover{
-    color: #333;
-    border-bottom-color: #333;
   }
 }
 #i-footer.pa{

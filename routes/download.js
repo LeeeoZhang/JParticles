@@ -3,7 +3,8 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
     res.render('download', {
-        title: '下载Particleground.js'
+        title: '下载Particleground.js',
+        nav: 2
     });
 });
 

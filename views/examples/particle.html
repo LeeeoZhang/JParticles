@@ -1,207 +1,113 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>粒子运动</title>
-        <link rel="stylesheet" href="../asset/css/xui.css">
-        <link rel="stylesheet" href="../asset/css/style.css">
-        <link rel="stylesheet" href="../asset/css/prism.css">
-    </head>
-<body>
-    <header class="header pr">
-        <div class="logo fl">
-            <a href="../index.html">Particleground.js</a>
-        </div>
-        <nav class="nav fr pr">
-            <a href="../index.html">首页</a>
-            <a class="active" href="../demo/preface.html">实例及API</a>
-            <a href="../download.html">下载</a>
-            <a href="https://github.com/Barrior/Particleground.js">Github</a>
-            <a href="http://shang.qq.com/wpa/qunwpa?idkey=f548e3f94e0040a2ac5adfe4fec6915ef67c8c1b6ba5784ff6d5049c6135a759" title="172839150" target="_blank">QQ群</a>
-            <div class="slideblock pa"></div>
-        </nav>
-    </header>
+{% extends '../common/layout.html' %}
 
-    <section class="eg-container cf">
-        <aside class="menu fl pr">
-            <h5>
-                <a href="preface.html">前言</a>
-            </h5>
-            <h5>
-                <a href="quick-getting.html">5分钟上手Particleground.js</a>
-            </h5>
-            <h5>实例及API</h5>
-            <ul class="list-unstyled">
-                <li class="active">
-                    <a href="particle.html">粒子运动</a>
-                </li>
-                <li>
-                    <a href="wave.html">波浪运动</a>
-                </li>
-                <li>
-                    <a href="snow.html">雪花飘落</a>
-                </li>
-            </ul>
-        </aside>
-        <div class="main">
-            <div class="content">
-                <div class="demo-wrap">
-                    <div id="demo"></div>
-                    <div id="open" class="btn btn-success">开启/Open</div>
-                    <div id="pause" class="btn btn-success">暂停/Pause</div>
-                    <h5 class="caption" id="源代码"><a href="#源代码">源代码：</a></h5>
-                    <pre>
-                        <code class="language-javascript normal-text">
-    var d = new Particleground.particle( '#demo', {
+{% block main %}
+<div class="main">
+    <div class="content">
+        <div class="demo-wrap">
+            <div id="demo"></div>
+            <div id="open" class="btn btn-success">开启/Open</div>
+            <div id="pause" class="btn btn-success">暂停/Pause</div>
+            <h5 class="caption" id="源代码"><a href="#源代码">源代码：</a></h5>
+            <pre>
+<code class="language-javascript normal-text">
+    new Particleground.particle( '#demo', {
         dis: 90,
-        r: 100,
-        resize: true
+        r: 100
     });
-    //暂停
-    d.pause();
-    //开启
-    d.open();</code>
-                    </pre>
-
-                    <table class="table table-bordered-inner table-striped">
-                        <caption id="参数">
-                            <a href="#参数">API配置参数，如未特别说明，参数均为可选，包括配置对象。</a>
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th>名称</th>
-                                <th>默认值</th>
-                                <th>类型</th>
-                                <th>描述</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>opacity</td>
-                                <td>.8</td>
-                                <td>number</td>
-                                <td>全局透明度</td>
-                            </tr>
-                            <tr>
-                                <td>color</td>
-                                <td>[] 即随机色</td>
-                                <td>array</td>
-                                <td>设置颜色数组，粒子则按设置的颜色数组随机</td>
-                            </tr>
-                            <tr>
-                                <td>speed</td>
-                                <td>1</td>
-                                <td>number</td>
-                                <td>粒子运动速度</td>
-                            </tr>
-                            <tr>
-                                <td>num</td>
-                                <td>.1</td>
-                                <td>number</td>
-                                <td>粒子个数，默认为容器的0.1倍，传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)</td>
-                            </tr>
-                            <tr>
-                                <td>max</td>
-                                <td>2.4</td>
-                                <td>number</td>
-                                <td>粒子最大半径</td>
-                            </tr>
-                            <tr>
-                                <td>min</td>
-                                <td>.6</td>
-                                <td>number</td>
-                                <td>粒子最小半径</td>
-                            </tr>
-                            <tr>
-                                <td>dis</td>
-                                <td>130</td>
-                                <td>number</td>
-                                <td>两个点之间相连接的最大距离</td>
-                            </tr>
-                            <tr>
-                                <td>lineWidth</td>
-                                <td>.2</td>
-                                <td>number</td>
-                                <td>连接线段的宽度</td>
-                            </tr>
-                            <tr>
-                                <td>r</td>
-                                <td>240</td>
-                                <td>number</td>
-                                <td>范围越大，连接的点越多</td>
-                            </tr>
-                            <tr>
-                                <td>eventElem</td>
-                                <td>false</td>
-                                <td>boolean 或 element</td>
-                                <td>触发移动事件的元素，false为canvas，或传入原生元素对象，如document</td>
-                            </tr>
-                            <tr>
-                                <td>resize</td>
-                                <td>false</td>
-                                <td>boolean</td>
-                                <td>自适应窗口尺寸变化</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table class="table table-bordered-inner table-striped">
-                        <caption id="方法">
-                            <a href="#方法">方法，如无特别说明，所有粒子运动对象都带有暂停与开启运动的方法，后面的例子将省略此表格，避免重复劳动。</a>
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th>名称</th>
-                                <th>描述</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>.open()</td>
-                                <td>开启粒子运动</td>
-                            </tr>
-                            <tr>
-                                <td>.pause()</td>
-                                <td>暂停粒子运动</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+</code>
+            </pre>
+            <table class="table table-bordered-inner table-striped">
+                <caption id="参数">
+                    <a href="#参数">API配置参数，如未特别说明，参数均为可选，包括配置对象。</a>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>默认值</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>opacity</td>
+                        <td>.6</td>
+                        <td>number</td>
+                        <td>全局透明度</td>
+                    </tr>
+                    <tr>
+                        <td>color</td>
+                        <td>[] 即随机色</td>
+                        <td>array</td>
+                        <td>设置颜色数组，粒子则按设置的颜色数组随机</td>
+                    </tr>
+                    <tr>
+                        <td>speed</td>
+                        <td>1</td>
+                        <td>number</td>
+                        <td>粒子运动速度</td>
+                    </tr>
+                    <tr>
+                        <td>num</td>
+                        <td>.12</td>
+                        <td>number</td>
+                        <td>粒子个数，默认为容器的0.12倍，传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)</td>
+                    </tr>
+                    <tr>
+                        <td>max</td>
+                        <td>2.4</td>
+                        <td>number</td>
+                        <td>粒子最大半径</td>
+                    </tr>
+                    <tr>
+                        <td>min</td>
+                        <td>.6</td>
+                        <td>number</td>
+                        <td>粒子最小半径</td>
+                    </tr>
+                    <tr>
+                        <td>dis</td>
+                        <td>130</td>
+                        <td>number</td>
+                        <td>两个点之间相连接的最大距离</td>
+                    </tr>
+                    <tr>
+                        <td>lineWidth</td>
+                        <td>.2</td>
+                        <td>number</td>
+                        <td>连接线段的宽度</td>
+                    </tr>
+                    <tr>
+                        <td>r</td>
+                        <td>160</td>
+                        <td>number</td>
+                        <td>范围越大，连接的点越多</td>
+                    </tr>
+                    <tr>
+                        <td>eventElem</td>
+                        <td>null</td>
+                        <td>null 或 element</td>
+                        <td>触发移动事件的元素，null为canvas自身，或传入原生元素对象，如document</td>
+                    </tr>
+                    <tr>
+                        <td>resize</td>
+                        <td>true</td>
+                        <td>boolean</td>
+                        <td>自适应窗口尺寸变化</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-    </section>
+    </div>
+</div>
+{% endblock %}
 
-    <footer class="footer text-center">
-        <div class="footer-text">
-            Copyright 2016 Barrior &lt;<a href="mailto:Barrior@qq.com">Barrior@qq.com</a>&gt;,
-            Licensed under the
-            <a href="http://www.opensource.org/licenses/mit-license.php"
-               target="_blank">MIT</a>.
-            <a href="#">
-                开源不易，犒赏作者
-            </a>
-        </div>
-    </footer>
-
-    <script src="../asset/js/jquery.js"></script>
-    <script src="../asset/js/xui.js"></script>
-    <script src="../asset/js/doc.js"></script>
-    <script src="../asset/js/prism.js"></script>
-    <script src="../asset/js/particleground.js"></script>
-    <script src="../asset/js/particle.js"></script>
-    <script>
-        var d = new Particleground.particle( '#demo', {
-            dis: 90,
-            r: 100,
-            resize: true
-        });
-        $('#open').click(function(){
-            d.open();
-        });
-        $('#pause').click(function(){
-            d.pause();
-        });
-
-        Prism.highlightElement($('.language-javascript')[0], 'javascript');
-    </script>
-</body>
-</html>
+{% block script %}
+<script src="/js/pjs/particle.js"></script>
+<script>
+    d = new Particleground.particle( '#demo', {
+        dis: 90,
+        r: 100
+    });
+</script>
+{% endblock %}

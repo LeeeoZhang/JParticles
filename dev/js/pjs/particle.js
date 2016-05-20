@@ -19,7 +19,7 @@
         this.set = util.extend( {}, Particle.configDefault, options );
 
         //设置事件元素对象
-        if( typeof this.set.eventElem !== 'object' ){
+        if( this.set.eventElem === null ){
             this.set.eventElem = this.c;
         }
         //移动鼠标点X,Y坐标
@@ -52,8 +52,8 @@
         lineWidth: .2,
         //范围越大，连接的点越多
         r: 160,
-        //触发移动事件的元素，false为canvas，或传入原生元素对象，如document
-        eventElem: false,
+        //触发移动事件的元素，null为canvas，或传入原生元素对象，如document
+        eventElem: null,
         //自适应窗口尺寸变化
         resize: true
     };
@@ -104,7 +104,6 @@
             cxt.clearRect( 0, 0, cw, ch );
 
             //当canvas宽高改变的时候，全局属性需要重新设置
-            //resize属性没有在默认配置configDefault里声明，以减小文件大小，但在文档里说明
             if( set.resize ){
                 cxt.lineWidth = set.lineWidth;
                 cxt.globalAlpha = set.opacity;

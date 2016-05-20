@@ -1,15 +1,25 @@
 var express = require('express');
 var router = express.Router();
 
-var examplesInfo = require('../db/examples-info');
+var examplesInfo = require('../db/examples');
+var preface = examplesInfo.preface;
+var list = examplesInfo.list;
 console.log('in');
 
 router.get('/', function(req, res, next) {
     // req.originalUrl: /examples/test
     var name = req.originalUrl.substring(10);
-    var info = examplesInfo[ name ];
+    var info = preface[ name ] || list[ name ];
     if( info ){
-        res.render( 'examples/'+ name + '.html',  info );
+        var output = {
+            preface: preface,
+            list: list,
+            title: info.title,
+            pageName: name,
+            nav: 1
+        };
+        console.log( output )
+        res.render( 'examples/'+ name + '.html', output );
     }else{
         //not found
         var err = new Error('Not Found');
