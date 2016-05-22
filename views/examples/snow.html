@@ -4,7 +4,7 @@
 <div class="main">
     <div class="main-content">
         <div class="demo-wrap">
-            <div id="demo"></div>
+            <div id="demo" class="snow"></div>
             <div id="open" class="btn btn-success">开启/Open</div>
             <div id="pause" class="btn btn-success">暂停/Pause</div>
             <div class="model">
@@ -12,10 +12,7 @@
                 <div class="content">
                     <pre>
 <code class="language-javascript normal-text">
-    new Particleground.particle( '#demo', {
-        dis: 90,
-        r: 100
-    });
+    new Particleground.snow( '#demo' );
 </code>
                     </pre>
                 </div>
@@ -35,63 +32,33 @@
                         <tbody>
                         <tr>
                             <td>opacity</td>
-                            <td>.6</td>
+                            <td>1</td>
                             <td>number</td>
                             <td>全局透明度</td>
                         </tr>
                         <tr>
                             <td>color</td>
-                            <td>[] 即随机色</td>
-                            <td>array</td>
-                            <td>设置颜色数组，粒子则按设置的颜色数组随机</td>
-                        </tr>
-                        <tr>
-                            <td>speed</td>
-                            <td>1</td>
-                            <td>number</td>
-                            <td>粒子运动速度</td>
-                        </tr>
-                        <tr>
-                            <td>num</td>
-                            <td>.12</td>
-                            <td>number</td>
-                            <td>粒子个数，默认为容器的0.12倍，传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)</td>
+                            <td>'#fff'</td>
+                            <td>string</td>
+                            <td>雪花的颜色</td>
                         </tr>
                         <tr>
                             <td>max</td>
-                            <td>2.4</td>
+                            <td>6.5</td>
                             <td>number</td>
-                            <td>粒子最大半径</td>
+                            <td>雪花最大半径</td>
                         </tr>
                         <tr>
                             <td>min</td>
-                            <td>.6</td>
+                            <td>.4</td>
                             <td>number</td>
-                            <td>粒子最小半径</td>
+                            <td>雪花最小半径</td>
                         </tr>
                         <tr>
-                            <td>dis</td>
-                            <td>130</td>
+                            <td>speed</td>
+                            <td>.4</td>
                             <td>number</td>
-                            <td>两个点之间相连接的最大距离</td>
-                        </tr>
-                        <tr>
-                            <td>lineWidth</td>
-                            <td>.2</td>
-                            <td>number</td>
-                            <td>连接线段的宽度</td>
-                        </tr>
-                        <tr>
-                            <td>r</td>
-                            <td>160</td>
-                            <td>number</td>
-                            <td>范围越大，连接的点越多</td>
-                        </tr>
-                        <tr>
-                            <td>eventElem</td>
-                            <td>null</td>
-                            <td>null 或 element</td>
-                            <td>触发移动事件的元素，null为canvas自身，或传入原生元素对象，如document</td>
+                            <td>雪花飘落速度</td>
                         </tr>
                         <tr>
                             <td>resize</td>
@@ -109,11 +76,8 @@
 {% endblock %}
 
 {% block script %}
-<script src="/js/pjs/particle.js"></script>
+<script src="/js/pjs/snow.js"></script>
 <script>
-    d = new Particleground.particle( '#demo', {
-        dis: 90,
-        r: 100
-    });
+    d = new Particleground.snow( '#demo' );
 </script>
 {% endblock %}

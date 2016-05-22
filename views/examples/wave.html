@@ -8,13 +8,19 @@
             <div id="open" class="btn btn-success">开启/Open</div>
             <div id="pause" class="btn btn-success">暂停/Pause</div>
             <div class="model">
+                <h5 class="caption"><a id="备注" href="#备注">备注：</a></h5>
+                <div class="content">
+                    本案例参考QQ电话的UI设计，网易云音乐也有这样的效果，大家可以参考这些实际用例。
+                </div>
+            </div>
+            <div class="model">
                 <h5 class="caption"><a id="源代码" href="#源代码">源代码：</a></h5>
                 <div class="content">
                     <pre>
 <code class="language-javascript normal-text">
-    new Particleground.particle( '#demo', {
-        dis: 90,
-        r: 100
+    new Particleground.wave( '#demo', {
+    dis: 90,
+    r: 100
     });
 </code>
                     </pre>
@@ -109,11 +115,9 @@
 {% endblock %}
 
 {% block script %}
-<script src="/js/pjs/particle.js"></script>
+<script src="/js/pjs/wave.js"></script>
 <script>
-    d = new Particleground.particle( '#demo', {
-        dis: 90,
-        r: 100
+    d = new Particleground.wave( '#demo', {
     });
 </script>
 {% endblock %}

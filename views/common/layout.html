@@ -13,7 +13,7 @@
         <section class="eg-container cf">
             <aside class="menu fl pr">
                 {% for key, val in preface %}
-                    <h5>
+                    <h5 class="pr">
                         <a {% if key == pageName %} class="active" {% endif %}
                            href="/examples/{{key}}">{{val.title}}</a>
                     </h5>

@@ -1,4 +1,4 @@
-
+//particle.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -168,9 +168,10 @@
             return this;
         },
         event: function() {
+            this.elemOffset = util.offset( this.set.eventElem );
             this.handler = function ( e ) {
-                this.posX = e.clientX;
-                this.posY = e.clientY;
+                this.posX = e.pageX - this.elemOffset.left;
+                this.posY = e.pageY - this.elemOffset.top;
             }.bind( this );
             on( this.set.eventElem, 'mousemove', this.handler );
         }
@@ -195,6 +196,7 @@
         util.resize( this, function( scaleX, scaleY ){
             this.posX *= scaleX;
             this.posY *= scaleY;
+            this.elemOffset = util.offset( this.set.eventElem );
         });
     };
 

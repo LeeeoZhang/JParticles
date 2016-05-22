@@ -4,7 +4,6 @@ var router = express.Router();
 var examplesInfo = require('../db/examples');
 var preface = examplesInfo.preface;
 var list = examplesInfo.list;
-console.log('in');
 
 router.get('/', function(req, res, next) {
     // req.originalUrl: /examples/test
@@ -18,7 +17,7 @@ router.get('/', function(req, res, next) {
             pageName: name,
             nav: 1
         };
-        console.log( output )
+        //console.log( output )
         res.render( 'examples/'+ name + '.html', output );
     }else{
         //not found

@@ -38,6 +38,18 @@
 	function getCss( elem, attr ){
 		return pInt( win.getComputedStyle( elem )[ attr ] );
 	}
+    function offset( elem ){
+        var left = elem.offsetLeft || 0;
+        var top  = elem.offsetTop || 0;
+        while ( elem = elem.offsetParent ){
+            left += elem.offsetLeft;
+            top += elem.offsetTop;
+        }
+        return {
+            left: left,
+            top: top
+        };
+    }
     function typeChecking( obj, type ){
         return Object.prototype.toString.call( obj ) === type;
     }
@@ -157,6 +169,7 @@
             randomColor: randomColor,
             limitRandom: limitRandom,
             getCss: getCss,
+            offset: offset,
             typeChecking: typeChecking,
             extend: extend,
             createCanvas: createCanvas,

@@ -1,31 +1,36 @@
 {% extends '../common/layout.html' %}
 {% block main %}
 <div class="main">
-    <div class="content">
+    <div class="main-content">
         <div class="quick-getting">
             quick-getting 5分钟上手pjs.
+            <h3>如未特别说明，参数均为可选，包括配置对象。</h3>
 
-            <table class="table table-bordered-inner table-striped">
-                <caption id="方法">
+            <div class="model">
+                <h5 class="caption">
                     <a href="#方法">方法，如无特别说明，所有粒子运动对象都带有暂停与开启运动的方法，后面的例子将省略此表格，避免重复劳动。</a>
-                </caption>
-                <thead>
-                <tr>
-                    <th>名称</th>
-                    <th>描述</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>.open()</td>
-                    <td>开启粒子运动</td>
-                </tr>
-                <tr>
-                    <td>.pause()</td>
-                    <td>暂停粒子运动</td>
-                </tr>
-                </tbody>
-            </table>
+                </h5>
+                <div class="content">
+                    <table class="table table-bordered-inner table-striped">
+                        <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>描述</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>.open()</td>
+                            <td>开启粒子运动</td>
+                        </tr>
+                        <tr>
+                            <td>.pause()</td>
+                            <td>暂停粒子运动</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

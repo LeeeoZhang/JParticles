@@ -11,24 +11,6 @@ $bezier: cubic-bezier(.175,.885,.32,1);
 
 
 //ui default
-caption,
-.caption{
-  margin-top: rem(30);
-  font-size: rem(16);
-  font-weight: 900;
-  color: $root-color;
-  position: relative;
-  &:before{
-    content: "#";
-    color: $green;
-    position: absolute;
-    right: 100.4%;
-  }
-  a{
-    color: $root-color;
-    text-decoration: none;
-  }
-}
 pre{
   background-color: $gray-bg;
 }
@@ -74,6 +56,7 @@ pre{
   line-height: rem(94);
   border-bottom: 1px solid $gray-border;
   box-shadow: 0 rem(1) rem(2) 0 #E8E8E8;
+  z-index: 9;
   a{
     text-decoration: none;
     color: $root-color;
@@ -204,84 +187,133 @@ pre{
       text-decoration: none;
       color: $root-color;
     }
+    .essential{
+      background: #00BE70;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1;
+      padding: 4px 6px 6px;
+      left: 183px;
+      top: -6px;
+      border-radius: 10px;
+      transform: scale(.9);
+      &:before{
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+        border-left-color: #00BE70;
+        border-bottom-color: #00BE70;
+        left: -2px;
+        top: 8px;
+        transform: rotate(23deg);
+      }
+    }
   }
   >.main{
     padding-left: rem(240);
-    >.content{
-      >.demo-wrap{
-        #demo{
-          height: rem(440);
-          border: 1px solid $gray-border;
+    >.main-content{
+      .model{
+        margin-top: rem(30);
+        .caption{
+          padding-bottom: rem(6);
+          font-size: rem(16);
+          position: relative;
+          &:before{
+            content: "#";
+            color: $green;
+            position: absolute;
+            right: 100.4%;
+          }
+          a{
+            color: $root-color;
+            text-decoration: none;
+          }
         }
-        .btn{
-          margin: rem(20) rem(10) rem(20) 0;
+        .content{
+          pre{
+            margin: 0;
+          }
         }
-        .table{
-          font-size: rem(13);
+      }
+      #demo{
+        height: rem(440);
+        border: 1px solid $gray-border;
+        &.snow{
+          height: rem(550);
+          background: url("../img/merry-christmas.jpg") 0 0 no-repeat;
+          background-size: 100% 100%;
         }
-        .table>tbody>tr>td,
-        .table>tbody>tr>th,
-        .table>tfoot>tr>td,
-        .table>tfoot>tr>th,
-        .table>thead>tr>td,
-        .table>thead>tr>th{
-          padding: .8em 1.3em;
-        }
-        :not(pre) > code[class*="language-"],
-        pre[class*="language-"]{
-          background-color: $gray-bg;
-        }
-        code[class*="language-"],
-        pre[class*="language-"]{
-          text-shadow: none;
-          font-family: 'Roboto Mono', Monaco, courier, monospace;
-        }
-        .token.selector,
-        .token.attr-name,
-        .token.string,
-        .token.char,
-        .token.builtin,
-        .token.inserted{
-          color: $green;
-        }
-        .token.function,
-        .token.property,
-        .token.tag,
-        .token.boolean,
-        .token.number,
-        .token.constant,
-        .token.symbol,
-        .token.deleted{
-          color: #BE0000;
-        }
-        .token.atrule,
-        .token.attr-value,
-        .token.keyword{
-          color: #0065BE;
-        }
-        .token.operator,
-        .token.entity,
-        .token.url,
-        .language-css .token.string,
-        .style .token.string{
-          color: #BE8500;
-          background-color: transparent;
-        }
-        .token.punctuation{
-          color: $root-color;
-        }
-        .token.comment,
-        .token.prolog,
-        .token.doctype,
-        .token.cdata{
-          color: #999;
-        }
-        pre[class*="language-"]::selection,
-        pre[class*="language-"] ::selection,
-        code[class*="language-"]::selection,
-        code[class*="language-"] ::selection{
-          background: #E8E8E8;
-        }
+      }
+      .btn{
+        margin: rem(20) rem(10) rem(20) 0;
+      }
+      .table{
+        font-size: rem(13);
+      }
+      .table>tbody>tr>td,
+      .table>tbody>tr>th,
+      .table>tfoot>tr>td,
+      .table>tfoot>tr>th,
+      .table>thead>tr>td,
+      .table>thead>tr>th{
+        padding: .8em 1.3em;
+      }
+      :not(pre) > code[class*="language-"],
+      pre[class*="language-"]{
+        background-color: $gray-bg;
+      }
+      code[class*="language-"],
+      pre[class*="language-"]{
+        text-shadow: none;
+        font-family: 'Roboto Mono', Monaco, courier, monospace;
+      }
+      .token.selector,
+      .token.attr-name,
+      .token.string,
+      .token.char,
+      .token.builtin,
+      .token.inserted{
+        color: $green;
+      }
+      .token.function,
+      .token.property,
+      .token.tag,
+      .token.boolean,
+      .token.number,
+      .token.constant,
+      .token.symbol,
+      .token.deleted{
+        color: #BE0000;
+      }
+      .token.atrule,
+      .token.attr-value,
+      .token.keyword{
+        color: #0065BE;
+      }
+      .token.operator,
+      .token.entity,
+      .token.url,
+      .language-css .token.string,
+      .style .token.string{
+        color: #BE8500;
+        background-color: transparent;
+      }
+      .token.punctuation{
+        color: $root-color;
+      }
+      .token.comment,
+      .token.prolog,
+      .token.doctype,
+      .token.cdata{
+        color: #999;
+      }
+      pre[class*="language-"]::selection,
+      pre[class*="language-"] ::selection,
+      code[class*="language-"]::selection,
+      code[class*="language-"] ::selection{
+        background: #E8E8E8;
       }
     }
   }

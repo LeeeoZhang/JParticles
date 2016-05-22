@@ -12,7 +12,7 @@ var info = {
             title: "粒子运动"
         },
         "wave": {
-            title: "和弦运动"
+            title: "波浪运动"
         },
         "snow": {
             title: "雪花飘落"
