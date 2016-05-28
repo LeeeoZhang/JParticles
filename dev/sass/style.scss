@@ -150,6 +150,21 @@ pre{
 //examples.html
 .eg-container{
   padding: rem(40) rem(60);
+  .caption{
+    padding-bottom: rem(6);
+    font-size: rem(16);
+    position: relative;
+    &:before{
+      content: "#";
+      color: $green;
+      position: absolute;
+      right: 100.4%;
+    }
+    a{
+      color: $root-color;
+      text-decoration: none;
+    }
+  }
   >.menu{
     width: rem(220);
     h6,
@@ -219,21 +234,6 @@ pre{
     >.main-content{
       .model{
         margin-top: rem(30);
-        .caption{
-          padding-bottom: rem(6);
-          font-size: rem(16);
-          position: relative;
-          &:before{
-            content: "#";
-            color: $green;
-            position: absolute;
-            right: 100.4%;
-          }
-          a{
-            color: $root-color;
-            text-decoration: none;
-          }
-        }
         .content{
           pre{
             margin: 0;
@@ -320,8 +320,16 @@ pre{
       }
     }
   }
+  .quick-getting,
   .preface{
     line-height: 2;
     font-size: rem(15);
+    h5{
+      font-size: rem(18);
+      font-weight: 900;
+    }
+  }
+  .quick-getting{
+
   }
 }

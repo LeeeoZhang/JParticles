@@ -3,7 +3,42 @@
 <div class="main">
     <div class="main-content">
         <div class="quick-getting">
-            quick-getting 5分钟上手pjs.
+            <section>
+                <h5>获取Particleground.js（以下简称pjs）</h5>
+                <p>通过以下两种方式获取pjs：</p>
+                <p class="text-indent">1、从官网下载界面选择特定的特效打包下载，或者直接下载包含所有特效的文件。</p>
+                <p class="text-indent">2、克隆pjs在Github上的整个项目，在public/js/pjs文件夹下选择你需要使用的js文件。</p>
+            </section>
+
+            <section>
+                <h5>引入pjs</h5>
+                <p>在页面内使用script标签引入插件js即可，当然也支持模块化的加载方式，不过pjs仍然在window对象上注册了Particleground对象，用于插件拓展。</p>
+                <p class="text-indent"></p>
+                <pre>
+<code class="language-javascript normal-text">
+    <!DOCTYPE html>
+    <html>
+    <header>
+        <meta charset="utf-8">
+    </header>
+    <body>
+        <!-- 准备一个显示粒子特效的DOM元素 -->
+        <div id="demo" style="width: 400px; height: 250px;"></div>
+
+        <!-- 引入 Particleground.js 文件 -->
+        <script src="particleground.js"></script>
+        <!-- 引入 粒子特效 文件 -->
+        <script src="particle.js"></script>
+        <script>
+            //使用Particleground.js提供的API
+            new Particleground.particle( '#demo' );
+        </script>
+    </body>
+    </html>
+</code>
+                </pre>
+            </section>
+
             <h3>如未特别说明，参数均为可选，包括配置对象。</h3>
 
             <div class="model">
@@ -34,4 +69,11 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script src="/js/pjs/particle.js"></script>
+<script>
+    d = new Particleground.particle( '#demo' );
+</script>
 {% endblock %}
