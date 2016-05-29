@@ -42,6 +42,13 @@ $(function(){
     }
     nav();
 
+    $('#open').click(function(){
+        d.open();
+    });
+    $('#pause').click(function(){
+        d.pause();
+    });
+
     function loadjs( url, callback ){
         var script = document.createElement('script');
         script.onload = callback;
@@ -52,12 +59,6 @@ $(function(){
     loadjs( '/js/prism.js', function(){
         if( $('.language-javascript').length ){
             Prism.highlightElement($('.language-javascript')[0], 'javascript');
-            $('#open').click(function(){
-                d.open();
-            });
-            $('#pause').click(function(){
-                d.pause();
-            });
         }
     });
 
