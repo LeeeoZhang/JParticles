@@ -999,6 +999,20 @@ pre.prettyprint{
       margin-top: .8em;
       color: #008850;
   }
+  .use{
+    margin-top: rem(30);
+    font-size: rem(24);
+    .btn{
+      background-color: transparent;
+      color: $green;
+      transition: .6s ease;
+      &:hover{
+        border-color: $green;
+        background-color: $green;
+        color: #fff;
+      }
+    }
+  }
 }
 #i-footer.pa{
   left: auto;

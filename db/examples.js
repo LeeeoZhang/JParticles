@@ -1,7 +1,7 @@
 var info = {
     "preface": {
         "preface": {
-            title: "前言"
+            title: "介绍"
         },
         "quick-getting": {
             title: "5分钟上手Particleground.js"
