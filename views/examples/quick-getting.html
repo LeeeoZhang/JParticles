@@ -42,7 +42,7 @@
 
             <section>
                 <h5 class="caption">
-                    <a id="进阶" href="#进阶">进阶<small>（非五分钟内容）</small></a>
+                    <a id="进阶" href="#进阶">进阶<small>（多加几分钟）</small></a>
                 </h5>
                 <blockquote>
                     <div>如无特别说明，每个用new实例化的对象都包含以下两个方法，为了减少重复劳动，后面的示例将不再出现：</div>
@@ -61,7 +61,7 @@
                 </blockquote>
                 <div id="open" class="btn btn-success">点我·开启</div>
                 <div id="pause" class="btn btn-success">点我·暂停</div>
-                <div>代码如下：</div>
+                <div>使用代码如下：</div>
                 <pre class="use-method normal-text"></pre>
             </section>
 
@@ -70,7 +70,8 @@
                     <a id="配置" href="#配置">配置</a>
                 </h5>
                 <blockquote>
-                    new Particleground.pluginName( selector [, options] );
+                    1、每个实例对象都接受两个参数，一个selector，一个options。<br>
+                    <code>new Particleground.name( selector , options );</code>
                 </blockquote>
                 <table class="table table-bordered-inner table-striped">
                     <thead>
@@ -89,26 +90,29 @@
                         <tr>
                             <td>options</td>
                             <td>object</td>
-                            <td>可选，特效配置参数</td>
+                            <td>可选，特效的配置参数</td>
                         </tr>
                     </tbody>
                 </table>
-                <blockquote>修改默认配置</blockquote>
-                <pre class="prettyprint normal-text">
-                    Particleground.particle.configDefault = {
-                        opacity: .6,
-                        color: [],
-                        speed: 1,
-                        num: .12,
-                        max: 2.4,
-                        min: .6,
-                        dis: 130,
-                        lineWidth: .2,
-                        r: 160,
-                        eventElem: null,
-                        resize: true
-                    };
-                </pre>
+                <blockquote>
+                    <div>
+                        2、通过pjs插件暴露的全局接口
+                        <code>Particleground.name.configDefault</code>
+                        可方便地修改特效的默认配置，示例如下：
+                    </div>
+                </blockquote>
+                <pre class="config-default normal-text"></pre>
+                <div>
+                    <h6>小提示：</h6>
+                    <ul class="mini-text">
+                        <li>修改默认配置应放在 <code>new</code> 之前。</li>
+                        <li>
+                            每个pjs插件的默认配置请在右侧相应的
+                            <b>实例及API</b>
+                            中查看。
+                        </li>
+                    </ul>
+                </div>
             </section>
         </div>
     </div>
@@ -116,22 +120,6 @@
 {% endblock %}
 
 {% block script %}
-<link href="//cdn.bootcss.com/prettify/r298/prettify.min.css" rel="stylesheet">
-<script src="//cdn.bootcss.com/prettify/r298/prettify.min.js"></script>
-<script>
-    $.get('/code-demo/import.html', function( msg ){
-        $('.import').text( msg ).addClass('prettyprint');
-        prettyPrint();
-    });
-    $.get('/code-demo/use.html', function( msg ){
-        $('.use').text( msg ).addClass('prettyprint');
-        prettyPrint();
-    });
-    $.get('/code-demo/use-method.html', function( msg ){
-        $('.use-method').text( msg ).addClass('prettyprint');
-        prettyPrint();
-    });
-</script>
 <script src="/js/pjs/particle.js"></script>
 <script>
     d = new Particleground.particle( '#demo', {

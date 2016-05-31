@@ -1235,7 +1235,7 @@ pre.prettyprint{
       line-height: 1;
       font-size: rem(12);
     }
-    >*{
+    >*:not(:last-child){
       margin-bottom: rem(30);
     }
   }

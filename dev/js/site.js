@@ -56,9 +56,26 @@ $(function(){
         document.getElementsByTagName('head')[0].appendChild( script );
     }
 
-    loadjs( '/js/prism.js', function(){
+    function loadcss( url, callback ){
+        var link = document.createElement('link');
+        link.onload = callback;
+        link.href = url;
+        link.rel = 'stylesheet';
+        document.getElementsByTagName('head')[0].appendChild( link );
+    }
+
+    loadcss('//cdn.bootcss.com/prettify/r298/prettify.min.css');
+
+    loadjs( '//cdn.bootcss.com/prettify/r298/prettify.min.js', function(){
         if( $('.language-javascript').length ){
             Prism.highlightElement($('.language-javascript')[0], 'javascript');
+        }else if( $('.quick-getting').length ){
+            'import use use-method config-default'.split(' ').forEach(function( v ){
+                $.get('/code-demo/'+ v +'.html', function( msg ){
+                    $( '.' + v ).text( msg ).addClass( 'prettyprint' );
+                    prettyPrint();
+                });
+            });
         }
     });
 
