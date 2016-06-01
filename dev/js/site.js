@@ -65,7 +65,6 @@ $(function(){
     }
 
     loadcss('//cdn.bootcss.com/prettify/r298/prettify.min.css');
-
     loadjs( '//cdn.bootcss.com/prettify/r298/prettify.min.js', function(){
         if( $('.language-javascript').length ){
             Prism.highlightElement($('.language-javascript')[0], 'javascript');
