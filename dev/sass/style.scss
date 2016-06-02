@@ -882,10 +882,11 @@ code{
   background-color: $gray-bg;
 }
 
+$page-left-right: rem(120);
 //com
 .header{
   height: rem(94);
-  padding: 0 rem(60);
+  padding: 0 $page-left-right;
   line-height: rem(94);
   border-bottom: 1px solid $gray-border;
   box-shadow: 0 rem(1) rem(2) 0 #E8E8E8;
@@ -947,7 +948,7 @@ code{
 }
 
 .footer{
-  padding: rem(20) rem(60);
+  padding: rem(20) $page-left-right;
   border-top: 1px solid $gray-border;
 }
 //syntax highlight
@@ -1023,9 +1024,9 @@ pre.prettyprint{
 
 //examples.html
 .eg-container{
-  padding: rem(40) rem(60);
+  padding: rem(40) $page-left-right;
   >.menu{
-    width: rem(220);
+    width: rem(240);
     h6,
     h5{
       margin-bottom: rem(16);
@@ -1089,7 +1090,7 @@ pre.prettyprint{
     }
   }
   >.main{
-    padding-left: rem(260);
+    padding-left: rem(300);
     a{
       color: $root-color;
       text-decoration: none;
@@ -1112,7 +1113,7 @@ pre.prettyprint{
         content: "#";
         color: $green;
         position: absolute;
-        right: 100.4%;
+        right: 100.8%;
       }
       a{
         color: $root-color;
