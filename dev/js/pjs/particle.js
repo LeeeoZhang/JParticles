@@ -19,7 +19,7 @@
         this.set = util.extend( {}, Particle.configDefault, options );
 
         //设置事件元素对象
-        if( this.set.eventElem === null ){
+        if( !util.isElem( this.set.eventElem ) ){
             this.set.eventElem = this.c;
         }
         //移动鼠标点X,Y坐标
@@ -35,8 +35,8 @@
     Particle.configDefault = {
         //全局透明度
         opacity: .6,
-        //粒子颜色数组，默认随机色
-        color: [],
+        //粒子颜色，null随机色，或随机给定数组的颜色
+        color: null,
         //粒子运动速度
         speed: 1,
         //粒子个数，默认为容器的0.1倍
@@ -51,7 +51,7 @@
         //连接线段的宽度
         lineWidth: .2,
         //范围越大，连接的点越多
-        r: 160,
+        rang: 160,
         //触发移动事件的元素，null为canvas，或传入原生元素对象，如document
         eventElem: null,
         //自适应窗口尺寸变化
@@ -61,35 +61,21 @@
     var fn = Particle.prototype = {
         version: '1.0.0',
         createDot: function(){
-            var cw = this.cw,
-                ch = this.ch,
-                set = this.set,
+            var set = this.set,
                 speed = set.speed,
-                num = cw * set.num,
-                color = util.randomColor,
-                colorLength = set.color.length,
+                num = set.num >= 1 ? set.num : this.cw * set.num,
                 dots = [],
                 i = 0;
-
-            if( set.num >= 1 ){
-                num = set.num;
-            }
-
-            if( colorLength ){
-                color = function(){
-                    return set.color[ floor( random() * colorLength ) ];
-                };
-            }
 
             for( ; i < num; i++ ){
                 var r = util.limitRandom( set.max, set.min );
                 dots.push({
-                    x: util.limitRandom( cw - r, r ),
-                    y: util.limitRandom( ch - r, r ),
+                    x: util.limitRandom( this.cw - r, r ),
+                    y: util.limitRandom( this.ch - r, r ),
                     r: r,
                     vx: util.limitRandom( speed, -speed * .5 ) || speed,
                     vy: util.limitRandom( speed, -speed * .5 ) || speed,
-                    color: color()
+                    color: this.color()
                 });
             }
 
@@ -140,7 +126,7 @@
                 dis = set.dis,
                 posX = this.posX,
                 posY = this.posY,
-                posR = set.r,
+                posR = set.rang,
                 dots = this.dots;
 
             dots.forEach(function ( v ) {
@@ -170,8 +156,14 @@
         event: function() {
             this.elemOffset = util.offset( this.set.eventElem );
             this.handler = function ( e ) {
-                this.posX = e.pageX - this.elemOffset.left;
-                this.posY = e.pageY - this.elemOffset.top;
+                var x = e.pageX;
+                var y = e.pageY;
+                if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
+                    x = e.clientX;
+                    y = e.clientY;
+                }
+                this.posX = x - this.elemOffset.left;
+                this.posY = y - this.elemOffset.top;
             }.bind( this );
             on( this.set.eventElem, 'mousemove', this.handler );
         }

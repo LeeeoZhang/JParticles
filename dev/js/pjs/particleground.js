@@ -23,8 +23,10 @@
 	var win = window,
         doc = document,
 		random = Math.random,
+        floor = Math.floor,
         canvasSupport = !!doc.createElement('canvas').getContext;
 
+    //public
 	function pInt( s ){
 		return parseInt( s, 10 );
 	}
@@ -35,24 +37,6 @@
 	function limitRandom( max, min ){
 		return random() * (max - min) + min;
 	}
-	function getCss( elem, attr ){
-		return pInt( win.getComputedStyle( elem )[ attr ] );
-	}
-    function offset( elem ){
-        var left = elem.offsetLeft || 0;
-        var top  = elem.offsetTop || 0;
-        while ( elem = elem.offsetParent ){
-            left += elem.offsetLeft;
-            top += elem.offsetTop;
-        }
-        return {
-            left: left,
-            top: top
-        };
-    }
-    function typeChecking( obj, type ){
-        return Object.prototype.toString.call( obj ) === type;
-    }
     function extend(){
         //站在jQuery的肩膀之上
         var arg = arguments,
@@ -88,7 +72,32 @@
 
         return target;
     }
+    function typeChecking( obj, type ){
+        return Object.prototype.toString.call( obj ) === type;
+    }
+    function isElem( arg ){
+        return arg && typeof arg === 'object' &&
+            (arg.nodeType === 1 || arg.nodeType === 9);
+    }
 
+    //about element
+    var getCssReg = /^\d+[.a-z]+$/i;
+    function getCss( elem, attr ){
+        var val = win.getComputedStyle( elem )[ attr ];
+        return getCssReg.test( val ) ? pInt( val ) : val;
+    }
+    function offset( elem ){
+        var left = elem.offsetLeft || 0;
+        var top  = elem.offsetTop || 0;
+        while ( elem = elem.offsetParent ){
+            left += elem.offsetLeft;
+            top += elem.offsetTop;
+        }
+        return {
+            left: left,
+            top: top
+        };
+    }
     function on( elem, evtName, handler ){
         elem.addEventListener( evtName, handler );
     }
@@ -96,11 +105,19 @@
         elem.removeEventListener( evtName, handler );
     }
 
+    //about instance objects
+    function createColor( setColor ){
+        var colorLength = setColor instanceof Array ? setColor.length : false;
+        var color = function(){
+            return setColor[ floor( random() * colorLength ) ];
+        };
+        return colorLength ? color : randomColor;
+    }
 	function createCanvas( selector, context ){
         if( !canvasSupport ){
             return false;
         }
-        if( typeof selector == 'object' ){
+        if( isElem( selector ) ){
             context.container = selector;
         }else if( !(context.container = doc.querySelector( selector )) ){
             throw new Error( selector + ' is not defined' );
@@ -111,6 +128,7 @@
 		context.cxt = context.c.getContext( '2d' );
         context.paused = false;
 
+        context.container.innerHTML = '';
         return !!context.container.appendChild( context.c );
     }
 	function pause( context, fn ){
@@ -167,17 +185,23 @@
         util: {
             pInt: pInt,
             randomColor: randomColor,
+            createColor: createColor,
             limitRandom: limitRandom,
+            extend: extend,
+            typeChecking: typeChecking,
+            isElem: isElem,
             getCss: getCss,
             offset: offset,
-            typeChecking: typeChecking,
-            extend: extend,
             createCanvas: createCanvas,
             pause: pause,
             open: open,
             resize: resize
         },
         inherit: {
+            color: function(){
+                this.color = createColor( this.set.color );
+                return this.color();
+            },
             pause: function(){
                 pause( this );
             },

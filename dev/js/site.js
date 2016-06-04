@@ -73,6 +73,12 @@ $(function(){
                 $.get('/code-demo/'+ v +'.html', function( msg ){
                     $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                     prettyPrint();
+                    if( v === 'use' ){
+                        window.d = new Particleground.particle( '#demo', {
+                            dis: 80,
+                            rang: 60
+                        });
+                    }
                 });
             });
         }
