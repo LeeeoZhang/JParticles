@@ -24,8 +24,8 @@
         //全局透明度
         opacity: 1,
         //线条颜色
-        //color: [],
-        color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
+        color: [],
+        //color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
         //线条个数
         num: 3,
         //线条宽度
@@ -35,7 +35,7 @@
         //波峰数值，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
         crest: .03,
         //波纹个数，即正弦周期个数
-        rippleNum: 3,
+        rippleNum: 6,
         //线段的横向偏移值
         offsetLeft: [],
         //运动速度
@@ -57,7 +57,7 @@
             //每个周期(2π)在canvas上的实际长度
             this.rippleLength = this.cw / set.rippleNum;
             //周期
-            var t = this.rippleLength / pi2;
+            var t = pi2 / this.rippleLength;
 
             for( var i = 0; i < lineNum; i++ ){
 
@@ -132,15 +132,20 @@
                 crest * sin( v.angle + self.getAttr( 'offsetLeft', i ) ) + v.y
                         );
                     }
-                    v.angle -= speed;
+                    v.angle += speed;
                 });
+                cxt.moveTo( cw, ch );
+                cxt.moveTo( 0, ch );
+                cxt.fill = 'red';
                 cxt.strokeStyle = self.getAttr( 'color', i );
+
                 cxt.lineWidth = self.getAttr( 'lineWidth', i );
                 cxt.stroke();
+                cxt.closePath();
                 cxt.restore();
             });
 
-            this.requestAnimationFrame();
+            //this.requestAnimationFrame();
         }
     };
 
