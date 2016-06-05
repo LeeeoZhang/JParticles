@@ -50,7 +50,7 @@
         //连接线段的宽度
         lineWidth: .2,
         //范围越大，连接的点越多
-        rang: 160,
+        range: 160,
         //触发移动事件的元素，null为canvas，或传入原生元素对象，如document
         eventElem: null,
         //自适应窗口尺寸变化
@@ -123,7 +123,7 @@
                 dis = set.dis,
                 posX = this.posX,
                 posY = this.posY,
-                posR = set.rang,
+                posR = set.range,
                 dots = this.dots;
 
             dots.forEach(function ( v ) {

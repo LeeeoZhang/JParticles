@@ -76,7 +76,7 @@ $(function(){
                     if( v === 'use' ){
                         window.d = new Particleground.particle( '#demo', {
                             dis: 80,
-                            rang: 60
+                            range: 60
                         });
                     }
                 });

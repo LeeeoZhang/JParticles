@@ -30,14 +30,16 @@
         num: 3,
         //线条宽度
         lineWidth: [],
-        //波峰数值,容器一半高*此数值
-        crest: 1,
-        //波纹个数
+        //线条中点到元素顶部的距离，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
+        offsetTop: .75,
+        //波峰数值，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
+        crest: .03,
+        //波纹个数，即正弦周期个数
         rippleNum: 3,
+        //线段的横向偏移值
+        offsetLeft: [],
         //运动速度
-        speed: 2,
-        //线条中点到元素顶部的距离，(0, 1)表示容器的倍数，[1, +∞)表示具体数值
-        offsetTop: .7,
+        speed: 6,
         //自适应窗口尺寸变化
         resize: true
     };
@@ -48,29 +50,31 @@
         createDot: function(){
             var set = this.set,
                 ch = this.ch,
-                crest = this.ch / 2 * set.crest,
                 lineNum = set.num,
                 dotsNum = this.cw,
-                dots = [],
+                dots = [];
 
-                calc = ( set.max - set.min ) / dotsNum;
+            //每个周期(2π)在canvas上的实际长度
+            this.rippleLength = this.cw / set.rippleNum;
+            //周期
+            var t = this.rippleLength / pi2;
 
             for( var i = 0; i < lineNum; i++ ){
 
-                //var scale = 1 - i / set.num;
                 var	line = [];
                 var y = set.offsetTop;
-                if( y > 0 && y < 1 ){
+                if( y > 0 && y <= 1 ){
                     y = y * ch + 10 * i;
                 }
+
+                //线段的横向偏移值
+                set.offsetLeft.push( random() * t );
 
                 for( var j = 0; j < dotsNum; j++ ){
                     line.push({
                         x: j,
                         y: y,
-                        //y: j / dotsNum * crest * scale,
-                        //y: ch / ( 30 - 27.6 * j / dotNum ),
-                        angle: j,
+                        angle: j * t
                     });
                 }
 
@@ -99,11 +103,10 @@
         draw: function(){
             var self = this,
                 set = this.set,
+                speed = set.speed,
                 cxt = this.cxt,
                 cw = this.cw,
-                ch = this.ch,
-                a = ch / 6,
-                speed = set.speed;
+                ch = this.ch;
 
             cxt.clearRect( 0, 0, cw, ch );
             cxt.globalAlpha = set.opacity;
@@ -111,14 +114,23 @@
             this.dots.forEach(function( lineDots, i ){
                 cxt.save();
                 cxt.beginPath();
+                var crest = set.crest;
+                if( crest > 0 && crest <= 1 ){
+                    crest = crest * ch;
+                }
+
+                //var rippleLength = cw / set.rippleNum / pi2;
+
                 lineDots.forEach(function( v, j ){
                     if( j ){
                         //y = A sin（ ωx + φ ）+ h
-                        //cxt.lineTo(200, 200)
-                        cxt.lineTo( v.x, 100 * sin( v.angle * radian ) + v.y );
+                        cxt.lineTo( v.x,
+                crest * sin( v.angle + self.getAttr( 'offsetLeft', i ) ) + v.y
+                        );
                     }else{
-                        //cxt.moveTo(20, 200)
-                        cxt.moveTo( v.x, 100 * sin( v.angle * radian ) + v.y );
+                        cxt.moveTo( v.x,
+                crest * sin( v.angle + self.getAttr( 'offsetLeft', i ) ) + v.y
+                        );
                     }
                     v.angle -= speed;
                 });
