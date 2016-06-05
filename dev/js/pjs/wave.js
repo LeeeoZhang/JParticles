@@ -24,15 +24,20 @@
         //全局透明度
         opacity: 1,
         //线条颜色
-        color: [util.randomColor(), util.randomColor(), util.randomColor()],
+        //color: [],
+        color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
         //线条个数
         num: 3,
         //线条宽度
-        lineWidth:.4,
+        lineWidth: [],
         //波峰数值,容器一半高*此数值
         crest: 1,
+        //波纹个数
+        rippleNum: 3,
         //运动速度
-        speed: 6,
+        speed: 2,
+        //线条中点到元素顶部的距离，(0, 1)表示容器的倍数，[1, +∞)表示具体数值
+        offsetTop: .7,
         //自适应窗口尺寸变化
         resize: true
     };
@@ -44,93 +49,86 @@
             var set = this.set,
                 ch = this.ch,
                 crest = this.ch / 2 * set.crest,
-                num = set.num,
-                dotsNum = this.cw / 2,
+                lineNum = set.num,
+                dotsNum = this.cw,
                 dots = [],
 
                 calc = ( set.max - set.min ) / dotsNum;
 
-            for( var i = 0; i < num; i++ ){
+            for( var i = 0; i < lineNum; i++ ){
 
-                var scale = 1 - i / set.num;
-                var	arr = [];
+                //var scale = 1 - i / set.num;
+                var	line = [];
+                var y = set.offsetTop;
+                if( y > 0 && y < 1 ){
+                    y = y * ch + 10 * i;
+                }
 
                 for( var j = 0; j < dotsNum; j++ ){
-                    arr.push({
-                        x: j * 2,
-                        y: j / dotsNum * crest * scale,
+                    line.push({
+                        x: j,
+                        y: y,
+                        //y: j / dotsNum * crest * scale,
                         //y: ch / ( 30 - 27.6 * j / dotNum ),
                         angle: j,
-                        //r: j * calc  + set.min
-                        r: 1
                     });
                 }
 
-                dots.push( arr );
+                dots.push( line );
 
             }
 
             this.dots = dots;
         },
+        getAttr: function( attr, i ){
+            var set = this.set;
+            var val = set[attr][i];
+            if( !val ){
+                switch ( attr ){
+                    case 'color':
+                        val = util.randomColor();
+                        break;
+                    case 'lineWidth':
+                        val = 1;
+                        break;
+                }
+                set[attr].push( val );
+            }
+            return val;
+        },
         draw: function(){
-            var set = this.set,
+            var self = this,
+                set = this.set,
                 cxt = this.cxt,
                 cw = this.cw,
                 ch = this.ch,
-                halfCH = ch / 2,
+                a = ch / 6,
                 speed = set.speed;
 
             cxt.clearRect( 0, 0, cw, ch );
             cxt.globalAlpha = set.opacity;
 
-            /*cxt.save();
-            cxt.beginPath();
-            cxt.moveTo(20, 200);
-            cxt.stroke();
-            cxt.restore();
-            cxt.save();
-            cxt.beginPath();
-            cxt.lineTo(200, 200);
-            cxt.stroke();
-            cxt.restore();*/
-
             this.dots.forEach(function( lineDots, i ){
-                var color = set.color[i];
                 cxt.save();
                 cxt.beginPath();
                 lineDots.forEach(function( v, j ){
                     if( j ){
+                        //y = A sin（ ωx + φ ）+ h
                         //cxt.lineTo(200, 200)
-                        cxt.lineTo( v.x, v.y * sin( v.angle * radian ) + halfCH );
+                        cxt.lineTo( v.x, 100 * sin( v.angle * radian ) + v.y );
                     }else{
                         //cxt.moveTo(20, 200)
-                        cxt.moveTo( v.x, v.y * sin( v.angle * radian ) + halfCH );
+                        cxt.moveTo( v.x, 100 * sin( v.angle * radian ) + v.y );
                     }
                     v.angle -= speed;
                 });
-                cxt.strokeStyle = color;
+                cxt.strokeStyle = self.getAttr( 'color', i );
+                cxt.lineWidth = self.getAttr( 'lineWidth', i );
                 cxt.stroke();
                 cxt.restore();
             });
-            /*this.dots.forEach(function( lineDots, i ){
-                var color = set.color[i];
-                lineDots.forEach(function( v, j ){
-                    cxt.save();
-                    cxt.beginPath();
-                    cxt.arc(
-                        v.x,
-                        //y = A sin（ ωx + φ ）+ h
-                        v.y * sin( v.angle * radian ) + halfCH,
-                        v.r, 0, pi2
-                    );
-                    cxt.fillStyle = color;
-                    cxt.fill();
-                    cxt.restore();
-                    v.angle -= speed;
-                });
-            });*/
 
-            //this.requestAnimationFrame();
+            this.requestAnimationFrame();
         }
     };
 

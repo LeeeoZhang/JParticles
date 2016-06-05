@@ -81,7 +81,7 @@
     }
 
     //about element
-    var getCssReg = /^\d+[.a-z]+$/i;
+    var getCssReg = /^\d+(\.\d+)?[a-z]+$/i;
     function getCss( elem, attr ){
         var val = win.getComputedStyle( elem )[ attr ];
         return getCssReg.test( val ) ? pInt( val ) : val;
@@ -231,6 +231,9 @@
 /**
  * 规定：
  *  set: 参数配置
+ *  set.color: 颜色
+ *  set.resize: 自适应
+ *
  *  c: canvas对象
  *  cw: canvas宽度
  *  ch: canvas高度

@@ -22,7 +22,7 @@
         //全局透明度
         opacity: 1,
         //雪花颜色
-        color: '#fff',
+        color: ['#fff'],
         //雪花最大半径
         max: 6.5,
         //雪花最小半径
@@ -43,7 +43,8 @@
                 y: -r,
                 r: r,
                 vx: random() || .4,
-                vy: r * set.speed
+                vy: r * set.speed,
+                color: this.color()
             };
         },
         createDot: function(){
@@ -64,15 +65,17 @@
             cxt.clearRect( 0, 0, cw, ch );
 
             //当canvas宽高改变的时候，全局属性需要重新设置
-            if( set.resize ){
-                cxt.fillStyle = set.color;
-                cxt.globalAlpha = set.opacity;
-            }
+            cxt.globalAlpha = set.opacity;
 
             dots.forEach(function( v, i ){
+                var vx = v.x;
+                var vy = v.y;
+                var vr = v.r;
+
                 cxt.save();
                 cxt.beginPath();
-                cxt.arc( v.x, v.y, v.r, 0, pi2 );
+                cxt.arc( vx, vy, vr, 0, pi2 );
+                cxt.fillStyle = v.color;
                 cxt.fill();
                 cxt.restore();
 
@@ -85,11 +88,11 @@
                 }
 
                 //雪花从侧边出去，删除
-                if( v.x < 0 || v.x - v.r > cw ){
+                if( vx < 0 || vx - vr > cw ){
                     dots.splice( i, 1 );
                     dots.push( self.snowShape() );
                     //雪花从底部出去
-                }else if( v.y - v.r >= ch ){
+                }else if( vy - vr >= ch ){
                     dots.splice( i, 1 );
                 }
             });

@@ -8,7 +8,6 @@
         off = event.off,
         math = Math,
         random = math.random,
-        floor = math.floor,
         abs = math.abs,
         pi2 = math.PI * 2;
 
@@ -90,10 +89,8 @@
             cxt.clearRect( 0, 0, cw, ch );
 
             //当canvas宽高改变的时候，全局属性需要重新设置
-            if( set.resize ){
-                cxt.lineWidth = set.lineWidth;
-                cxt.globalAlpha = set.opacity;
-            }
+            cxt.lineWidth = set.lineWidth;
+            cxt.globalAlpha = set.opacity;
 
             this.dots.forEach(function( v ){
                 var r = v.r;
@@ -107,8 +104,8 @@
                 v.x += v.vx;
                 v.y += v.vy;
 
-                var	x = v.x,
-                    y = v.y;
+                var	x = v.x;
+                var y = v.y;
 
                 if( x + r >= cw || x - r <= 0 ){
                     v.vx *= -1;
