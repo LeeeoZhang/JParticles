@@ -5,7 +5,6 @@
     var util = Particleground.util,
         random = Math.random,
         sin = Math.sin,
-        radian = Math.PI / 180,
         pi2 = Math.PI * 2;
 
     function Wave( selector, options ){
@@ -27,7 +26,7 @@
         color: [],
         //color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
         //线条个数
-        num: 3,
+        num: 1,
         //线条宽度
         lineWidth: [],
         //线条中点到元素顶部的距离，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
@@ -35,11 +34,11 @@
         //波峰数值，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
         crest: .03,
         //波纹个数，即正弦周期个数
-        rippleNum: 6,
+        rippleNum: 3,
         //线段的横向偏移值
         offsetLeft: [],
         //运动速度
-        speed: 6,
+        speed: .2,
         //自适应窗口尺寸变化
         resize: true
     };
@@ -51,13 +50,13 @@
             var set = this.set,
                 ch = this.ch,
                 lineNum = set.num,
-                dotsNum = this.cw,
                 dots = [];
 
             //每个周期(2π)在canvas上的实际长度
             this.rippleLength = this.cw / set.rippleNum;
-            //周期
-            var t = pi2 / this.rippleLength;
+
+            //一个点的高度
+            var step = pi2 / this.rippleLength;
 
             for( var i = 0; i < lineNum; i++ ){
 
@@ -68,13 +67,17 @@
                 }
 
                 //线段的横向偏移值
-                set.offsetLeft.push( random() * t );
+                set.offsetLeft.push( random() * this.rippleLength );
 
-                for( var j = 0; j < dotsNum; j++ ){
+                //var speed = set.speed || util.limitRandom( 6, 2 );
+                var speed = 1;
+                //创建一条线段所需的点
+                for( var j = 0; j < this.cw; j++ ){
                     line.push({
                         x: j,
                         y: y,
-                        angle: j * t
+                        angle: j * step,
+                        speed: speed
                     });
                 }
 
@@ -119,8 +122,6 @@
                     crest = crest * ch;
                 }
 
-                //var rippleLength = cw / set.rippleNum / pi2;
-
                 lineDots.forEach(function( v, j ){
                     if( j ){
                         //y = A sin（ ωx + φ ）+ h
@@ -134,18 +135,18 @@
                     }
                     v.angle += speed;
                 });
-                cxt.moveTo( cw, ch );
-                cxt.moveTo( 0, ch );
-                cxt.fill = 'red';
+                /*cxt.moveTo( cw, ch );
+                cxt.moveTo( 0, ch );*/
+                //cxt.fill = 'red';
                 cxt.strokeStyle = self.getAttr( 'color', i );
 
                 cxt.lineWidth = self.getAttr( 'lineWidth', i );
                 cxt.stroke();
-                cxt.closePath();
+                //cxt.closePath();
                 cxt.restore();
             });
 
-            //this.requestAnimationFrame();
+            this.requestAnimationFrame();
         }
     };
 
