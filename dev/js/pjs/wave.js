@@ -14,6 +14,7 @@
         this.set = util.extend( {}, Wave.configDefault, options );
 
         this.dots = [];
+        this.initAttr();
         this.createDot();
         this.draw();
         this.resize();
@@ -28,7 +29,7 @@
         //线条个数
         num: 3,
         //线条宽度
-        lineWidth: [1],
+        lineWidth: 1,
         //线条中点到元素顶部的距离，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
         offsetTop: .75,
         //波峰数值，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
@@ -48,6 +49,67 @@
 
     Wave.prototype = {
         version: '1.0.0',
+        initAttr: function(){
+            var set = this.set;
+            var num = set.num;
+            var isArray = Array.isArray;
+
+            attrNormalize( 'color' );
+            attrNormalize( 'lineWidth' );
+            attrNormalize( 'offsetTop' );
+
+            function attrNormalize( attr ){
+                var val = set[ attr ];
+                if( !isArray( val ) ){
+                    set[ attr ] = [];
+                    if( typeof val === 'number' ){
+                        for( var i = 0; i < num; i++ ){
+                            set[ attr ].push( val );
+                        }
+                    }
+                }
+                //是一个数组可能只写了一个参数
+            }
+        },
+        setAttr: function( attr ){
+            switch ( attr ){
+                case 'color':
+                    attr = util.randomColor();
+                    break;
+                case 'lineWidth':
+                    attr = 1;
+                    break;
+                case 'offsetLeft':
+                    attr = random() * this.rippleLength[i];
+                    break;
+                case 'speed':
+                    attr = util.limitRandom(.4, .2);
+                    break;
+            }
+            return attr;
+        },
+        getAttr: function( attr, i ){
+            var set = this.set;
+            var val = set[attr][i];
+            if( typeof val === 'undefined' ){
+                switch ( attr ){
+                    case 'color':
+                        val = util.randomColor();
+                        break;
+                    case 'lineWidth':
+                        val = 1;
+                        break;
+                    case 'offsetLeft':
+                        val = random() * this.rippleLength[i];
+                        break;
+                    case 'speed':
+                        val = util.limitRandom(.4, .2);
+                        break;
+                }
+                set[attr].push( val );
+            }
+            return val;
+        },
         createDot: function(){
             var set = this.set,
                 cw = this.cw,
@@ -87,28 +149,6 @@
 
             }
             this.dots = dots;
-        },
-        getAttr: function( attr, i ){
-            var set = this.set;
-            var val = set[attr][i];
-            if( !val ){
-                switch ( attr ){
-                    case 'color':
-                        val = util.randomColor();
-                        break;
-                    case 'lineWidth':
-                        val = 1;
-                        break;
-                    case 'offsetLeft':
-                        val = random() * this.rippleLength[i];
-                        break;
-                    case 'speed':
-                        val = util.limitRandom(.4, .2);
-                        break;
-                }
-                set[attr].push( val );
-            }
-            return val;
         },
         draw: function(){
             var self = this,
