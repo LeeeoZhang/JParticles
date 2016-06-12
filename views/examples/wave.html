@@ -117,7 +117,23 @@
 {% block script %}
 <script src="/js/pjs/wave.js"></script>
 <script>
-    d = new Particleground.wave( '#demo', {
-    });
+    d = new Particleground.wave( '#demo',{
+        num: 4,
+        crest: [10, 9, 3, 5,6 ]
+    }/*, {
+        color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
+        num: 3,
+        lineWidth: [1, .8, .6],
+        //线条中点到元素顶部的距离，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        offsetTop: .75,
+        //波峰数值，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        crest: [16, 12, 8],
+        //波纹个数，即正弦周期个数
+        rippleNum: 2,
+        //线段的横向偏移值，(0, 1]表示波长的倍数，(1, +∞)表示具体数值
+        offsetLeft: [0, 1, 2],
+        //运动速度
+        speed: .07
+    }*/);
 </script>
 {% endblock %}

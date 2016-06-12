@@ -36,22 +36,26 @@
     Snow.prototype = {
         version: '1.0.0',
         snowShape: function(){
-            var set = this.set,
+            var self = this,
+                cw = self.cw,
+                set = self.set,
+                speed = set.speed,
                 r = util.limitRandom( set.max, set.min );
             return {
-                x: random() * this.cw,
+                x: random() * cw,
                 y: -r,
                 r: r,
                 vx: random() || .4,
-                vy: r * set.speed,
-                color: this.color()
+                vy: r * speed,
+                color: self.color()
             };
         },
         createDot: function(){
             //随机创建0-6个雪花
             var count = random() * 6;
+            var dots = this.dots;
             for( var i = 0; i < count; i++ ){
-                this.dots.push( this.snowShape() );
+                dots.push( this.snowShape() );
             }
         },
         draw: function(){

@@ -5,7 +5,8 @@
     var util = Particleground.util,
         random = Math.random,
         sin = Math.sin,
-        pi2 = Math.PI * 2;
+        pi2 = Math.PI * 2,
+        UNDEFINED = 'undefined';
 
     function Wave( selector, options ){
         if( !util.createCanvas( selector, this ) ){
@@ -13,7 +14,6 @@
         }
         this.set = util.extend( {}, Wave.configDefault, options );
 
-        this.dots = [];
         this.initAttr();
         this.createDot();
         this.draw();
@@ -24,24 +24,21 @@
         //全局透明度
         opacity: 1,
         //线条颜色
-        //color: [],
-        color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
+        color: [],
         //线条个数
-        num: 3,
+        num: null,
         //线条宽度
-        lineWidth: 1,
-        //线条中点到元素顶部的距离，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
-        offsetTop: .75,
-        //波峰数值，(0, 1]表示容器的倍数，(1, +∞)表示具体数值
-        //crest:.3,
-        crest: [16, 12, 8],
+        lineWidth: [],
+        //线条中点到元素顶部的距离，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        offsetTop: [],
+        //波峰数值，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        crest: [],
         //波纹个数，即正弦周期个数
-        rippleNum: [2, 2, 2],
-        //线段的横向偏移值
-        offsetLeft: [.1, 1, 2],
+        rippleNum: [],
+        //线段的横向偏移值，(0, 1]表示波长的倍数，(1, +∞)表示具体数值
+        offsetLeft: [],
         //运动速度
-        //speed: [.1, .1, .1],
-        speed: [.07, .07, .07],
+        speed: [],
         //自适应窗口尺寸变化
         resize: true
     };
@@ -50,98 +47,94 @@
     Wave.prototype = {
         version: '1.0.0',
         initAttr: function(){
-            var set = this.set;
-            var num = set.num;
+            var self = this;
+            var cw = self.cw;
+            var ch = self.ch;
+            var set = self.set;
             var isArray = Array.isArray;
+            var randomColor = util.randomColor;
+            var limitRandom = util.limitRandom;
+            //线条数量
+            var num = set.num = set.num || limitRandom( ch / 2, 1 );
+            //线条波长，每个周期(2π)在canvas上的实际长度
+            var rippleLength = this.rippleLength = [];
 
-            attrNormalize( 'color' );
-            attrNormalize( 'lineWidth' );
-            attrNormalize( 'offsetTop' );
+            'color lineWidth offsetLeft offsetTop crest rippleNum speed'.split(' ')
+                .forEach(function( attr ){
+                    attrNormalize( attr );
+                });
 
             function attrNormalize( attr ){
                 var val = set[ attr ];
-                if( !isArray( val ) ){
+                if( isArray( val ) ){
+                    //将crest: []或[2]或[2, 2], 转换成crest: [2, 2, 2]
+                    if( val.length < num ){
+                        for( var i = 0, len = num - val.length; i < len; i++ ){
+                            val.push( getAttr( attr ) );
+                        }
+                    }
+                }else {
                     set[ attr ] = [];
+                    //将crest: 2, 转换成crest: [2, 2, 2]
                     if( typeof val === 'number' ){
                         for( var i = 0; i < num; i++ ){
+                            if( attr === 'offsetTop' || attr === 'crest' ){
+                                val = scale( val, ch );
+                            }else if( attr === 'offsetLeft' ){
+                                val = scale( val, cw );
+                            }
                             set[ attr ].push( val );
                         }
                     }
                 }
-                //是一个数组可能只写了一个参数
             }
-        },
-        setAttr: function( attr ){
-            switch ( attr ){
-                case 'color':
-                    attr = util.randomColor();
-                    break;
-                case 'lineWidth':
-                    attr = 1;
-                    break;
-                case 'offsetLeft':
-                    attr = random() * this.rippleLength[i];
-                    break;
-                case 'speed':
-                    attr = util.limitRandom(.4, .2);
-                    break;
-            }
-            return attr;
-        },
-        getAttr: function( attr, i ){
-            var set = this.set;
-            var val = set[attr][i];
-            if( typeof val === 'undefined' ){
+
+            function getAttr( attr ){
                 switch ( attr ){
                     case 'color':
-                        val = util.randomColor();
+                        attr = randomColor();
                         break;
                     case 'lineWidth':
-                        val = 1;
+                        attr = limitRandom( 2, .2 );
                         break;
                     case 'offsetLeft':
-                        val = random() * this.rippleLength[i];
+                        attr = random() * cw;
+                        break;
+                    case 'offsetTop':
+                    case 'crest':
+                        attr = random() * ch;
+                        break;
+                    case 'rippleNum':
+                        attr = limitRandom( cw / 2, 1 );
+                        rippleLength.push( cw / attr );
                         break;
                     case 'speed':
-                        val = util.limitRandom(.4, .2);
+                        attr = limitRandom( .4, .1 );
                         break;
                 }
-                set[attr].push( val );
+                return attr;
             }
-            return val;
+            function scale( val, scale ){
+                return val > 0 && val <= 1 ? val * scale : val;
+            }
         },
         createDot: function(){
             var set = this.set,
                 cw = this.cw,
-                ch = this.ch,
                 lineNum = set.num,
                 dots = [];
 
-            this.rippleLength = [];
-
             for( var i = 0; i < lineNum; i++ ){
 
-                //每个周期(2π)在canvas上的实际长度
-                var rippleLength = cw / set.rippleNum[i];
-                //一个点的高度
-                var step = pi2 / rippleLength;
-
-                this.rippleLength.push( rippleLength );
-
-
                 var	line = [];
-                var h = set.offsetTop;
-                if( h > 0 && h <= 1 ){
-                    //10 * i不够随机
-                    h = h * ch;
-                }
+                //一个点的高度
+                var step = pi2 / this.rippleLength[i];
 
                 //创建一条线段所需的点
                 for( var j = 0; j < cw; j++ ){
                     line.push({
                         x: j,
-                        y: j * step,
-                        h: h
+                        y: j * step
                     });
                 }
 
@@ -151,12 +144,10 @@
             this.dots = dots;
         },
         draw: function(){
-            var self = this,
-                set = this.set,
-                speed = set.speed,
-                cxt = this.cxt,
+            var cxt = this.cxt,
                 cw = this.cw,
-                ch = this.ch;
+                ch = this.ch,
+                set = this.set;
 
             cxt.clearRect( 0, 0, cw, ch );
             cxt.globalAlpha = set.opacity;
@@ -164,31 +155,25 @@
             this.dots.forEach(function( lineDots, i ){
                 cxt.save();
                 cxt.beginPath();
-                var crest = set.crest;
-                if( crest > 0 && crest <= 1 ){
-                    crest = crest * ch;
-                }
 
+                var crest = set.crest[i];
+                var offsetLeft = set.offsetLeft[i];
+                var offsetTop = set.offsetTop[i];
+                var speed = set.speed[i];
                 lineDots.forEach(function( v, j ){
-                    if( j ){
+                    cxt[ j ? 'lineTo' : 'moveTo'](
+                        v.x,
                         //y = A sin（ ωx + φ ）+ h
-                        cxt.lineTo( v.x,
-                self.getAttr( 'crest', i ) * sin( v.y + self.getAttr( 'offsetLeft', i ) ) + v.h
-                        );
-                    }else{
-                        cxt.moveTo( v.x,
-                self.getAttr( 'crest', i ) * sin( v.y + self.getAttr( 'offsetLeft', i ) ) + v.h
-                        );
-                    }
-                    //v.y = v.y - .1;
-                    v.y -= self.getAttr( 'speed', i );
+                        crest * sin( v.y + offsetLeft ) + offsetTop
+                    );
+                    v.y -= speed;
                 });
                 /*cxt.moveTo( cw, ch );
                 cxt.moveTo( 0, ch );*/
                 //cxt.fill = 'red';
-                cxt.strokeStyle = self.getAttr( 'color', i );
+                cxt.strokeStyle = set.color[i];
 
-                cxt.lineWidth = self.getAttr( 'lineWidth', i );
+                cxt.lineWidth = set.lineWidth[i];
                 cxt.stroke();
                 //cxt.closePath();
                 cxt.restore();

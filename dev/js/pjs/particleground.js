@@ -24,6 +24,7 @@
         doc = document,
 		random = Math.random,
         floor = Math.floor,
+        isArray = Array.isArray,
         canvasSupport = !!doc.createElement('canvas').getContext;
 
     //public
@@ -57,11 +58,10 @@
 
                 value = arg[i][attr];
 
-                if( deep && (typeChecking( value, '[object Object]' ) ||
-                    typeChecking( value, '[object Array]' )) ){
+                if( deep && (isPlainObject( value ) || isArray( value )) ){
 
                     target[attr] =
-                        extend( deep, typeChecking(value, '[object Array]') ? [] : {}, value );
+                        extend( deep, isArray( value ) ? [] : {}, value );
 
                 }else{
                     target[attr] = value;
@@ -74,6 +74,9 @@
     }
     function typeChecking( obj, type ){
         return Object.prototype.toString.call( obj ) === type;
+    }
+    function isPlainObject( obj ){
+        return typeChecking( obj, '[object Object]' );
     }
     function isElem( arg ){
         return arg && typeof arg === 'object' &&
@@ -189,6 +192,7 @@
             limitRandom: limitRandom,
             extend: extend,
             typeChecking: typeChecking,
+            isPlainObject: isPlainObject,
             isElem: isElem,
             getCss: getCss,
             offset: offset,
