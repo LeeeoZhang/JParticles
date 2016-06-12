@@ -26,6 +26,7 @@
                     </pre>
                 </div>
             </div>
+            <div id="demo-2" style="height: 20rem;"></div>
             <div class="model">
                 <h5 class="caption"><a id="参数" href="#参数">API参数配置</a></h5>
                 <div class="content">
@@ -117,23 +118,26 @@
 {% block script %}
 <script src="/js/pjs/wave.js"></script>
 <script>
-    d = new Particleground.wave( '#demo',{
-        num: 4,
-        crest: [10, 9, 3, 5,6 ]
-    }/*, {
-        color: ['rgba(0, 190, 112, .9)', 'rgba(0, 190, 112, .6)', 'rgba(0, 190, 112, .3)'],
+    d = new Particleground.wave( '#demo', {
+        color: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
         num: 3,
-        lineWidth: [1, .8, .6],
-        //线条中点到元素顶部的距离，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        lineWidth: [.5, .7,.9],
+        offsetLeft: [2, 1, 0],
         offsetTop: .75,
-        //波峰数值，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
-        crest: [16, 12, 8],
-        //波纹个数，即正弦周期个数
+        crest: [8, 12, 16],
         rippleNum: 2,
-        //线段的横向偏移值，(0, 1]表示波长的倍数，(1, +∞)表示具体数值
-        offsetLeft: [0, 1, 2],
-        //运动速度
         speed: .07
-    }*/);
+    });
+
+    var d2 = new Particleground.wave( '#demo-2', {
+        num: 1,
+        color: '#27C9E5',
+        crest: 8,
+        offsetTop: .75,
+        rippleNum: 3,
+        area: true,
+        stroke: false,
+        speed: .07
+    });
 </script>
 {% endblock %}

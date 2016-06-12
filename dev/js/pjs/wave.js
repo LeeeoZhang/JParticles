@@ -29,16 +29,20 @@
         num: null,
         //线条宽度
         lineWidth: [],
-        //线条中点到元素顶部的距离，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        //线段的横向偏移值，(0, 1)表示波长的倍数，0 & [1, +∞)表示具体数值
+        offsetLeft: [],
+        //线条中点到元素顶部的距离，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
         offsetTop: [],
-        //波峰数值，(0, 1]表示容器高度的倍数，(1, +∞)表示具体数值
+        //波峰数值，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
         crest: [],
         //波纹个数，即正弦周期个数
         rippleNum: [],
-        //线段的横向偏移值，(0, 1]表示波长的倍数，(1, +∞)表示具体数值
-        offsetLeft: [],
         //运动速度
         speed: [],
+        //是否绘制成区域图
+        area: false,
+        //是否绘制边框
+        stroke: true,
         //自适应窗口尺寸变化
         resize: true
     };
@@ -59,7 +63,7 @@
             //线条波长，每个周期(2π)在canvas上的实际长度
             var rippleLength = this.rippleLength = [];
 
-            'color lineWidth offsetLeft offsetTop crest rippleNum speed'.split(' ')
+            'color lineWidth offsetLeft offsetTop crest rippleNum speed area stroke'.split(' ')
                 .forEach(function( attr ){
                     attrNormalize( attr );
                 });
@@ -68,7 +72,13 @@
                 var val = set[ attr ];
                 if( isArray( val ) ){
                     //将crest: []或[2]或[2, 2], 转换成crest: [2, 2, 2]
-                    if( val.length < num ){
+                    if( attr === 'offsetTop' || attr === 'crest' ||  attr === 'offsetLeft' ){
+                        var arg = attr === 'offsetLeft' ? cw : ch;
+                        for( var i = 0; i < num; i++ ){
+                            val[i] = typeof val[i] === UNDEFINED ?
+                                getAttr( attr ) : scale( val[i], arg );
+                        }
+                    }else if( val.length < num ){
                         for( var i = 0, len = num - val.length; i < len; i++ ){
                             val.push( getAttr( attr ) );
                         }
@@ -76,12 +86,14 @@
                 }else {
                     set[ attr ] = [];
                     //将crest: 2, 转换成crest: [2, 2, 2]
-                    if( typeof val === 'number' ){
+                    if( typeof val === 'number' || typeof val === 'boolean' ){
                         for( var i = 0; i < num; i++ ){
                             if( attr === 'offsetTop' || attr === 'crest' ){
                                 val = scale( val, ch );
                             }else if( attr === 'offsetLeft' ){
                                 val = scale( val, cw );
+                            }else if( attr === 'rippleNum' ){
+                                rippleLength.push( cw / val );
                             }
                             set[ attr ].push( val );
                         }
@@ -111,11 +123,17 @@
                     case 'speed':
                         attr = limitRandom( .4, .1 );
                         break;
+                    case 'area':
+                        attr = false;
+                        break;
+                    case 'stroke':
+                        attr = true;
+                        break;
                 }
                 return attr;
             }
             function scale( val, scale ){
-                return val > 0 && val <= 1 ? val * scale : val;
+                return val > 0 && val < 1 ? val * scale : val;
             }
         },
         createDot: function(){
@@ -160,6 +178,7 @@
                 var offsetLeft = set.offsetLeft[i];
                 var offsetTop = set.offsetTop[i];
                 var speed = set.speed[i];
+                var color = set.color[i];
                 lineDots.forEach(function( v, j ){
                     cxt[ j ? 'lineTo' : 'moveTo'](
                         v.x,
@@ -168,17 +187,21 @@
                     );
                     v.y -= speed;
                 });
-                /*cxt.moveTo( cw, ch );
-                cxt.moveTo( 0, ch );*/
-                //cxt.fill = 'red';
-                cxt.strokeStyle = set.color[i];
-
-                cxt.lineWidth = set.lineWidth[i];
-                cxt.stroke();
-                //cxt.closePath();
+                if( set.area[i] ){
+                    cxt.lineTo( cw, ch );
+                    cxt.lineTo( 0, ch );
+                    cxt.closePath();
+                    cxt.fillStyle = color;
+                    cxt.fill();
+                }
+                if( set.stroke[i] ){
+                    cxt.lineWidth = set.lineWidth[i];
+                    cxt.strokeStyle = color;
+                    cxt.stroke();
+                }
                 cxt.restore();
             });
-
+            console.log( this )
             this.requestAnimationFrame();
         }
     };
