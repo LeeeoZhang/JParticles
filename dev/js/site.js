@@ -42,6 +42,21 @@ $(function(){
     }
     nav();
 
+    //当页面不够高时，设置页脚为相对定位到底部
+    setFooter();
+    function setFooter(){
+        if( $('body').height() > $('.page-header').outerHeight() +
+            $('.page-content').outerHeight() +
+            $('.page-footer').outerHeight() ){
+            $('.page-footer').css({
+                width: '100%',
+                position: 'absolute',
+                bottom: 0
+            });
+        }
+        $('.page-footer').show();
+    }
+
     $('#open').click(function(){
         d.open();
     });

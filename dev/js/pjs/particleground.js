@@ -79,8 +79,9 @@
         return typeChecking( obj, '[object Object]' );
     }
     function isElem( arg ){
-        return arg && typeof arg === 'object' &&
-            (arg.nodeType === 1 || arg.nodeType === 9);
+        //document不能是element，因为它没有很多element该具有属性
+        //如用getComputedStyle获取不到它的宽高，就会报错
+        return arg && typeof arg === 'object' && arg.nodeType === 1;
     }
 
     //about element

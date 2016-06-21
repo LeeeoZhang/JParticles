@@ -18,7 +18,7 @@
         this.set = util.extend( {}, Particle.configDefault, options );
 
         //设置事件元素对象
-        if( !util.isElem( this.set.eventElem ) ){
+        if( !util.isElem( this.set.eventElem ) || this.set.eventElem !== document ){
             this.set.eventElem = this.c;
         }
         //移动鼠标点X,Y坐标
@@ -151,16 +151,21 @@
             return this;
         },
         event: function() {
-            this.elemOffset = util.offset( this.set.eventElem );
+            if( this.set.eventElem !== document ){
+                this.elemOffset = util.offset( this.set.eventElem );
+            }
             this.handler = function ( e ) {
-                var x = e.pageX;
-                var y = e.pageY;
-                if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
-                    x = e.clientX;
-                    y = e.clientY;
+                this.posX = e.pageX;
+                this.posY = e.pageY;
+                if( this.elemOffset ){
+                    if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
+                        this.posX = e.clientX;
+                        this.posX = e.clientY;
+                    }else{
+                        this.posX -= this.elemOffset.left;
+                        this.posY -= this.elemOffset.top;
+                    }
                 }
-                this.posX = x - this.elemOffset.left;
-                this.posY = y - this.elemOffset.top;
             }.bind( this );
             on( this.set.eventElem, 'mousemove', this.handler );
         }
@@ -185,7 +190,7 @@
         util.resize( this, function( scaleX, scaleY ){
             this.posX *= scaleX;
             this.posY *= scaleY;
-            this.elemOffset = util.offset( this.set.eventElem );
+            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
         });
     };
 

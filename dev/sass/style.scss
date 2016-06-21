@@ -951,6 +951,10 @@ $page-left-right: rem(120);
   padding: rem(20) $page-left-right;
   border-top: 1px solid $gray-border;
 }
+.page-footer{
+  display: none;
+}
+
 //syntax highlight
 pre.prettyprint{
   padding: 1em 2em !important;
@@ -1240,4 +1244,9 @@ pre.prettyprint{
       margin-bottom: rem(30);
     }
   }
+}
+
+#changelog,
+#download{
+  padding: rem(40) $page-left-right;
 }
