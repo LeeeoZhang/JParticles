@@ -106,4 +106,9 @@ $(function(){
     }else{
         window.localStorage.setItem( 'read', true );
     }
+
+    //changelog
+    $('#changelog').on('click', '.accordion > .header', function(){
+        $(this).next().stop().slideToggle(600);
+    });
 });

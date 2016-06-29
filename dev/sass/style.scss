@@ -884,7 +884,7 @@ code{
 
 $page-left-right: rem(120);
 //com
-.header{
+body>.header{
   height: rem(94);
   padding: 0 $page-left-right;
   line-height: rem(94);
@@ -996,8 +996,12 @@ pre.prettyprint{
   top: calc( 50% - 10rem );
   color: $green;
   .i-readmore{
-    font-size: 80%;
+    display: inline-block;
+    border-bottom: 1px solid $green;
+    text-decoration: none;
+    font-size: 65%;
     color: $green;
+    transform: translateY(rem(-3));
   }
   > h1{
       font-size: 6.6rem;
@@ -1253,4 +1257,56 @@ pre.prettyprint{
 #changelog,
 #download{
   padding: rem(40) $page-left-right;
+}
+
+#changelog{
+  text-align: center;
+  >.inner{
+    display: inline-block;
+    padding-left: rem(20);
+    border-left: rem(3) solid $green;
+    text-align: left;
+    font-size: rem(14);
+  }
+  .box{
+    &:not(:last-child){
+      margin-bottom: rem(30);
+    }
+    ul{
+      margin: rem(10) 0;
+      padding-right: rem(10);
+    }
+    li>ul{
+      margin-top: 0;
+    }
+    .title{
+      font-size: rem(16);
+      font-weight: 900;
+      color: $green;
+      position: relative;
+      &:before{
+        display: block;
+        content: "";
+        width: rem(13);
+        height: rem(13);
+        background-color: $green;
+        border-radius: 50%;
+        position: absolute;
+        left: rem(-28);
+        top: rem(6);
+      }
+    }
+    >.accordion{
+      border: 1px solid $gray-border;
+      >.header{
+        padding: rem(6) rem(12);
+        background-color: $gray-bg;
+        cursor: pointer;
+      }
+      >.content{
+        display: none;
+        border-top: 1px solid $gray-border;
+      }
+    }
+  }
 }
