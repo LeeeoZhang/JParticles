@@ -1253,6 +1253,12 @@ pre.prettyprint{
     }
   }
 }
+.api{
+  ul{
+    padding-left: rem(16);
+    margin-bottom: 0;
+  }
+}
 
 #changelog,
 #download{
@@ -1263,6 +1269,7 @@ pre.prettyprint{
   text-align: center;
   >.inner{
     display: inline-block;
+    max-width: rem(820);
     padding-left: rem(20);
     border-left: rem(3) solid $green;
     text-align: left;
@@ -1271,6 +1278,20 @@ pre.prettyprint{
   .box{
     &:not(:last-child){
       margin-bottom: rem(30);
+    }
+    &:first-child{
+      .title{
+        &:after{
+          display: block;
+          content: "";
+          width: rem(13);
+          height: rem(13);
+          background-color: #fff;
+          position: absolute;
+          left: rem(-28);
+          top: 0;
+        }
+      }
     }
     ul{
       margin: rem(10) 0;
@@ -1292,6 +1313,7 @@ pre.prettyprint{
         background-color: $green;
         border-radius: 50%;
         position: absolute;
+        z-index: 2;
         left: rem(-28);
         top: rem(6);
       }

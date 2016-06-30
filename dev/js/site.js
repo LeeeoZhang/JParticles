@@ -85,7 +85,7 @@ $(function(){
             prettyPrint();
         }else if( $('.quick-getting').length ){
             'import use use-method config-default'.split(' ').forEach(function( v ){
-                $.get('/code-demo/'+ v +'.html', function( msg ){
+                $.get('/code-tpl/'+ v +'.html', function( msg ){
                     $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                     prettyPrint();
                     if( v === 'use' ){

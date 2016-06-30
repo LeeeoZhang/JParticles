@@ -9,52 +9,31 @@
     {% include 'common/header.html' %}
     <div id="changelog" class="page-content">
         <div class="inner">
+            {% for key, val in changelog %}
             <div class="box">
                 <div class="title">
-                    <span class="version">alpha v1.0.0</span>
-                    <time class="date">&nbsp;(2016.06.21)</time>
+                    <span class="version">{{val.version}}</span>
+                    <time class="date">&nbsp;( {{val.date}} )</time>
                 </div>
                 <ul>
-                    <li>Particleground.js v1.0.0(alpha) 诞生啦！</li>
-                    <li>提供粒子无序运动，水纹波动，雪花飘落三种特效！</li>
+                    {% for key, val in val.description %}
+                        <li>{{val}}</li>
+                    {% endfor %}
                 </ul>
+                {% if val.bugs %}
                 <div class="accordion">
                     <header class="header">修复的Bug</header>
                     <div class="content">
                         <ul>
-                            <li>Fixed memory build-up issues.</li>
-                            <li>Fixed some minor bugs reported since 1.2.5.</li>
-                            <li>create something in this.
-                                <ul>
-                                    <li>Fixed some minor bugs reported since 1.2.5.</li>
-                                    <li>Fixed some minor bugs reported since 1.2.5.</li>
-                                    <li>Fixed some minor bugs reported since 1.2.5.</li>
-                                </ul>
-                            </li>
+                            {% for key, val in val.bugs %}
+                            <li>{{val}}</li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
+                {% endif %}
             </div>
-            <div class="box">
-                <div class="title">
-                    <span class="version">正式版 v1.0.0</span>
-                    <time class="date">&nbsp;(2016.07.23)</time>
-                </div>
-                <ul>
-                    <li>Particleground.js v1.0.0(正式版) 诞生啦！</li>
-                    <li>增加流星，萤火，水滴特效！</li>
-                    <li>优化动画算法，增加动画类型。</li>
-                </ul>
-                <div class="accordion">
-                    <header class="header">修复的Bug</header>
-                    <div class="content">
-                        <ul>
-                            <li>Fixed memory build-up issues.</li>
-                            <li>Fixed some minor bugs reported since 1.2.5.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
     {% include 'common/footer.html' %}
