@@ -1016,13 +1016,37 @@ pre.prettyprint{
     margin-top: rem(30);
     font-size: rem(24);
     .btn{
+      width: rem(146);
+      height: rem(62);
       background-color: transparent;
       color: $green;
-      transition: .6s ease;
-      &:hover{
-        border-color: $green;
+      border-color: $green;
+      position: relative;
+      overflow: hidden;
+      &:after{
+        content: '';
+        width: 100%;
+        height: 0;
         background-color: $green;
+        position: absolute;
+        z-index: 2;
+        left: 0;
+        top: rem(30);
+        transition: height .4s ease-out;
+        //cubic-bezier(0.12, 0.25, 0.19, 1.1)
+        transform: translateY(-50%) rotate(45deg);
+      }
+      .pa{
+        width: 100%;
+        height: 100%;
+        line-height: rem(62);
+        z-index: 3;
+      }
+      &:hover{
         color: #fff;
+        &:after{
+          height: rem(156);
+        }
       }
     }
   }
