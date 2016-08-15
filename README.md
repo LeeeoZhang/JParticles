@@ -24,4 +24,4 @@
 
 #开发工具
 
-- <a href="https://www.jetbrains.com/webstorm/" target="_blank">WebStorm</a>
+- [WebStorm](https://www.jetbrains.com/webstorm/){:target="_blank"}
