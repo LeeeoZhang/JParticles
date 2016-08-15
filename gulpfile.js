@@ -1,14 +1,14 @@
-var gulp  = require('gulp');
-var sourcemaps = require('gulp-sourcemaps');
+let gulp  = require('gulp');
+let sourcemaps = require('gulp-sourcemaps');
+let eslint = require('gulp-eslint');
 
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var cssmin = require('gulp-clean-css');
+let sass = require('gulp-sass');
+let autoprefixer = require('gulp-autoprefixer');
+let cssmin = require('gulp-clean-css');
 
-var htmlmin = require('gulp-htmlmin');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-
+let htmlmin = require('gulp-htmlmin');
+let uglify = require('gulp-uglify');
+let concat = require('gulp-concat');
 
 gulp.task('sass',function(){
    gulp.src('dev/sass/*.scss')
@@ -36,11 +36,19 @@ gulp.task('js',function(){
        .pipe(gulp.dest('public/js/'))
 });
 
+gulp.task('eslint', function() {
+    gulp.src('dev/js/**/*.js')
+        .pipe(eslint())
+        .pipe(eslint.format())
+});
+
 gulp.task('default',function(){
     gulp.watch(['dev/sass/*.scss'],function(){
         gulp.run('sass');
     });
     gulp.watch(['dev/js/**/*.js'],function(){
+        //装逼失败<(￣︶￣)>
+        //gulp.run('eslint');
         gulp.run('js');
     });
 });
