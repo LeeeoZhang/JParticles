@@ -10,6 +10,13 @@ let htmlmin = require('gulp-htmlmin');
 let uglify = require('gulp-uglify');
 let concat = require('gulp-concat');
 
+const VERSION = '1.0.0';
+const COPYRIGHT = `
+    Particleground.js v${ VERSION } (https://github.com/Barrior/Particleground.js)
+    Copyright 2016 Barrior <Barrior@qq.com>
+    Licensed under the MIT (https://opensource.org/licenses/mit-license.php)
+`;
+
 gulp.task('sass',function(){
    gulp.src('dev/sass/*.scss')
        .pipe(sourcemaps.init())

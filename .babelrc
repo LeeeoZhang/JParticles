@@ -1,9 +1,0 @@
-{
-    //将编译内容编译成es2015或react
-    presets: [
-        "es2015",
-        "react"
-    ],
-    //用于增强
-    plugins: []
-}
