@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<body>
+    {% include 'header.html' %}
+
+    <section class="eg-container cf com-width">
+        <aside class="menu fl pr">
+            {% for key, val in preface %}
+            <h5 class="pr">
+                <a {% if key == pageName %} class="active" {% endif %}
+                   href="/examples/{{key}}">{{val.title}}</a>
+            </h5>
+            {% endfor %}
+            <h5>实例及API</h5>
+            <ul class="list-unstyled">
+                {% for key, val in list %}
+                <li {% if key == pageName %} class="active" {% endif %}>
+                    <a href="/examples/{{key}}">{{val.title}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+        {% block main %}{% endblock %}
+    </section>
+
+    {% include 'footer.html' %}
+</body>
+{% endblock %}

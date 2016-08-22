@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{title}}</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+{% extends 'common/body.html' %}
+
+{% block body %}
+<body id="page-changelog">
     {% include 'common/header.html' %}
-    <div id="changelog" class="page-content">
+
+    <div class="com-width">
         <div class="inner">
             {% for key, val in changelog %}
             <div class="box">
@@ -17,7 +14,7 @@
                 </div>
                 <ul>
                     {% for key, val in val.description %}
-                        <li>{{val}}</li>
+                    <li>{{val}}</li>
                     {% endfor %}
                 </ul>
                 {% if val.bugs %}
@@ -36,6 +33,7 @@
             {% endfor %}
         </div>
     </div>
+
     {% include 'common/footer.html' %}
 </body>
-</html>
+{% endblock %}

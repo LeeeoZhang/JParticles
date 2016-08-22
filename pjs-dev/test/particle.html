@@ -3,8 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        #demo{
+            width: 900px;
+            height: 600px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .btn-box{
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+    <div id="demo"></div>
+    <div class="btn-box">
+        <a class="btn btn-default" href="javascript:open();">
+            open
+        </a>
+        <a class="btn btn-default" href="javascript:pause();">
+            paused
+        </a>
+    </div>
 
+
+    <script src="../pjs/particleground.js"></script>
+    <script src="../pjs/particle.js"></script>
+    <script>
+        var demo = new Particleground.particle( '#demo' );
+        function open(){
+            demo.open();
+        }
+        function pause(){
+            demo.pause();
+        }
+    </script>
 </body>
 </html>

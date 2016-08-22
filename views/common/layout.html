@@ -1,34 +1,12 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{{title}}</title>
-        <link rel="stylesheet" href="/css/style.css">
-    </head>
-    <body>
-        {% include 'header.html' %}
-
-        <section class="eg-container cf page-content">
-            <aside class="menu fl pr">
-                {% for key, val in preface %}
-                    <h5 class="pr">
-                        <a {% if key == pageName %} class="active" {% endif %}
-                           href="/examples/{{key}}">{{val.title}}</a>
-                    </h5>
-                {% endfor %}
-                <h5>实例及API</h5>
-                <ul class="list-unstyled">
-                    {% for key, val in list %}
-                        <li {% if key == pageName %} class="active" {% endif %}>
-                            <a href="/examples/{{key}}">{{val.title}}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </aside>
-            {% block main %}{% endblock %}
-        </section>
-
-        {% include 'footer.html' %}
-        {% block script %}{% endblock %}
-    </body>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="keywords" content="pjs,Particleground.js,canvas特效,粒子运动特效">
+    <meta name="description" content="Particleground.js是一款基于canvas的不依赖于其他库的简单，高效，轻量级的纯js粒子运动特效插件。">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+    {% block body %}{% endblock %}
 </html>

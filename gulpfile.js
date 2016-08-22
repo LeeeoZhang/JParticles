@@ -18,7 +18,7 @@ const COPYRIGHT = `
 `;
 
 gulp.task('sass',function(){
-   gulp.src('dev/sass/*.scss')
+   gulp.src('frontend/sass/site.scss')
        .pipe(sourcemaps.init())
        .pipe(
            sass({
@@ -36,7 +36,7 @@ gulp.task('sass',function(){
 });
 
 gulp.task('js',function(){
-   gulp.src('dev/js/**/*.js')
+   gulp.src('frontend/js/site.js')
        .pipe(sourcemaps.init())
        .pipe(uglify())
        .pipe(sourcemaps.write('./map'))
@@ -44,18 +44,27 @@ gulp.task('js',function(){
 });
 
 gulp.task('eslint', function() {
-    gulp.src('dev/js/**/*.js')
+    gulp.src('frontend/js/*.js')
         .pipe(eslint())
         .pipe(eslint.format())
 });
 
 gulp.task('default',function(){
-    gulp.watch(['dev/sass/*.scss'],function(){
+    gulp.watch(['frontend/sass/*.scss'],function(){
         gulp.run('sass');
     });
-    gulp.watch(['dev/js/**/*.js'],function(){
+    gulp.watch(['frontend/js/*.js'],function(){
         //装逼失败<(￣︶￣)>
         //gulp.run('eslint');
         gulp.run('js');
     });
+});
+
+/*
+    pjs dev
+ */
+gulp.task('build-pjs', function () {
+    gulp.src( 'pjs-dev/pjs/*.js' )
+        .pipe( uglify() )
+        .pipe( gulp.dest( `pjs/${ VERSION }/` ) )
 });

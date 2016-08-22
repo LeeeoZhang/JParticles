@@ -1,37 +1,23 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{{title}}</title>
-        <link rel="stylesheet" href="/css/style.css">
-    </head>
-    <body class="overflow-hidden">
-        <section id="i-bg"></section>
-        {% include 'common/header.html' %}
-        <section id="i-profile" class="text-center-vertical text-center">
-            <h1>Particleground.js</h1>
-            <p>
-                简洁，高效，轻量级的纯js粒子运动特效插件。
-                <a class="i-readmore" href="/examples/preface">了解更多</a>
-            </p>
-            <div class="use text-center">
-                <a href="/examples/quick-getting" class="btn btn-success">
-                    <span class="pa">立即使用</span>
-                </a>
-            </div>
-        </section>
-        <footer id="i-footer" class="pa gray-text">
-            {% include 'common/footer-text.html' %}
-        </footer>
+{% extends 'common/layout.html' %}
 
-        <script src="/js/jquery.js"></script>
-        <script src="/js/site.js"></script>
-        <script src="/js/pjs/particleground.js"></script>
-        <script src="/js/pjs/particle.js"></script>
-        <script>
-            new Particleground.particle( '#i-bg', {
-                eventElem: document
-            });
-        </script>
-    </body>
-</html>
+{% block body %}
+<body id="page-index" class="overflow-hidden">
+    <section class="bg"></section>
+    {% include 'common/header.html' %}
+
+    <section class="profile text-center-vertical text-center">
+        <h1>Particleground.js</h1>
+        <p>
+            简洁，高效，轻量级的纯js粒子运动特效插件。
+            <a class="readmore" href="/examples/preface">了解更多</a>
+        </p>
+        <div class="use text-center">
+            <a class="btn btn-success pr" href="/examples/quick-getting">
+                <span class="pa">立即使用</span>
+            </a>
+        </div>
+    </section>
+
+    {% include 'common/footer.html' %}
+</body>
+{% endblock %}

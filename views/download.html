@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{title}}</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+{% extends 'common/body.html' %}
+
+{% block body %}
+<body id="page-download">
     {% include 'common/header.html' %}
-    <div id="download" class="page-content">
+
+    <div class="com-width">
         <h3 class="text-center" style="font-weight: 100;">
             I'm sorry, please give me some time to build here.
             Thank you for your supporting (*^_^*) !
         </h3>
     </div>
+
     {% include 'common/footer.html' %}
 </body>
-</html>
+{% endblock %}
