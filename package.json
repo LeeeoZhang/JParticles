@@ -3,7 +3,8 @@
   "description": "A cool canvas effect add-ons for your web pages.",
   "version": "1.0.0",
   "scripts": {
-    "start": "node ./bin/www.js"
+    "start": "node ./bin/www.js",
+    "build-pjs": "gulp build-pjs"
   },
   "dependencies": {
     "body-parser": "~1.13.2",

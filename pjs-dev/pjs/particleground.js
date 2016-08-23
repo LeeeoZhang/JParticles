@@ -4,11 +4,7 @@
  * Licensed under the MIT (https://opensource.org/licenses/mit-license.php)
  */
 (function ( factory ){
-    if ( typeof define === 'function' && define.amd ) {
-        // AMD. Register as an anonymous module.
-        define( [], factory );
-
-    } else if ( typeof module === 'object' && module.exports ) {
+    if ( typeof module === 'object' && module.exports ) {
         // Node. Does not work with strict CommonJS, but
         // only CommonJS-like environments that support module.exports,
         // like Node.
@@ -19,15 +15,14 @@
     }
 }(function (){
 	'use strict';
+	var win = window;
+    var doc = document;
+	var	random = Math.random;
+    var floor = Math.floor;
+    var isArray = Array.isArray;
+    var canvasSupport = !!doc.createElement('canvas').getContext;
 
-	var win = window,
-        doc = document,
-		random = Math.random,
-        floor = Math.floor,
-        isArray = Array.isArray,
-        canvasSupport = !!doc.createElement('canvas').getContext;
-
-    //public
+    //public function
 	function pInt( s ){
 		return parseInt( s, 10 );
 	}
@@ -84,7 +79,7 @@
         return arg && typeof arg === 'object' && arg.nodeType === 1;
     }
 
-    //about element
+    //DOM function
     var getCssReg = /^\d+(\.\d+)?[a-z]+$/i;
     function getCss( elem, attr ){
         var val = win.getComputedStyle( elem )[ attr ];
@@ -109,7 +104,7 @@
         elem.removeEventListener( evtName, handler );
     }
 
-    //about instance objects
+    //addons function
     function createColor( setColor ){
         var colorLength = setColor instanceof Array ? setColor.length : false;
         var color = function(){
@@ -228,6 +223,13 @@
             return extend( obj, this.inherit ), this;
         }
     };
+
+    // AMD. Register as an anonymous module.
+    if ( typeof define === 'function' && define.amd ) {
+        define( function() {
+            return Particleground;
+        } );
+    }
 
     win.Particleground = Particleground;
 	return Particleground;

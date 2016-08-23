@@ -14,30 +14,35 @@
         .btn-box{
             text-align: center;
         }
+        .btn{
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="demo"></div>
     <div class="btn-box">
-        <a class="btn btn-default" href="javascript:open();">
+        <button class="btn btn-primary" type="button" data-open>
             open
-        </a>
-        <a class="btn btn-default" href="javascript:pause();">
-            paused
-        </a>
+        </button>
+        <button class="btn btn-danger" type="button" data-pause>
+            pause
+        </button>
     </div>
-
 
     <script src="../pjs/particleground.js"></script>
     <script src="../pjs/particle.js"></script>
     <script>
         var demo = new Particleground.particle( '#demo' );
-        function open(){
-            demo.open();
-        }
-        function pause(){
-            demo.pause();
-        }
+
+        document.addEventListener( 'click', function( event ){
+            var target = event.target;
+            if( target.getAttribute('data-open') !== null ){
+                demo.open();
+            }else if( target.getAttribute('data-pause') !== null ){
+                demo.pause();
+            }
+        });
     </script>
 </body>
 </html>

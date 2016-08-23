@@ -66,5 +66,5 @@ gulp.task('default',function(){
 gulp.task('build-pjs', function () {
     gulp.src( 'pjs-dev/pjs/*.js' )
         .pipe( uglify() )
-        .pipe( gulp.dest( `pjs/${ VERSION }/` ) )
+        .pipe( gulp.dest( `pjs-production/${ VERSION }/` ) )
 });
