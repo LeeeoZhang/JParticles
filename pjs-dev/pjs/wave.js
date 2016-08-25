@@ -1,4 +1,4 @@
-//snow.js
+//wave.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -6,7 +6,8 @@
         random = Math.random,
         sin = Math.sin,
         pi2 = Math.PI * 2,
-        UNDEFINED = 'undefined';
+        UNDEFINED = 'undefined',
+        isArray = Array.isArray;
 
     function Wave( selector, options ){
         if( !util.createCanvas( selector, this ) ){
@@ -24,7 +25,9 @@
         //全局透明度
         opacity: 1,
         //线条颜色
-        color: [],
+        lineColor: [],
+        //填充的背景颜色
+        fillColor: [],
         //线条个数
         num: null,
         //线条宽度
@@ -55,7 +58,6 @@
             var cw = self.cw;
             var ch = self.ch;
             var set = self.set;
-            var isArray = Array.isArray;
             var randomColor = util.randomColor;
             var limitRandom = util.limitRandom;
             //线条数量
@@ -63,10 +65,15 @@
             //线条波长，每个周期(2π)在canvas上的实际长度
             var rippleLength = this.rippleLength = [];
 
-            'color lineWidth offsetLeft offsetTop crest rippleNum speed area stroke'.split(' ')
-                .forEach(function( attr ){
-                    attrNormalize( attr );
-                });
+            [
+                'lineColor', 'fillColor', 'lineWidth',
+                'offsetLeft', 'offsetTop', 'crest',
+                'rippleNum', 'speed', 'area',
+                'stroke'
+            ]
+            .forEach(function( attr ){
+                attrNormalize( attr );
+            });
 
             function attrNormalize( attr ){
                 var val = set[ attr ];
@@ -104,7 +111,8 @@
 
             function getAttr( attr ){
                 switch ( attr ){
-                    case 'color':
+                    case 'lineColor':
+                    case 'fillColor':
                         attr = randomColor();
                         break;
                     case 'lineWidth':
@@ -135,6 +143,21 @@
             }
             function scale( val, scale ){
                 return val > 0 && val < 1 ? val * scale : val;
+            }
+        },
+        setOffsetTop: function( topVal ){
+            if( isArray( topVal ) ){
+                //如果传入的topVal数组少于自身数组的长度，则保持它的原有值，以保证不出现undefined
+                this.set.offsetTop.forEach(function( v, i, array ){
+                    array[ i ] = topVal[ i ] || v;
+                });
+            }else{
+                if( topVal > 0 && topVal < 1 ){
+                    topVal *= ch;
+                }
+                this.set.offsetTop.forEach(function( v, i, array ){
+                    array[ i ] = topVal;
+                });
             }
         },
         createDot: function(){
@@ -179,7 +202,6 @@
                 var offsetLeft = set.offsetLeft[i];
                 var offsetTop = set.offsetTop[i];
                 var speed = set.speed[i];
-                var color = set.color[i];
                 lineDots.forEach(function( v, j ){
                     cxt[ j ? 'lineTo' : 'moveTo'](
                         v.x,
@@ -192,12 +214,12 @@
                     cxt.lineTo( cw, ch );
                     cxt.lineTo( 0, ch );
                     cxt.closePath();
-                    cxt.fillStyle = color;
+                    cxt.fillStyle = set.fillColor[i];
                     cxt.fill();
                 }
                 if( set.stroke[i] ){
                     cxt.lineWidth = set.lineWidth[i];
-                    cxt.strokeStyle = color;
+                    cxt.strokeStyle = set.lineColor[i];
                     cxt.stroke();
                 }
                 cxt.restore();

@@ -2,8 +2,14 @@
  * Particleground.js v1.0.0 (https://github.com/Barrior/Particleground.js)
  * Copyright 2016 Barrior <Barrior@qq.com>
  * Licensed under the MIT (https://opensource.org/licenses/mit-license.php)
+ * test-5556
  */
 (function ( factory ){
+    // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
+    // 导致后面的插件找不到Particleground对象，报错
+    /*if ( typeof define === 'function' && define.amd ) {
+        define( factory );
+     }else */
     if ( typeof module === 'object' && module.exports ) {
         // Node. Does not work with strict CommonJS, but
         // only CommonJS-like environments that support module.exports,

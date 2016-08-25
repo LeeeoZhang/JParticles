@@ -76,13 +76,23 @@
                             <td>全局透明度</td>
                         </tr>
                         <tr>
-                            <td>color</td>
+                            <td>lineColor</td>
                             <td>[]</td>
                             <td>array 或 string</td>
                             <td>
                                 <ul>
                                     <li>线条的颜色，空数组则随机取色，或传入依次定义线段的颜色的数组，数组里的颜色比线条个数少，系统即随机生成颜色对应赋值。</li>
                                     <li>传入一个颜色字符串，则所有线条应用此颜色。（以下有些雷同参数如lineWidth等，同理，不再赘述）</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>fillColor</td>
+                            <td>[]</td>
+                            <td>array 或 string</td>
+                            <td>
+                                <ul>
+                                    <li>填充的背景色，空数组则随机取色，或传入依次定义线段的颜色的数组，数组里的颜色比线条个数少，系统即随机生成颜色对应赋值。</li>
                                 </ul>
                             </td>
                         </tr>
@@ -114,7 +124,7 @@
                             <td>crest</td>
                             <td>[]</td>
                             <td>array 或 number</td>
-                            <td>波峰数值，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值</td>
+                            <td>波峰的高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值</td>
                         </tr>
                         <tr>
                             <td>rippleNum</td>

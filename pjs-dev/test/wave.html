@@ -3,8 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        [id^="demo"]{
+            width: 900px;
+            height: 600px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .btn-box{
+            text-align: center;
+        }
+        .btn{
+            font-size: 20px;
+        }
+        .instance{
+            position: relative;
+        }
+        #process{
+            width: 100%;
+            height: 600px;
+            line-height: 600px;
+            text-align: center;
+            font-size: 50px;
+            color: #333;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
 </head>
 <body>
+    <div class="instance">
+        <div id="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
 
+    <div class="instance">
+        <div id="demo2"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
+
+    <div class="instance">
+        <div id="demo3"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+        <div id="process">12</div>
+    </div>
+
+
+    <script src="../pjs/particleground.all.js"></script>
+    <script src="../js/event.js"></script>
+    <script>
+        bind('#demo', function(){
+            return new Particleground.wave( '#demo', {
+                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
+                num: 3,
+                //三条线段依次的宽度
+                lineWidth: [.5, .7,.9],
+                //三条线段依次的右偏移值
+                offsetLeft: [2, 1, 0],
+                //三条线段都向上偏移容器高度的0.75倍
+                offsetTop: .75,
+                //三条线段依次的波峰高度
+                crest: [8, 12, 16],
+                //三条线段都只有两个波峰（波纹）
+                rippleNum: 2,
+                speed: .07
+            });
+        });
+
+        bind('#demo2', function(){
+            return new Particleground.wave( '#demo2', {
+                num: 1,
+                fillColor: '#27C9E5',
+                crest: 8,
+                offsetTop: .75,
+                rippleNum: 3,
+                //绘制成区域
+                area: true,
+                //线条的边框
+                stroke: false,
+                speed: .07
+            });
+        });
+
+        bind('#demo3', function(){
+            var d3 = document.querySelector('#demo3');
+            var processElem = document.querySelector('#process');
+            var process = parseInt( getComputedStyle(d3, false).height ) - 8;
+            var timer = null;
+            var effect = null;
+            var processElemVal = 0;
+            function setProcess(){
+                processElemVal = (600 - process) / process;
+                processElem.innerHTML = processElemVal + '%';
+            }
+            setProcess();
+            effect = new Particleground.wave( '#demo3', {
+                num: 1,
+                fillColor: '#27C9E5',
+                crest: 8,
+                offsetTop: process,
+                rippleNum: 3,
+                //绘制成区域
+                area: true,
+                //线条的边框
+                stroke: false,
+                speed: .3
+            });
+
+            console.log( process );
+
+            timer = setInterval(function(){
+                console.log( process )
+                if( process <= -8 ){
+                    effect.setOffsetTop( -8 );
+                    effect.pause();
+                    return clearInterval( timer );
+                }
+                process -= 3;
+                //一条
+                effect.setOffsetTop( process );
+                //多条
+//                effect.setOffsetTop( [1,2,3] );
+                setProcess();
+            }, 30 );
+
+            return effect;
+        });
+    </script>
 </body>
 </html>

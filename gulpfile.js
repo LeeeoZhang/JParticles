@@ -10,6 +10,8 @@ let htmlmin = require('gulp-htmlmin');
 let uglify = require('gulp-uglify');
 let concat = require('gulp-concat');
 
+const fs = require('fs');
+
 const VERSION = '1.0.0';
 const COPYRIGHT = `
     Particleground.js v${ VERSION } (https://github.com/Barrior/Particleground.js)
@@ -63,8 +65,26 @@ gulp.task('default',function(){
 /*
     pjs dev
  */
-gulp.task('build-pjs', function () {
-    gulp.src( 'pjs-dev/pjs/*.js' )
+let packDirPath = './pjs-dev/pjs/';
+gulp.task('pack-pjs', function () {
+    gulp.watch([ packDirPath + '*.js' ], function(){
+        let files = fs.readdirSync( packDirPath );
+        files = files.join(' ').replace( /particleground\.js\s|particleground\.all\.js\s/g, '');
+        files = ( 'particleground.js ' + files ).split(' ');
+        files.forEach(function( v, i, array ){
+            array.splice( i, 1, packDirPath + v );
+        });
+        gulp.src( files )
+            .pipe( concat( 'particleground.all.js' ) )
+            .pipe( gulp.dest( packDirPath ) )
+    });
+});
+
+/*
+    pjs production
+ */
+gulp.task('build-prod', function () {
+    gulp.src( packDirPath + '*.js' )
         .pipe( uglify() )
         .pipe( gulp.dest( `pjs-production/${ VERSION }/` ) )
 });

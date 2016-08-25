@@ -5,7 +5,7 @@
     <title>Title</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        #demo{
+        [id^="demo"]{
             width: 900px;
             height: 600px;
             margin: 50px auto;
@@ -20,28 +20,23 @@
     </style>
 </head>
 <body>
-    <div id="demo"></div>
-    <div class="btn-box">
-        <button class="btn btn-primary" type="button" data-open>
-            open
-        </button>
-        <button class="btn btn-danger" type="button" data-pause>
-            pause
-        </button>
+    <div class="instance">
+        <div id="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
     </div>
 
-    <script src="../pjs/particleground.js"></script>
-    <script src="../pjs/particle.js"></script>
+    <script src="../pjs/particleground.all.js"></script>
+    <script src="../js/event.js"></script>
     <script>
-        var demo = new Particleground.particle( '#demo' );
-
-        document.addEventListener( 'click', function( event ){
-            var target = event.target;
-            if( target.getAttribute('data-open') !== null ){
-                demo.open();
-            }else if( target.getAttribute('data-pause') !== null ){
-                demo.pause();
-            }
+        bind('#demo', function(){
+            return new Particleground.particle( '#demo' );
         });
     </script>
 </body>

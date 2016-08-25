@@ -3,8 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body{
+            background-color: #000;
+        }
+        [id^="demo"]{
+            width: 900px;
+            height: 600px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .btn-box{
+            text-align: center;
+        }
+        .btn{
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
+    <div class="instance">
+        <div id="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
 
+
+    <script src="../pjs/particleground.all.js"></script>
+    <script src="../js/event.js"></script>
+    <script>
+        bind('#demo', function(){
+            return new Particleground.snow( '#demo' );
+        });
+    </script>
 </body>
 </html>
