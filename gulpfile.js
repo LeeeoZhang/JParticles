@@ -13,10 +13,12 @@ let concat = require('gulp-concat');
 const fs = require('fs');
 
 const VERSION = '1.0.0';
-const COPYRIGHT = `
-    Particleground.js v${ VERSION } (https://github.com/Barrior/Particleground.js)
-    Copyright 2016 Barrior <Barrior@qq.com>
-    Licensed under the MIT (https://opensource.org/licenses/mit-license.php)
+const COPYRIGHT =
+`/**
+ * Particleground.js v${ VERSION } (https://github.com/Barrior/Particleground.js)
+ * Copyright 2016 Barrior <Barrior@qq.com>
+ * Licensed under the MIT (https://opensource.org/licenses/mit-license.php)
+ */
 `;
 
 gulp.task('sass',function(){
@@ -56,15 +58,13 @@ gulp.task('default',function(){
         gulp.run('sass');
     });
     gulp.watch(['frontend/js/*.js'],function(){
-        //装逼失败<(￣︶￣)>
-        //gulp.run('eslint');
+        // 装逼失败<(￣︶￣)>
+        // gulp.run('eslint');
         gulp.run('js');
     });
 });
 
-/*
-    pjs dev
- */
+// pack pjs to dev environment
 let packDirPath = './pjs-dev/pjs/';
 gulp.task('pack-pjs', function () {
     gulp.watch([ packDirPath + '*.js' ], function(){
@@ -84,11 +84,33 @@ gulp.task('pack-pjs', function () {
     });
 });
 
-/*
-    pjs production
- */
+// build pjs production
+let prodDir = `pjs-production/${ VERSION }/`;
 gulp.task('build-prod', function () {
     gulp.src( packDirPath + '*.js' )
         .pipe( uglify() )
-        .pipe( gulp.dest( `pjs-production/${ VERSION }/` ) )
+        .pipe( gulp.dest( prodDir ) );
+
+    setTimeout(function(){
+        addCopyright()
+    }, 1000 );
+
 });
+
+function addCopyright(){
+    [
+        'particleground.all.js',
+        'particleground.js'
+    ]
+    .forEach(function( v ){
+        let filename = prodDir + v;
+        fs.readFile( filename, function( err, data ){
+            let writeData = COPYRIGHT + data.toString();
+            if( !err ){
+                fs.writeFile( filename, writeData, function( err ){
+                    !err && console.log( filename + '写入成功' );
+                });
+            }
+        });
+    });
+}
