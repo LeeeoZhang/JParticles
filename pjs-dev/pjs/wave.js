@@ -153,7 +153,7 @@
                 });
             }else{
                 if( topVal > 0 && topVal < 1 ){
-                    topVal *= ch;
+                    topVal *= this.ch;
                 }
                 this.set.offsetTop.forEach(function( v, i, array ){
                     array[ i ] = topVal;

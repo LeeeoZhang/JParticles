@@ -20,7 +20,7 @@
         .instance{
             position: relative;
         }
-        #process{
+        [id^="process"]{
             width: 100%;
             height: 600px;
             line-height: 600px;
@@ -30,6 +30,9 @@
             position: absolute;
             top: 0;
             left: 0;
+        }
+        #demo3 canvas{
+            border-radius: 50%;
         }
     </style>
 </head>
@@ -68,7 +71,20 @@
                 pause
             </button>
         </div>
-        <div id="process">12</div>
+        <div id="process">0%</div>
+    </div>
+
+    <div class="instance">
+        <div id="demo4"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+        <div id="process4">0%</div>
     </div>
 
 
@@ -111,15 +127,17 @@
         bind('#demo3', function(){
             var d3 = document.querySelector('#demo3');
             var processElem = document.querySelector('#process');
-            var process = parseInt( getComputedStyle(d3, false).height ) - 8;
+            var elemHeight = parseInt( getComputedStyle(d3, false).height ) - 8;
+            var process = elemHeight;
             var timer = null;
             var effect = null;
-            var processElemVal = 0;
+
             function setProcess(){
-                processElemVal = (600 - process) / process;
-                processElem.innerHTML = processElemVal + '%';
+                var per = ( (elemHeight - process) / elemHeight * 100 ).toFixed();
+                processElem.innerHTML = per + '%';
             }
             setProcess();
+
             effect = new Particleground.wave( '#demo3', {
                 num: 1,
                 fillColor: '#27C9E5',
@@ -133,21 +151,84 @@
                 speed: .3
             });
 
-            console.log( process );
+            /*effect = new Particleground.wave( '#demo3', {
+                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
+                num: 3,
+                //三条线段依次的宽度
+                lineWidth: [.5, .7,.9],
+                //三条线段依次的右偏移值
+                offsetLeft: [2, 1, 0],
+                //三条线段都向上偏移容器高度的0.75倍
+                offsetTop: process,
+                //三条线段依次的波峰高度
+                crest: [8, 12, 16],
+                //三条线段都只有两个波峰（波纹）
+                rippleNum: 2,
+                speed: .3
+            });*/
 
             timer = setInterval(function(){
-                console.log( process )
-                if( process <= -8 ){
+
+                if( process <= 0 ){
+                    process = 0;
+                    setProcess();
                     effect.setOffsetTop( -8 );
                     effect.pause();
                     return clearInterval( timer );
                 }
+
                 process -= 3;
-                //一条
+                // 一条
                 effect.setOffsetTop( process );
-                //多条
-//                effect.setOffsetTop( [1,2,3] );
+                // 多条
+                /*effect.setOffsetTop( [
+                    process,
+                    process - 20,
+                    process - 40
+                ] );*/
                 setProcess();
+
+            }, 30 );
+
+            return effect;
+        });
+
+        bind('#demo4', function(){
+            var processElem = document.querySelector('#process4');
+            var process = 0.9;
+            var timer = null;
+            var effect = null;
+
+            function setProcess(){
+                processElem.innerHTML = ( (1 - process) * 100 ).toFixed() + '%';
+            }
+            setProcess();
+
+            effect = new Particleground.wave( '#demo4', {
+                num: 1,
+                fillColor: '#27C9E5',
+                crest: 8,
+                offsetTop: process,
+                rippleNum: 3,
+                area: true,
+                stroke: false,
+                speed: .3
+            });
+
+            timer = setInterval(function(){
+
+                if( process <= 0.01 ){
+                    process = 0;
+                    setProcess();
+                    effect.setOffsetTop( -8 );
+                    effect.pause();
+                    return clearInterval( timer );
+                }
+
+                process -= 0.01;
+                effect.setOffsetTop( process );
+                setProcess();
+
             }, 30 );
 
             return effect;
