@@ -1,5 +1,5 @@
 $(function(){
-    //common
+    // common
     function loadjs( url, callback ){
         var script = document.createElement('script');
         script.onload = callback;
@@ -18,11 +18,24 @@ $(function(){
         $this.addClass('active');
     }
 
-    //nav
+    // nav
     function nav(){
-        var $nav = $('.header .nav');
+        var $nav = $('.com-header .nav');
         var $active = $nav.find('.active');
         var $slideblock = $nav.find('.slideblock');
+
+        function changeActive( $el ){
+            setActive( $nav, $el );
+            setSlideblock( $el );
+        }
+
+        function setSlideblock( $el ){
+            var l = $el.position().left + parseInt($el.css('paddingLeft')) + .5;
+            $slideblock.css({
+                width: $el.width(),
+                transform: 'translate('+ l +'px,0)'
+            });
+        }
 
         setSlideblock( $active );
         setTimeout(function(){
@@ -41,23 +54,10 @@ $(function(){
                 setSlideblock( $nav.find('.active') );
             }, 400 );
         });
-
-        function changeActive( $el ){
-            setActive( $nav, $el );
-            setSlideblock( $el );
-        }
-
-        function setSlideblock( $el ){
-            var l = $el.position().left + parseInt($el.css('paddingLeft')) + .5;
-            $slideblock.css({
-                width: $el.width(),
-                transform: 'translate('+ l +'px,0)'
-            });
-        }
     }
     nav();
 
-    //footer 当页面不够高时，设置页脚为相对定位到底部
+    // footer 当页面不够高时，设置页脚为相对定位到底部
     setFooter();
     function setFooter(){
         if( $('body').height() > $('.page-header').outerHeight() +
@@ -72,14 +72,7 @@ $(function(){
         $('.page-footer').show();
     }
 
-    $('#open').click(function(){
-        d.open();
-    });
-    $('#pause').click(function(){
-        d.pause();
-    });
-
-    //load & prettify code templates
+    // load & prettify code templates
     loadcss( '//cdn.bootcss.com/prettify/r298/prettify.min.css' );
     loadjs( '//cdn.bootcss.com/prettify/r298/prettify.min.js', function(){
         if( $('.prettyprint').length ){
@@ -100,7 +93,7 @@ $(function(){
         }
     });
 
-    //必读flag的显示与否
+    // 必读flag的显示与否
     if( !/\/examples\/quick-getting/i.test( location.href ) ){
         if( !window.localStorage.getItem( 'read' ) ){
             $('.eg-container >.menu >h5:eq(1)').append('<i class="essential pa">必读</i>');
@@ -109,15 +102,22 @@ $(function(){
         window.localStorage.setItem( 'read', true );
     }
 
-    //route
-    if( $('#i-bg').length ){
-        pageIndex();
-    }else if( $('#changelog').length ){
-        pageChangelog();
-    }
+    // route
+    var route = {
+        //'#page-index': pageIndex,
+        '#changelog': pageChangelog
+    };
+    (function(){
+        for( var key in route ){
+            if( $( key ).length ){
+                route[ key ]();
+                break;
+            }
+        }
+    })();
 
     function pageIndex(){
-        new Particleground.particle( '#i-bg', {
+        new Particleground.particle( '.bg', {
             eventElem: document
         });
     }
@@ -127,5 +127,4 @@ $(function(){
             $(this).next().stop().slideToggle(600);
         });
     }
-
 });

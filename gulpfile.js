@@ -58,7 +58,7 @@ gulp.task('default',function(){
         gulp.run('sass');
     });
     gulp.watch(['frontend/js/*.js'],function(){
-        // 装逼失败<(￣︶￣)>
+        // 装逼失败
         // gulp.run('eslint');
         gulp.run('js');
     });

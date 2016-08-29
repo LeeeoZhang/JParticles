@@ -1,0 +1,18 @@
+@media all and (max-width: 415px){
+    $page-left-right: rem(20);
+    .com-header{
+        padding: 0 $page-left-right;
+        .logo{
+            float: right;
+        }
+    }
+    .com-footer{
+        padding: $page-left-right;
+        > .text {
+            > div {
+                display: block;
+                text-align: center;
+            }
+        }
+    }
+}

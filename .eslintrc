@@ -1,3 +1,10 @@
 {
-  "extends": "standard"
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "rules": {
+        // 数组和对象键值对最后一个不能加逗号
+        "comma-dangle": "never"
+    }
 }
