@@ -73,6 +73,10 @@ $page-left-right: rem(120);
             color: $green;
         }
     }
+    .mobile-menu{
+        float: left;
+        display: none;
+    }
     .logo {
         float: left;
         height: rem(94);
@@ -207,7 +211,7 @@ pre.prettyprint {
     .com-footer{
         width: 100%;
         position: absolute;
-        z-index: 9;
+        z-index: 8;
         left: 0;
         bottom: 0;
         text-align: right;

@@ -104,7 +104,7 @@ $(function(){
 
     // route
     var route = {
-        //'#page-index': pageIndex,
+        '#page-index': pageIndex,
         '#changelog': pageChangelog
     };
     (function(){
@@ -127,4 +127,13 @@ $(function(){
             $(this).next().stop().slideToggle(600);
         });
     }
+
+    // mobile
+    var isMobile = $('.mobile-menu').css('display') === 'block';
+    function mobileHandler(){
+        $('.mobile-menu').click(function(){
+            $('.com-header .nav').toggleClass('menu-show');
+        });
+    }
+    isMobile && mobileHandler();
 });
