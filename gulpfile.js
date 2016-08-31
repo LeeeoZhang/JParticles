@@ -1,6 +1,7 @@
 let gulp  = require('gulp');
 let sourcemaps = require('gulp-sourcemaps');
 let eslint = require('gulp-eslint');
+let rename = require('gulp-rename');
 
 let sass = require('gulp-sass');
 let autoprefixer = require('gulp-autoprefixer');
@@ -22,7 +23,7 @@ const COPYRIGHT =
 `;
 
 gulp.task('sass',function(){
-   gulp.src('frontend/sass/site.scss')
+   gulp.src('frontend/sass/build.scss')
        .pipe(sourcemaps.init())
        .pipe(
            sass({
@@ -35,6 +36,7 @@ gulp.task('sass',function(){
            })
        )
        .pipe(cssmin())
+       .pipe(rename('site.css'))
        .pipe(sourcemaps.write('./map'))
        .pipe(gulp.dest('public/css/'))
 });

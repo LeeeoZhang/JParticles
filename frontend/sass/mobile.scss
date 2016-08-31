@@ -1,9 +1,43 @@
 @media all and (max-width: 415px){
     $page-left-right: rem(20);
     .com-header{
+        height: rem(60);
+        line-height: rem(60);
         padding: 0 $page-left-right;
+        .mobile-menu{
+            display: inline-block;
+            font-size: rem(14);
+        }
         .logo{
             float: right;
+            height: auto;
+            a{
+                font-size: rem(16);
+            }
+        }
+        .nav{
+            float: none;
+            width: rem(200);
+            margin-right: 0;
+            background-color: rgba(255, 255, 255, .9);
+            box-shadow: 0 rem(2) rem(4) 0 #E8E8E8;
+            transition: .4s ease-out;
+            position: fixed;
+            left: rem(-200);
+            top: rem(50);
+            bottom: 0;
+            overflow: auto;
+            &.menu-show{
+                left: 0;
+            }
+            a{
+                display: block;
+                padding: 0 rem(20);
+                line-height: 3;
+            }
+            .slideblock{
+                display: none;
+            }
         }
     }
     .com-footer{
@@ -12,6 +46,16 @@
             > div {
                 display: block;
                 text-align: center;
+            }
+        }
+    }
+    #page-index{
+        >.profile{
+            >.title{
+                font-size: rem(30);
+            }
+            >.describe{
+                font-size: rem(14);
             }
         }
     }

@@ -123,7 +123,7 @@ $(function(){
             eventElem: document
         };
         if( isMobile ){
-            settings.range = 40;
+            settings.range = 30;
             settings.max = 1.4;
         }
         new Particleground.particle( '.bg', settings );
@@ -140,9 +140,13 @@ $(function(){
         $('.mobile-menu').click(function(){
             $('.com-header .nav').toggleClass('menu-show');
         });
+
         $(document).on('click', function( event ){
             var $target = $(event.target);
-            if( !$target.parents('.nav').length ){
+            if( !$target.parents('.nav').length &&
+                !$target.parents('.mobile-menu').length &&
+                !$target.hasClass('mobile-menu') &&
+                !$target.hasClass('menu-show') ){
                 $('.com-header .nav').removeClass('menu-show');
             }
         });
