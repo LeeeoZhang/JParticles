@@ -1,4 +1,4 @@
-@media all and (max-width: 415px){
+@media all and (max-width: 768px){
     $page-left-right: rem(20);
     .com-header{
         height: rem(60);
@@ -23,12 +23,13 @@
             box-shadow: 0 rem(2) rem(4) 0 #E8E8E8;
             transition: .4s ease-out;
             position: fixed;
+            z-index: 10;
             left: rem(-200);
-            top: rem(50);
+            top: rem(60);
             bottom: 0;
             overflow: auto;
             &.menu-show{
-                left: 0;
+                transform: translate(rem(200), 0);
             }
             a{
                 display: block;
@@ -41,8 +42,9 @@
         }
     }
     .com-footer{
-        padding: $page-left-right;
+        padding: rem(6) $page-left-right;
         > .text {
+            transform: scale(.86);
             > div {
                 display: block;
                 text-align: center;
@@ -56,6 +58,20 @@
             }
             >.describe{
                 font-size: rem(14);
+            }
+            >.usage{
+                margin-top: rem(16);
+                .btn{
+                    width: rem(84);
+                    height: rem(36);
+                    font-size: rem(14);
+                    &:after{
+                        top: rem(17);
+                    }
+                    .pa{
+                        line-height: rem(36);
+                    }
+                }
             }
         }
     }
