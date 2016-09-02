@@ -96,7 +96,6 @@ gulp.task('build-prod', function () {
     setTimeout(function(){
         addCopyright()
     }, 1000 );
-
 });
 
 function addCopyright(){
@@ -110,7 +109,7 @@ function addCopyright(){
             let writeData = COPYRIGHT + data.toString();
             if( !err ){
                 fs.writeFile( filename, writeData, function( err ){
-                    !err && console.log( filename + '写入成功' );
+                    !err && console.log( filename + '【写入成功】' );
                 });
             }
         });

@@ -1,9 +1,13 @@
 {% extends '../common/examples-body.html' %}
 
 {% block main %}
-<div class="main">
     <div class="main-content">
         <div class="demo-wrap">
+            <!--<div class="instance">
+                <div class="demo"></div>
+                <div class="btn btn-default open">开启·OPEN</div>
+                <div class="btn btn-default pause">暂停·PAUSE</div>
+            </div>-->
             <div id="demo"></div>
             <div id="open" class="btn btn-success">开启·OPEN</div>
             <div id="pause" class="btn btn-success">暂停·PAUSE</div>
@@ -105,15 +109,15 @@
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script %}
-<script src="/js/pjs/particle.js"></script>
 <script>
-    d = new Particleground.particle( '#demo', {
-        dis: 90,
-        r: 100
+    $(function(){
+        new Particleground.particle( '#demo', {
+            dis: 90,
+            r: 100
+        });
     });
 </script>
 {% endblock %}

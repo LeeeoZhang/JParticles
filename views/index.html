@@ -19,5 +19,19 @@
     </section>
 
     {% include 'common/footer.html' %}
+    <script>
+        $(function(){
+            var settings = {
+                eventElem: document
+            };
+            if( window.isMobile ){
+                settings.range = 0;
+                settings.max = 20;
+                settings.num = 18;
+                settings.speed = 3;
+            }
+            new Particleground.particle( '.bg', settings );
+        });
+    </script>
 </body>
 {% endblock %}

@@ -1,10 +1,10 @@
-{% extends 'common/body.html' %}
+{% extends 'common/layout.html' %}
 
 {% block body %}
 <body id="page-changelog">
     {% include 'common/header.html' %}
 
-    <div class="com-width">
+    <div class="com-body">
         <div class="inner">
             {% for key, val in changelog %}
             <div class="box">
@@ -35,5 +35,10 @@
     </div>
 
     {% include 'common/footer.html' %}
+    <script>
+        $('#page-changelog').on('click', '.accordion > .header', function(){
+            $(this).next().stop().slideToggle(600);
+        });
+    </script>
 </body>
 {% endblock %}

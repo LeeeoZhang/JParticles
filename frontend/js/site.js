@@ -1,5 +1,5 @@
 $(function(){
-    // common
+    // common function
     function loadjs( url, callback ){
         var script = document.createElement('script');
         script.onload = callback;
@@ -18,17 +18,13 @@ $(function(){
         $this.addClass('active');
     }
 
-    var isMobile = false;
-    function determineScreenSize(){
-        isMobile = $('.mobile-menu').css('display') === 'block';
-    }
-    determineScreenSize();
-    /*$(window).resize(function(){
-        determineScreenSize();
-        isMobile && mobileHandler();
-    });*/
+    window.isMobile = $('.mobile-menu').css('display') === 'block';
+    $(window).resize(function(){
+        window.isMobile = $('.mobile-menu').css('display') === 'block';
+        setFooter();
+    });
 
-    // nav
+    // nav 导航栏滑动效果
     function nav(){
         var $nav = $('.com-header .nav');
         var $active = $nav.find('.active');
@@ -68,83 +64,56 @@ $(function(){
     nav();
 
     // footer 当页面不够高时，设置页脚为相对定位到底部
-    setFooter();
     function setFooter(){
-        if( $('body').height() > $('.page-header').outerHeight() +
-            $('.page-content').outerHeight() +
-            $('.page-footer').outerHeight() ){
-            $('.page-footer').css({
+        if( $('body').height() > $('.com-header').outerHeight() +
+            $('.com-body').outerHeight() +
+            $('.com-footer').outerHeight() ){
+            $('.com-footer').css({
                 width: '100%',
                 position: 'absolute',
+                zIndex: 8,
                 bottom: 0
             });
         }
-        $('.page-footer').show();
+        $('.com-footer').show();
+    }
+    setFooter();
+
+    if( $('#page-example').length ){
+
+        // load & prettify code templates
+        loadcss( '//cdn.bootcss.com/prettify/r298/prettify.min.css' );
+        loadjs( '//cdn.bootcss.com/prettify/r298/prettify.min.js', function(){
+            if( $('.prettyprint').length ){
+                prettyPrint();
+            }else if( $('.quick-getting').length ){
+                'import use use-method config-default'.split(' ').forEach(function( v ){
+                    $.get('/code-tpl/'+ v +'.html', function( msg ){
+                        $( '.' + v ).text( msg ).addClass( 'prettyprint' );
+                        prettyPrint();
+                        if( v === 'use' ){
+                            window.d = new Particleground.particle( '#demo', {
+                                dis: 80,
+                                range: 60
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
     }
 
-    // load & prettify code templates
-    loadcss( '//cdn.bootcss.com/prettify/r298/prettify.min.css' );
-    loadjs( '//cdn.bootcss.com/prettify/r298/prettify.min.js', function(){
-        if( $('.prettyprint').length ){
-            prettyPrint();
-        }else if( $('.quick-getting').length ){
-            'import use use-method config-default'.split(' ').forEach(function( v ){
-                $.get('/code-tpl/'+ v +'.html', function( msg ){
-                    $( '.' + v ).text( msg ).addClass( 'prettyprint' );
-                    prettyPrint();
-                    if( v === 'use' ){
-                        window.d = new Particleground.particle( '#demo', {
-                            dis: 80,
-                            range: 60
-                        });
-                    }
-                });
-            });
-        }
-    });
-
-    // 必读flag的显示与否
+    // flag 必读图标的状态
     if( !/\/examples\/quick-getting/i.test( location.href ) ){
         if( !window.localStorage.getItem( 'read' ) ){
-            $('.eg-container >.menu >h5:eq(1)').append('<i class="essential pa">必读</i>');
+            $('.com-body >.menu >h5:eq(1)').append('<i class="essential pa">必读</i>');
         }
     }else{
         window.localStorage.setItem( 'read', true );
     }
 
-    // route
-    var route = {
-        '#page-index': pageIndex,
-        '#changelog': pageChangelog
-    };
-    (function(){
-        for( var key in route ){
-            if( $( key ).length ){
-                route[ key ]();
-                break;
-            }
-        }
-    })();
-
-    function pageIndex(){
-        var settings = {
-            eventElem: document
-        };
-        if( isMobile ){
-            settings.range = 80;
-            settings.max = 2;
-            settings.num = .4;
-        }
-        new Particleground.particle( '.bg', settings );
-    }
-
-    function pageChangelog(){
-        $('#changelog').on('click', '.accordion > .header', function(){
-            $(this).next().stop().slideToggle(600);
-        });
-    }
-
-    // mobile
+    // mobile 移动端页面处理器
     function mobileHandler(){
         $('.mobile-menu').click(function(){
             $('.com-header .nav').toggleClass('menu-show');
@@ -160,5 +129,5 @@ $(function(){
             }
         });
     }
-    isMobile && mobileHandler();
+    mobileHandler();
 });

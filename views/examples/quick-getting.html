@@ -1,6 +1,6 @@
-{% extends '../common/layout.html' %}
+{% extends '../common/examples-body.html' %}
+
 {% block main %}
-<div class="main">
     <div class="main-content">
         <div class="quick-getting">
             <section>
@@ -9,10 +9,10 @@
                 </h5>
                 <blockquote>通过以下两种方式获取pjs：</blockquote>
                 <p class="text-indent">
-                    1、从<a href="/download" target="_blank">官网下载</a>界面选择特定的特效打包下载，或者直接<a href="/download.all.js" target="_blank">下载包含所有特效的文件</a>。
+                    1、从<a href="/download" target="_blank">官网下载</a>界面选择特定的特效打包下载，或者直接<a href="/js/particleground.all.js" target="_blank">下载包含所有特效的文件</a>。
                 </p>
                 <p class="text-indent">
-                    2、克隆pjs在<a href="https://github.com/Barrior/Particleground.js" target="_blank">Github</a>上的整个项目，在<code>public/js/pjs</code>文件夹下选择你需要使用的js文件。
+                    2、克隆pjs在<a href="https://github.com/Barrior/Particleground.js" target="_blank">Github</a>上的整个项目，在<code>pjs-production</code>文件夹下选择你需要使用的版本的js文件。
                 </p>
             </section>
 
@@ -30,14 +30,14 @@
                 </h5>
                 <blockquote>
                     准备一个具有一定宽高的DOM元素，用于显示粒子特效。<br>
-                    使用 new Particleground.特效名 创建特效。
+                    使用<code>new Particleground.特效名</code>创建特效。
                 </blockquote>
                 <pre class="use normal-text"></pre>
             </section>
 
             <section>
                 <blockquote>这样我们的粒子运动特效就完成了！</blockquote>
-                <div id="demo" style="width: 400px; height: 250px;"></div>
+                <div id="demo" style="max-width: 400px; height: 250px;"></div>
             </section>
 
             <section>
@@ -85,7 +85,7 @@
                         <tr>
                             <td>selector</td>
                             <td>string 或 element</td>
-                            <td>必填，选择器字符串或DOM元素</td>
+                            <td>必填，选择器字符串或原生DOM元素</td>
                         </tr>
                         <tr>
                             <td>options</td>
@@ -116,9 +116,4 @@
             </section>
         </div>
     </div>
-</div>
-{% endblock %}
-
-{% block script %}
-<script src="/js/pjs/particle.js"></script>
 {% endblock %}

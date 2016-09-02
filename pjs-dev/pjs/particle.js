@@ -1,4 +1,4 @@
-//particle.js
+// particle.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -11,49 +11,59 @@
         abs = math.abs,
         pi2 = math.PI * 2;
 
+    function eventHandler( eventType, context ){
+        event[ eventType ]( context.set.eventElem, 'mousemove', context.handler );
+        event[ eventType ]( context.set.eventElem, 'touchmove', context.handler );
+    }
+
     function Particle( selector, options ){
         if( !util.createCanvas( selector, this ) ){
             return;
         }
+
         this.set = util.extend( {}, Particle.configDefault, options );
 
-        //设置事件元素对象
+        // 设置事件元素对象
         if( !util.isElem( this.set.eventElem ) && this.set.eventElem !== document ){
             this.set.eventElem = this.c;
         }
-        //移动鼠标点X,Y坐标
+
+        // 移动鼠标点X,Y坐标
         this.posX = random() * this.cw;
         this.posY = random() * this.ch;
 
         this.createDot();
         this.draw();
-        this.event();
         this.resize();
+
+        if( this.set.range > 0 ){
+            this.event();
+        }
     }
 
     Particle.configDefault = {
-        //全局透明度
+        // 全局透明度
         opacity: .6,
-        //粒子颜色，null随机色，或随机给定数组的颜色
+        // 粒子颜色，null随机色，或随机给定数组的颜色
         color: null,
-        //粒子运动速度
+        // 粒子运动速度
         speed: 1,
-        //粒子个数，默认为容器的0.1倍
-        //传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)
+        // 粒子个数，默认为容器的0.1倍
+        // 传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)
         num: .12,
-        //粒子最大半径
+        // 粒子最大半径
         max: 2.4,
-        //粒子最小半径
+        // 粒子最小半径
         min: .6,
-        //连接线段最大距离，即鼠标点的方圆几里的点连接在一起
+        // 连接线段最大距离，即鼠标点的方圆几里的点连接在一起
         dis: 130,
-        //连接线段的宽度
+        // 连接线段的宽度
         lineWidth: .2,
-        //范围越大，连接的点越多
+        // 范围越大，连接的点越多，当range等于0或false时，不连接线段
         range: 160,
-        //触发移动事件的元素，null为canvas，或传入原生元素对象，如document
+        // 触发移动事件的元素，null为canvas，或传入原生元素对象，如document
         eventElem: null,
-        //自适应窗口尺寸变化
+        // 自适应窗口尺寸变化
         resize: true
     };
 
@@ -88,7 +98,7 @@
 
             cxt.clearRect( 0, 0, cw, ch );
 
-            //当canvas宽高改变的时候，全局属性需要重新设置
+            // 当canvas宽高改变的时候，全局属性需要重新设置
             cxt.lineWidth = set.lineWidth;
             cxt.globalAlpha = set.opacity;
 
@@ -115,7 +125,11 @@
                 }
             });
 
-            this.connectDot().requestAnimationFrame();
+            // 当连接范围小于0时，不连接线段，可以做出球体运动效果
+            if( set.range > 0 ){
+                this.connectDot();
+            }
+            this.requestAnimationFrame();
         },
         connectDot:function(){
             var cxt = this.cxt,
@@ -147,8 +161,6 @@
                     });
                 }
             });
-
-            return this;
         },
         event: function() {
             if( this.set.eventElem !== document ){
@@ -167,34 +179,40 @@
                     }
                 }
             }.bind( this );
-            on( this.set.eventElem, 'mousemove', this.handler );
+            eventHandler( 'on', this );
         }
     };
 
-    //继承公共方法，如pause，open
+    // 继承公共方法，如pause，open
     Particleground.extend( fn );
 
     fn.pause = function () {
         util.pause( this, function(){
-            off( this.set.eventElem, 'mousemove', this.handler );
+            if( this.set.range > 0 ){
+                eventHandler( 'off', this );
+            }
         });
     };
 
     fn.open = function () {
         util.open( this, function(){
-            on( this.set.eventElem, 'mousemove', this.handler );
+            if( this.set.range > 0 ){
+                eventHandler( 'on', this );
+            }
         });
     };
 
     fn.resize = function () {
         util.resize( this, function( scaleX, scaleY ){
-            this.posX *= scaleX;
-            this.posY *= scaleY;
-            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
+            if( this.set.range > 0 ){
+                this.posX *= scaleX;
+                this.posY *= scaleY;
+                this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
+            }
         });
     };
 
-    //添加实例
+    // 添加实例
     Particleground.particle = fn.constructor = Particle;
 
 }( window, Particleground );

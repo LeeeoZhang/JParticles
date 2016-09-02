@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<body>
+<body id="page-example">
     {% include 'header.html' %}
 
-    <section class="eg-container cf com-width">
+    <section class="com-body cf">
         <aside class="menu fl pr">
             {% for key, val in preface %}
             <h5 class="pr">
@@ -21,9 +21,12 @@
                 {% endfor %}
             </ul>
         </aside>
-        {% block main %}{% endblock %}
+        <div class="main">
+            {% block main %}{% endblock %}
+        </div>
     </section>
 
     {% include 'footer.html' %}
+    {% block script %}{% endblock %}
 </body>
 {% endblock %}

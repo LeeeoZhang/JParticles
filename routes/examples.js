@@ -5,6 +5,8 @@ var examplesInfo = require('../db/examples');
 var preface = examplesInfo.preface;
 var list = examplesInfo.list;
 
+var menuData = require('./com-header-menu-data');
+
 router.get('/', function(req, res, next) {
     // req.originalUrl: /examples/test
     var name = req.originalUrl.substring(10);
@@ -13,6 +15,7 @@ router.get('/', function(req, res, next) {
         var output = {
             preface: preface,
             list: list,
+            menuData: menuData,
             title: info.title,
             pageName: name,
             nav: 1

@@ -28,9 +28,19 @@
             QQ群
         </a>
         <a {% if nav === 3 %} class="active" {% endif %}
-           href="/changelog" title="吾将上下而求索">
-            路漫漫兮
+           href="/changelog" title="路漫漫兮吾将上下而求索">
+            更新日志
         </a>
         <div class="slideblock pa hidden"></div>
+
+        <aside class="example-menu">
+            <div class="divider"></div>
+            {% for key, val in menuData %}
+                <a {% if key == pageName %} class="active" {% endif %}
+                   href="/examples/{{key}}">
+                    {{val.title}}
+                </a>
+            {% endfor %}
+        </aside>
     </nav>
 </header>
