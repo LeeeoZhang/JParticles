@@ -11,7 +11,7 @@ blockquote {
 code {
     background-color: $gray-bg;
     color: #BE0019;
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-family: Menlo,Monaco,Consolas,"Microsoft YaHei";
 }
 
 .text-indent {
@@ -20,6 +20,13 @@ code {
 
 .btn {
     text-decoration: none;
+}
+
+.btn-default{
+    border-color: $gray-border;
+    &:hover{
+        background-color: $gray-border;
+    }
 }
 
 .btn-success {
@@ -32,35 +39,25 @@ code {
     }
 }
 
-.form-control,
-.table-bordered,
-.table-bordered-inner > tbody > tr > td,
-.table-bordered-inner > tbody > tr > th,
-.table-bordered-inner > tfoot > tr > td,
-.table-bordered-inner > tfoot > tr > th,
-.table-bordered-inner > thead > tr > td,
-.table-bordered-inner > thead > tr > th {
-    border-color: $gray-border;
-}
-
-.table > tbody > tr > td,
-.table > tbody > tr > th,
-.table > tfoot > tr > td,
-.table > tfoot > tr > th,
-.table > thead > tr > td,
-.table > thead > tr > th {
-    border-top-color: $gray-border;
-}
-
 .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: $gray-bg;
 }
 
+.table {
+    font-size: rem(13);
+    td,
+    th{
+        padding: rem(10) rem(14) !important;
+        border-color: $gray-border !important;
+    }
+}
+
 // syntax highlight
-pre.prettyprint {
-    padding: 1em 2em !important;
+pre {
+    margin: 0;
+    padding: rem(10) rem(20) !important;
     border: none !important;
-    font-family: Menlo, Monaco, Consolas, "Microsoft YaHei";
+    font-family: Menlo,Monaco,Consolas,"Microsoft YaHei";
     opacity: .9;
     .com {
         color: #999;
@@ -151,6 +148,92 @@ $page-left-right: rem(120);
         &:hover {
             color: $green;
             text-decoration: underline;
+        }
+    }
+}
+
+// instance
+.instance{
+    height: rem(440);
+    position: relative;
+    margin-top: rem(30);
+    border: 1px solid $gray-border;
+    &:hover{
+        >.ctrl{
+            display: block;
+        }
+    }
+    &.snow{
+        height: rem(550);
+        background: url("../img/merry-christmas.jpg") 0 0 no-repeat;
+        background-size: 100% 100%;
+    }
+    >.demo{
+        height: 100%;
+    }
+    >.ctrl{
+        display: none;
+        position: absolute;
+        z-index: 2;
+        left: rem(10);
+        top: rem(10);
+        .btn{
+            &:not(:last-child){
+                margin-right: rem(8);
+            }
+        }
+    }
+}
+
+// module. like for examples page
+.module {
+    margin-top: rem(30);
+    &.module-api{
+        ul {
+            padding-left: rem(16);
+            margin-bottom: 0;
+        }
+    }
+    >.caption{
+        padding-bottom: rem(10);
+        font-size: rem(16);
+        position: relative;
+        &:hover {
+            &:before {
+                display: block;
+            }
+        }
+        &:before {
+            display: none;
+            content: "#";
+            color: $green;
+            position: absolute;
+            right: 100.8%;
+        }
+        a {
+            color: $root-color;
+            text-decoration: none;
+        }
+    }
+}
+
+// dotted-line
+.dotted-line{
+    color: $root-color;
+    text-decoration: none;
+    border-bottom: 1px dotted #777;
+    &:hover {
+        color: $green;
+        border-color: $gray;
+    }
+}
+
+// first instance crtl
+#first-instance-ctrl{
+    margin: rem(20) 0;
+    .btn{
+        &:not(:last-child){
+            margin-right: rem(10);
         }
     }
 }
@@ -304,121 +387,11 @@ $page-left-right: rem(120);
         }
         > .main {
             padding-left: rem(300);
-            a {
-                color: $root-color;
-                text-decoration: none;
-                border-bottom: 1px dotted #777;
-                &:hover {
-                    color: $green;
-                }
-            }
-            .caption {
-                padding-bottom: rem(6);
-                font-size: rem(16);
-                position: relative;
-                &:hover {
-                    &:before {
-                        display: block;
-                    }
-                }
-                &:before {
-                    display: none;
-                    content: "#";
-                    color: $green;
-                    position: absolute;
-                    right: 100.8%;
-                }
-                a {
-                    color: $root-color;
-                    border-bottom: none;
-                }
-            }
             > .main-content {
-                .model {
-                    margin-top: rem(30);
-                    .content {
-                        pre {
-                            margin: 0;
-                        }
+                .instance{
+                    &:first-child{
+                        margin-top: 0;
                     }
-                }
-                #demo {
-                    height: rem(440);
-                    border: 1px solid $gray-border;
-                    &.snow {
-                        height: rem(550);
-                        background: url("../img/merry-christmas.jpg") 0 0 no-repeat;
-                        background-size: 100% 100%;
-                    }
-                }
-                .btn {
-                    margin: rem(20) rem(10) rem(20) 0;
-                }
-                .table {
-                    font-size: rem(13);
-                }
-                .table > tbody > tr > td,
-                .table > tbody > tr > th,
-                .table > tfoot > tr > td,
-                .table > tfoot > tr > th,
-                .table > thead > tr > td,
-                .table > thead > tr > th {
-                    padding: .8em 1.3em;
-                }
-                :not(pre) > code[class*="language-"],
-                pre[class*="language-"] {
-                    background-color: $gray-bg;
-                }
-                code[class*="language-"],
-                pre[class*="language-"] {
-                    text-shadow: none;
-                    font-family: 'Roboto Mono', Monaco, courier, monospace;
-                }
-                .token.selector,
-                .token.attr-name,
-                .token.string,
-                .token.char,
-                .token.builtin,
-                .token.inserted {
-                    color: $green;
-                }
-                .token.function,
-                .token.property,
-                .token.tag,
-                .token.boolean,
-                .token.number,
-                .token.constant,
-                .token.symbol,
-                .token.deleted {
-                    color: #BE0000;
-                }
-                .token.atrule,
-                .token.attr-value,
-                .token.keyword {
-                    color: #0065BE;
-                }
-                .token.operator,
-                .token.entity,
-                .token.url,
-                .language-css .token.string,
-                .style .token.string {
-                    color: #BE8500;
-                    background-color: transparent;
-                }
-                .token.punctuation {
-                    color: $root-color;
-                }
-                .token.comment,
-                .token.prolog,
-                .token.doctype,
-                .token.cdata {
-                    color: #999;
-                }
-                pre[class*="language-"]::selection,
-                pre[class*="language-"] ::selection,
-                code[class*="language-"]::selection,
-                code[class*="language-"] ::selection {
-                    background: #E8E8E8;
                 }
             }
         }
@@ -426,40 +399,34 @@ $page-left-right: rem(120);
         .preface {
             line-height: 2;
             font-size: rem(15);
-            .caption,
-            h5 {
-                font-size: rem(18);
-                font-weight: 900;
+            >.module{
+                &:first-child{
+                    margin-top: 0;
+                }
+                >.caption{
+                    font-size: rem(18);
+                    font-weight: 900;
+                }
+                blockquote{
+                    &:not(:first-child){
+                        margin-top: rem(20);
+                    }
+                }
             }
         }
         .preface {
-            h5 {
-                margin-bottom: rem(10);
-                line-height: 1;
-            }
-            > * {
-                margin-bottom: rem(30);
-            }
+
         }
         .quick-getting {
-            blockquote {
-                margin-top: rem(10);
+            .instance{
+                max-width: rem(400);
+                height: rem(250);
             }
             .btn {
                 line-height: 1;
                 font-size: rem(12);
             }
-            > *:not(:last-child) {
-                margin-bottom: rem(30);
-            }
         }
-    }
-}
-
-.api {
-    ul {
-        padding-left: rem(16);
-        margin-bottom: 0;
     }
 }
 

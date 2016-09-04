@@ -1,51 +1,97 @@
 {% extends '../common/examples-body.html' %}
 
 {% block main %}
-    <div class="main-content">
-        <div class="quick-getting">
-            <section>
-                <h5 class="caption">
-                    <a id="获取" href="#获取">1、获取Particleground.js（以下简称pjs）</a>
-                </h5>
+    <div class="main-content quick-getting">
+        <div class="module">
+            <h5 class="caption">
+                <a id="获取pjs" href="#获取pjs">
+                    1、获取Particleground.js（以下简称pjs）
+                </a>
+            </h5>
+            <div class="content">
                 <blockquote>通过以下两种方式获取pjs：</blockquote>
                 <p class="text-indent">
-                    1、从<a href="/download" target="_blank">官网下载</a>界面选择特定的特效打包下载，或者直接<a href="/js/particleground.all.js" target="_blank">下载包含所有特效的文件</a>。
+                    1、从
+                    <a class="dotted-line" href="/download"
+                       target="_blank">
+                        官网下载
+                    </a>
+                    界面选择特定的特效打包下载，或者直接
+                    <a class="dotted-line" href="/js/particleground.all.js"
+                       target="_blank">
+                        下载包含所有特效的文件
+                    </a>。
                 </p>
                 <p class="text-indent">
-                    2、克隆pjs在<a href="https://github.com/Barrior/Particleground.js" target="_blank">Github</a>上的整个项目，在<code>pjs-production</code>文件夹下选择你需要使用的版本的js文件。
+                    2、克隆pjs在
+                    <a class="dotted-line"
+                       href="https://github.com/Barrior/Particleground.js"
+                       target="_blank">
+                        Github
+                    </a>
+                    上的整个项目，在
+                    <code>pjs-production</code>
+                    文件夹下选择你需要使用的版本的js文件。
                 </p>
-            </section>
+            </div>
+        </div>
 
-            <section>
-                <h5 class="caption">
-                    <a id="引入pjs" href="#引入pjs">2、引入pjs</a>
-                </h5>
-                <blockquote>在页面内使用script标签引入插件js即可，当然也支持模块化的加载方式，不过pjs仍然在window对象上注册了Particleground对象，用于插件拓展。</blockquote>
+        <div class="module">
+            <h5 class="caption">
+                <a id="引入pjs" href="#引入pjs">
+                    2、引入pjs
+                </a>
+            </h5>
+            <div class="content">
+                <blockquote>
+                    在页面内使用script标签引入插件js即可，当然也支持模块化的加载方式，不过pjs仍然在window对象上注册了Particleground对象，用于插件拓展。
+                </blockquote>
                 <pre class="import normal-text"></pre>
-            </section>
+            </div>
+        </div>
 
-            <section>
-                <h5 class="caption">
-                    <a id="创建特效" href="#创建特效">3、创建特效</a>
-                </h5>
+        <div class="module">
+            <h5 class="caption">
+                <a id="创建特效" href="#创建特效">
+                    3、创建特效
+                </a>
+            </h5>
+            <div class="content">
                 <blockquote>
                     准备一个具有一定宽高的DOM元素，用于显示粒子特效。<br>
                     使用<code>new Particleground.特效名</code>创建特效。
                 </blockquote>
                 <pre class="use normal-text"></pre>
-            </section>
+            </div>
+        </div>
 
-            <section>
-                <blockquote>这样我们的粒子运动特效就完成了！</blockquote>
-                <div id="demo" style="max-width: 400px; height: 250px;"></div>
-            </section>
-
-            <section>
-                <h5 class="caption">
-                    <a id="进阶" href="#进阶">进阶<small>（多加几分钟）</small></a>
-                </h5>
+        <div class="module">
+            <h5 class="caption">
+                <a id="创建完成" href="#创建完成">
+                    4、创建完成
+                </a>
+            </h5>
+            <div class="content">
                 <blockquote>
-                    <div>如无特别说明，每个用new实例化的对象都包含以下两个方法，为了减少重复劳动，后面的示例将不再出现：</div>
+                    这样我们的粒子运动特效就完成了！
+                </blockquote>
+                <div class="instance" data-ctrl="none">
+                    <div class="demo"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="module">
+            <h5 class="caption">
+                <a id="进阶" href="#进阶">
+                    进阶<small>（多加几分钟）</small>
+                </a>
+            </h5>
+            <div class="content">
+                <blockquote>
+                    <div>
+                        每个用new实例化的对象都包含以下两个方法，为了减少重复劳动，后面的示例就不再特别说明了：
+                    </div>
                     <table>
                         <tbody>
                             <tr>
@@ -59,39 +105,45 @@
                         </tbody>
                     </table>
                 </blockquote>
-                <div id="open" class="btn btn-success">点我·开启</div>
-                <div id="pause" class="btn btn-success">点我·暂停</div>
+                <div id="first-instance-ctrl">
+                    <div class="btn btn-success open">点我·开启</div>
+                    <div class="btn btn-success pause">点我·暂停</div>
+                </div>
                 <div>使用代码如下：</div>
                 <pre class="use-method normal-text"></pre>
-            </section>
+            </div>
+        </div>
 
-            <section>
-                <h5 class="caption">
-                    <a id="配置" href="#配置">配置</a>
-                </h5>
+        <div class="module">
+            <h5 class="caption">
+                <a id="配置" href="#配置">
+                    配置
+                </a>
+            </h5>
+            <div class="content">
                 <blockquote>
                     1、每个实例对象都接受两个参数，一个selector，一个options。<br>
                     <code>new Particleground.name( selector , options );</code>
                 </blockquote>
                 <table class="table table-bordered-inner table-striped">
                     <thead>
-                        <tr>
-                            <th>参数</th>
-                            <th>类型</th>
-                            <th>描述</th>
-                        </tr>
+                    <tr>
+                        <th>参数</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>selector</td>
-                            <td>string 或 element</td>
-                            <td>必填，选择器字符串或原生DOM元素</td>
-                        </tr>
-                        <tr>
-                            <td>options</td>
-                            <td>object</td>
-                            <td>可选，特效的配置参数</td>
-                        </tr>
+                    <tr>
+                        <td>selector</td>
+                        <td>string 或 element</td>
+                        <td>必填，选择器字符串或原生DOM元素</td>
+                    </tr>
+                    <tr>
+                        <td>options</td>
+                        <td>object</td>
+                        <td>可选，特效的配置参数</td>
+                    </tr>
                     </tbody>
                 </table>
                 <blockquote>
@@ -107,13 +159,23 @@
                     <ul class="mini-text">
                         <li>修改默认配置应放在 <code>new</code> 之前。</li>
                         <li>
-                            每个pjs插件的默认配置请在右侧相应的
-                            <b>实例及API</b>
-                            中查看。
+                            每个pjs插件的默认配置请参看具体的
+                            <b>实例及API</b> 。
                         </li>
                     </ul>
                 </div>
-            </section>
+            </div>
         </div>
+
     </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(function(){
+        bind( 0, function( demoElem ){
+            return new Particleground.particle( demoElem );
+        });
+    });
+</script>
 {% endblock %}

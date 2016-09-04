@@ -1,14 +1,39 @@
+var localConfig = {
+    plugin: {
+        prettify: {
+            css: '/plugin/prettify/prettify.min.css',
+            js: '/plugin/prettify/prettify.min.js'
+        }
+    }
+};
+var prodConfig = {
+    plugin: {
+        prettify: {
+            css: '//cdn.bootcss.com/prettify/r298/prettify.min.css',
+            js: '//cdn.bootcss.com/prettify/r298/prettify.min.js'
+        }
+    }
+};
+var siteConfig = $.extend( true, {}, localConfig );
+var isProdEnv = location.hostname !== 'localhost' &&
+    location.hostname !== '127.0.0.1';
+if( isProdEnv ){
+    $.extend( true, siteConfig, prodConfig );
+}
+
 $(function(){
     // common function
-    function loadjs( url, callback ){
+    function loadjs( url, callback, error ){
         var script = document.createElement('script');
         script.onload = callback;
+        script.onerror = error;
         script.src = url;
         document.getElementsByTagName('head')[0].appendChild( script );
     }
-    function loadcss( url, callback ){
+    function loadcss( url, callback, error ){
         var link = document.createElement('link');
         link.onload = callback;
+        link.onerror = error;
         link.href = url;
         link.rel = 'stylesheet';
         document.getElementsByTagName('head')[0].appendChild( link );
@@ -24,7 +49,7 @@ $(function(){
         setFooter();
     });
 
-    // nav 导航栏滑动效果
+    // nav PC端导航栏滑动效果
     function nav(){
         var $nav = $('.com-header .nav');
         var $active = $nav.find('.active');
@@ -63,7 +88,7 @@ $(function(){
     }
     nav();
 
-    // footer 当页面不够高时，设置页脚为相对定位到底部
+    // footer 当页面不够高时，设置页脚为绝对定位到底部
     function setFooter(){
         if( $('body').height() > $('.com-header').outerHeight() +
             $('.com-body').outerHeight() +
@@ -81,9 +106,8 @@ $(function(){
 
     if( $('#page-example').length ){
 
-        // load & prettify code templates
-        loadcss( '//cdn.bootcss.com/prettify/r298/prettify.min.css' );
-        loadjs( '//cdn.bootcss.com/prettify/r298/prettify.min.js', function(){
+        // load and prettify code templates
+        var loadedPrettifyHandler = function(){
             if( $('.prettyprint').length ){
                 prettyPrint();
             }else if( $('.quick-getting').length ){
@@ -91,15 +115,15 @@ $(function(){
                     $.get('/code-tpl/'+ v +'.html', function( msg ){
                         $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                         prettyPrint();
-                        if( v === 'use' ){
-                            window.d = new Particleground.particle( '#demo', {
-                                dis: 80,
-                                range: 60
-                            });
-                        }
                     });
                 });
             }
+        };
+        loadcss( siteConfig.plugin.prettify.css, function () {}, function(){
+            loadcss( localConfig.plugin.prettify.css );
+        });
+        loadjs( siteConfig.plugin.prettify.js, loadedPrettifyHandler, function(){
+            loadjs( localConfig.plugin.prettify.js, loadedPrettifyHandler );
         });
 
     }
@@ -113,7 +137,83 @@ $(function(){
         window.localStorage.setItem( 'read', true );
     }
 
-    // mobile 移动端页面处理器
+    // Demo实例的优化，控制
+    (function(){
+        var ctrlTpl =
+            '<div class="ctrl">' +
+                '<div class="btn btn-default open">开启·OPEN</div>' +
+                '<div class="btn btn-default pause">暂停·PAUSE</div>' +
+            '</div>';
+
+        var handler = function( instance ){
+            var $this = $(this);
+            var eventType = $this.hasClass('open') ? 'open' : 'pause';
+            // 如果有clientX，表示是事件处理函数，反之则是函数调用
+            var instance = instance.clientX ?
+                $this.parents('.instance')[0] : instance;
+
+            if( instance.effect ){
+                instance.effect[ eventType ]();
+                instance.userClickPaused = eventType === 'pause';
+            }
+        };
+
+        $('.instance').each(function(){
+            if( $(this).attr('data-ctrl') !== 'none' ){
+                $(this).append( ctrlTpl )
+                    .on('click.ctrl', '.ctrl .btn', handler );
+            }
+        });
+
+        $('#first-instance-ctrl').on('click', '.btn', function(){
+            handler.call( this, $('.instance:first')[0] );
+        });
+
+        // 创建公共的方式用于创建并关联Demo实例
+        window.bind = function( index, createInstance ){
+            var $instance = $('.instance').eq( index );
+            $instance[0].effect = createInstance( $instance.find('.demo')[0] );
+        };
+
+        // 检查动画元素是否在可视区内，不在则暂停运动，在则打开运动
+        function checkInViewBox(){
+            var scrollTop = $(window).scrollTop();
+            var clientHeight= $(window).height();
+            $('.instance').each(function(){
+                if( this.effect && !this.userClickPaused ){
+                    var $this = $(this);
+                    var top = $this.offset().top;
+                    var outerHeight = $this.outerHeight();
+
+                    if( scrollTop > top + outerHeight ||
+                        scrollTop + clientHeight < top ){
+
+                        // 不在可视区范围内
+                        this.effect.pause();
+                    }else{
+                        this.effect.open();
+                    }
+
+                }
+            });
+        }
+
+        // 让所有的实例都创建完毕再执行 演示Demo的性能优化
+        setTimeout(function(){
+            checkInViewBox();
+            var timer = null;
+            function throttle(){
+                clearTimeout( timer );
+                timer = setTimeout(function(){
+                    checkInViewBox();
+                }, 200 );
+            }
+            $(window).resize( throttle )
+                .scroll( throttle );
+        }, 0 );
+    })();
+
+    // mobile 移动端页面UI、事件等处理
     function mobileHandler(){
         $('.mobile-menu').click(function(){
             $('.com-header .nav').toggleClass('menu-show');

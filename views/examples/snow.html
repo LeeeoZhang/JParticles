@@ -2,72 +2,79 @@
 
 {% block main %}
     <div class="main-content">
-        <div class="demo-wrap">
-            <div id="demo" class="snow"></div>
-            <div id="open" class="btn btn-success">开启·OPEN</div>
-            <div id="pause" class="btn btn-success">暂停·PAUSE</div>
-            <div class="model">
-                <h5 class="caption"><a id="源代码" href="#源代码">查看源代码：</a></h5>
-                <div class="content">
-                    <pre>
+        <div class="instance snow" data-ctrl="none">
+            <div class="demo"></div>
+        </div>
+
+        <div id="first-instance-ctrl">
+            <div class="btn btn-success open">开启·OPEN</div>
+            <div class="btn btn-success pause">暂停·PAUSE</div>
+        </div>
+
+        <div class="module">
+            <h5 class="caption">
+                <a id="源代码" href="#源代码">查看源代码：</a>
+            </h5>
+            <div class="content">
+                <pre>
 <code class="prettyprint normal-text">
-    new Particleground.snow( '#demo' );
+new Particleground.snow( '#demo' );
 </code>
-                    </pre>
-                </div>
+                </pre>
             </div>
-            <div class="model api">
-                <h5 class="caption"><a id="参数" href="#参数">API参数配置</a></h5>
-                <div class="content">
-                    <table class="table table-bordered-inner table-striped">
-                        <thead>
-                        <tr>
-                            <th>名称</th>
-                            <th>默认值</th>
-                            <th>类型</th>
-                            <th>描述</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>opacity</td>
-                            <td>1</td>
-                            <td>number</td>
-                            <td>全局透明度</td>
-                        </tr>
-                        <tr>
-                            <td>color</td>
-                            <td>['#fff']</td>
-                            <td>null 或 array</td>
-                            <td>雪花的颜色</td>
-                        </tr>
-                        <tr>
-                            <td>max</td>
-                            <td>6.5</td>
-                            <td>number</td>
-                            <td>雪花最大半径</td>
-                        </tr>
-                        <tr>
-                            <td>min</td>
-                            <td>.4</td>
-                            <td>number</td>
-                            <td>雪花最小半径</td>
-                        </tr>
-                        <tr>
-                            <td>speed</td>
-                            <td>.4</td>
-                            <td>number</td>
-                            <td>雪花飘落速度</td>
-                        </tr>
-                        <tr>
-                            <td>resize</td>
-                            <td>true</td>
-                            <td>boolean</td>
-                            <td>自适应窗口尺寸变化</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+        </div>
+
+        <div class="module module-api">
+            <h5 class="caption"><a id="参数" href="#参数">API参数配置</a></h5>
+            <div class="content">
+                <table class="table table-bordered-inner table-striped">
+                    <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>默认值</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>opacity</td>
+                        <td>1</td>
+                        <td>number</td>
+                        <td>全局透明度</td>
+                    </tr>
+                    <tr>
+                        <td>color</td>
+                        <td>['#fff']</td>
+                        <td>null 或 array</td>
+                        <td>雪花的颜色</td>
+                    </tr>
+                    <tr>
+                        <td>max</td>
+                        <td>6.5</td>
+                        <td>number</td>
+                        <td>雪花最大半径</td>
+                    </tr>
+                    <tr>
+                        <td>min</td>
+                        <td>.4</td>
+                        <td>number</td>
+                        <td>雪花最小半径</td>
+                    </tr>
+                    <tr>
+                        <td>speed</td>
+                        <td>.4</td>
+                        <td>number</td>
+                        <td>雪花飘落速度</td>
+                    </tr>
+                    <tr>
+                        <td>resize</td>
+                        <td>true</td>
+                        <td>boolean</td>
+                        <td>自适应窗口尺寸变化</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -76,7 +83,9 @@
 {% block script %}
 <script>
     $(function(){
-        d = new Particleground.snow( '#demo' );
+        bind( 0, function( demoElem ){
+            return new Particleground.snow( demoElem );
+        });
     });
 </script>
 {% endblock %}

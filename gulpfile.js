@@ -1,15 +1,15 @@
-let gulp  = require('gulp');
-let sourcemaps = require('gulp-sourcemaps');
-let eslint = require('gulp-eslint');
-let rename = require('gulp-rename');
+const gulp  = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const eslint = require('gulp-eslint');
+const rename = require('gulp-rename');
 
-let sass = require('gulp-sass');
-let autoprefixer = require('gulp-autoprefixer');
-let cssmin = require('gulp-clean-css');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const cssmin = require('gulp-clean-css');
 
-let htmlmin = require('gulp-htmlmin');
-let uglify = require('gulp-uglify');
-let concat = require('gulp-concat');
+const htmlmin = require('gulp-htmlmin');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
 
 const fs = require('fs');
 
@@ -60,8 +60,6 @@ gulp.task('default',function(){
         gulp.run('sass');
     });
     gulp.watch(['frontend/js/*.js'],function(){
-        // 装逼失败
-        // gulp.run('eslint');
         gulp.run('js');
     });
 });

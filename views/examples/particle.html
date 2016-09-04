@@ -2,110 +2,133 @@
 
 {% block main %}
     <div class="main-content">
-        <div class="demo-wrap">
-            <!--<div class="instance">
-                <div class="demo"></div>
-                <div class="btn btn-default open">开启·OPEN</div>
-                <div class="btn btn-default pause">暂停·PAUSE</div>
-            </div>-->
-            <div id="demo"></div>
-            <div id="open" class="btn btn-success">开启·OPEN</div>
-            <div id="pause" class="btn btn-success">暂停·PAUSE</div>
-            <div class="model">
-                <h5 class="caption"><a id="源代码" href="#源代码">查看源代码：</a></h5>
-                <div class="content">
-                    <pre>
+        <div class="instance" data-ctrl="none">
+            <div class="demo"></div>
+        </div>
+
+        <div id="first-instance-ctrl">
+            <div class="btn btn-success open">开启·OPEN</div>
+            <div class="btn btn-success pause">暂停·PAUSE</div>
+        </div>
+
+        <div class="module">
+            <h5 class="caption"><a id="源代码" href="#源代码">查看源代码：</a></h5>
+            <div class="content">
+                <pre>
 <code class="prettyprint normal-text">
-    new Particleground.particle( '#demo', {
-        dis: 90,
-        range: 100
-    });
+new Particleground.particle( '#demo', {
+    dis: 90,
+    range: 100
+});
 </code>
-                    </pre>
-                </div>
+                </pre>
             </div>
-            <div class="model api">
-                <h5 class="caption"><a id="参数" href="#参数">API参数配置</a></h5>
-                <div class="content">
-                    <table class="table table-bordered-inner table-striped">
-                        <thead>
-                        <tr>
-                            <th width="100">名称</th>
-                            <th width="100">默认值</th>
-                            <th width="140">类型</th>
-                            <th>描述</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>opacity</td>
-                            <td>.6</td>
-                            <td>number</td>
-                            <td>全局透明度</td>
-                        </tr>
-                        <tr>
-                            <td>color</td>
-                            <td>null</td>
-                            <td>null 或 array</td>
-                            <td>设置粒子颜色，如果为数组，则按数组里的颜色随机</td>
-                        </tr>
-                        <tr>
-                            <td>speed</td>
-                            <td>1</td>
-                            <td>number</td>
-                            <td>粒子运动速度</td>
-                        </tr>
-                        <tr>
-                            <td>num</td>
-                            <td>.12</td>
-                            <td>number</td>
-                            <td>粒子个数，默认为容器的0.12倍，传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)</td>
-                        </tr>
-                        <tr>
-                            <td>max</td>
-                            <td>2.4</td>
-                            <td>number</td>
-                            <td>粒子最大半径</td>
-                        </tr>
-                        <tr>
-                            <td>min</td>
-                            <td>.6</td>
-                            <td>number</td>
-                            <td>粒子最小半径</td>
-                        </tr>
-                        <tr>
-                            <td>dis</td>
-                            <td>130</td>
-                            <td>number</td>
-                            <td>两个点之间连接的最大距离</td>
-                        </tr>
-                        <tr>
-                            <td>lineWidth</td>
-                            <td>.2</td>
-                            <td>number</td>
-                            <td>连接线段的宽度</td>
-                        </tr>
-                        <tr>
-                            <td>range</td>
-                            <td>160</td>
-                            <td>number</td>
-                            <td>范围越大，连接的点越多</td>
-                        </tr>
-                        <tr>
-                            <td>eventElem</td>
-                            <td>null</td>
-                            <td>null 或 element</td>
-                            <td>触发移动事件的元素，null为canvas自身，或传入原生元素对象，如document</td>
-                        </tr>
-                        <tr>
-                            <td>resize</td>
-                            <td>true</td>
-                            <td>boolean</td>
-                            <td>自适应窗口尺寸变化</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+        </div>
+
+        <div class="instance">
+            <div class="demo"></div>
+        </div>
+
+        <div class="module">
+            <h5 class="caption">
+                <a id="源代码2" href="#源代码2">查看源代码：</a>
+            </h5>
+            <div class="content">
+                <pre>
+<code class="prettyprint normal-text">
+new Particleground.particle( '#demo', {
+    //range等于0，表示不连线
+    range: 0,
+    max: 20,
+    num: 18,
+    speed: 3
+});
+</code>
+                </pre>
+            </div>
+        </div>
+
+        <div class="module module-api">
+            <h5 class="caption"><a id="参数" href="#参数">API参数配置</a></h5>
+            <div class="content">
+                <table class="table table-bordered-inner table-striped">
+                    <thead>
+                    <tr>
+                        <th width="100">名称</th>
+                        <th width="100">默认值</th>
+                        <th width="140">类型</th>
+                        <th>描述</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>opacity</td>
+                        <td>.6</td>
+                        <td>number</td>
+                        <td>全局透明度</td>
+                    </tr>
+                    <tr>
+                        <td>color</td>
+                        <td>null</td>
+                        <td>null 或 array</td>
+                        <td>设置粒子颜色，如果为数组，则按数组里的颜色随机</td>
+                    </tr>
+                    <tr>
+                        <td>speed</td>
+                        <td>1</td>
+                        <td>number</td>
+                        <td>粒子运动速度</td>
+                    </tr>
+                    <tr>
+                        <td>num</td>
+                        <td>.12</td>
+                        <td>number</td>
+                        <td>粒子个数，默认为容器的0.12倍，传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)</td>
+                    </tr>
+                    <tr>
+                        <td>max</td>
+                        <td>2.4</td>
+                        <td>number</td>
+                        <td>粒子最大半径</td>
+                    </tr>
+                    <tr>
+                        <td>min</td>
+                        <td>.6</td>
+                        <td>number</td>
+                        <td>粒子最小半径</td>
+                    </tr>
+                    <tr>
+                        <td>dis</td>
+                        <td>130</td>
+                        <td>number</td>
+                        <td>两个点之间连接的最大距离</td>
+                    </tr>
+                    <tr>
+                        <td>lineWidth</td>
+                        <td>.2</td>
+                        <td>number</td>
+                        <td>连接线段的宽度</td>
+                    </tr>
+                    <tr>
+                        <td>range</td>
+                        <td>160</td>
+                        <td>number</td>
+                        <td>范围越大，连接的点越多</td>
+                    </tr>
+                    <tr>
+                        <td>eventElem</td>
+                        <td>null</td>
+                        <td>null 或 element</td>
+                        <td>触发移动事件的元素，null为canvas自身，或传入原生元素对象，如document</td>
+                    </tr>
+                    <tr>
+                        <td>resize</td>
+                        <td>true</td>
+                        <td>boolean</td>
+                        <td>自适应窗口尺寸变化</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -114,9 +137,20 @@
 {% block script %}
 <script>
     $(function(){
-        new Particleground.particle( '#demo', {
-            dis: 90,
-            r: 100
+        bind( 0, function( demoElem ){
+            return new Particleground.particle( demoElem, {
+                dis: 90,
+                range: 100
+            });
+        });
+
+        bind( 1, function( demoElem ){
+            return new Particleground.particle( demoElem, {
+                range: 0,
+                max: 20,
+                num: 18,
+                speed: 3
+            });
         });
     });
 </script>
