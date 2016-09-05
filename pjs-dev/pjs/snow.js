@@ -1,4 +1,4 @@
-//snow.js
+// snow.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -109,8 +109,10 @@
         }
     };
 
-    //继承公共方法，如pause，open
+    // 继承公共方法，如pause，open
     Particleground.extend( Snow.prototype );
-    //添加实例
+
+    // 添加实例
     Particleground.snow = Snow.prototype.constructor = Snow;
+
 }( window, Particleground );

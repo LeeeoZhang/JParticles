@@ -42,6 +42,25 @@ $(function(){
         $parent.find('.active').removeClass('active');
         $this.addClass('active');
     }
+    function throttle( fn, delay, must ){
+        if( !delay && !must ){
+            return fn;
+        }
+        var startTime = new Date(),
+            timer;
+        return function( e ){
+            var context = this;
+            if( delay ){
+                clearTimeout( timer );
+                timer = setTimeout(function(){
+                    fn.call( context, e );
+                }, delay );
+            }else if( new Date() - startTime > must ){
+                startTime = new Date();
+                fn.call( context, e );
+            }
+        }
+    }
 
     window.isMobile = $('.mobile-menu').css('display') === 'block';
     $(window).resize(function(){
@@ -61,11 +80,13 @@ $(function(){
         }
 
         function setSlideblock( $el ){
-            var l = $el.position().left + parseInt($el.css('paddingLeft')) + .5;
-            $slideblock.css({
-                width: $el.width(),
-                transform: 'translate('+ l +'px,0)'
-            });
+            if( !isMobile ){
+                var l = $el.position().left + parseInt($el.css('paddingLeft')) + .5;
+                $slideblock.css({
+                    width: $el.width(),
+                    transform: 'translate('+ l +'px,0)'
+                });
+            }
         }
 
         setSlideblock( $active );
@@ -79,12 +100,9 @@ $(function(){
             changeActive( $active );
         });
 
-        $(window).resize(function(){
-            clearTimeout( this.timer );
-            this.timer = setTimeout(function(){
-                setSlideblock( $nav.find('.active') );
-            }, 400 );
-        });
+        $(window).resize(throttle( function(){
+            setSlideblock( $nav.find('.active') );
+        }, 400 ));
     }
     nav();
 
@@ -126,12 +144,36 @@ $(function(){
             loadjs( localConfig.plugin.prettify.js, loadedPrettifyHandler );
         });
 
+        // 菜单栏固定
+        (function(){
+            var $win = $(window);
+            var $doc = $(document);
+            var $footer = $('.com-footer');
+            var $menu = $('#page-example > .com-body > .menu');
+            var $main = $('#page-example > .com-body > .main');
+            var handler = function(){
+                if( !isMobile ){
+                    console.log('in');
+                    var scrollTop = $win.scrollTop();
+                    var clientHeight = $win.height();
+                    var pageHeight = $doc.outerHeight();
+                    var footerHeight = $footer.outerHeight();
+                    var touchFooter = scrollTop + clientHeight > pageHeight - footerHeight;
+                    $menu[ scrollTop > $main.offset().top ? 'addClass' : 'removeClass' ]('fixed');
+                    $menu.css('bottom', touchFooter ? footerHeight : 0);
+                }
+            };
+            handler();
+            $win.on('resize, scroll', handler);
+        })();
     }
 
     // flag 必读图标的状态
     if( !/\/examples\/quick-getting/i.test( location.href ) ){
         if( !window.localStorage.getItem( 'read' ) ){
-            $('.com-body >.menu >h5:eq(1)').append('<i class="essential pa">必读</i>');
+            $('.com-body >.menu >h5:eq(1), .example-menu a:eq(1)').append(
+                '<i class="essential">必读</i>'
+            );
         }
     }else{
         window.localStorage.setItem( 'read', true );

@@ -128,29 +128,34 @@
         return colorLength ? color : randomColor;
     }
 
-	function createCanvas( selector, context ){
-        if( !canvasSupport ){
-            return false;
+	function createCanvas( selector, constructor, options ){
+        if( canvasSupport ){
+
+            /*if( isElem( selector ) ){
+
+                this.container = selector;
+
+            }else if( typeof selector === 'string' ){
+
+                this.container = doc.querySelector( selector );
+
+            }else{
+                return false;
+            }*/
+
+            if( this.container = isElem( selector ) ? selector : doc.querySelector( selector ) ){
+                context.c = doc.createElement( 'canvas' );
+                context.cw = context.c.width = getCss( context.container, 'width' );
+                context.ch = context.c.height = getCss( context.container, 'height' );
+                context.cxt = context.c.getContext( '2d' );
+                context.paused = false;
+
+                context.container.innerHTML = '';
+                return !!context.container.appendChild( context.c );
+            }
+
         }
-
-        if( isElem( selector ) ){
-
-            context.container = selector;
-
-        }else if( !(context.container = doc.querySelector( selector )) ){
-
-            throw new Error( selector + ' is not defined' );
-
-        }
-
-        context.c = doc.createElement( 'canvas' );
-		context.cw = context.c.width = getCss( context.container, 'width' );
-		context.ch = context.c.height = getCss( context.container, 'height' );
-		context.cxt = context.c.getContext( '2d' );
-        context.paused = false;
-
-        context.container.innerHTML = '';
-        return !!context.container.appendChild( context.c );
+        return false;
     }
 
 	function pause( context, fn ){
@@ -170,6 +175,7 @@
 
     function resize( context, fn ){
         if( context.set.resize ){
+            // 不采用函数节流，会出现延迟的很不爽的效果
             on( win, 'resize', function(){
                 var oldCW = context.cw;
                 var oldCH = context.ch;
@@ -187,7 +193,9 @@
 
                 isFunction( fn ) && fn.call( context, scaleX, scaleY );
 
-                context.paused && context.draw();
+                context.paused && context.draw({
+                    isResize: true
+                });
             });
         }
     }
@@ -197,9 +205,7 @@
 				win.webkitRequestAnimationFrame ||
 				win.mozRequestAnimationFrame ||
 				function( fn ) {
-
 		        	win.setTimeout( fn, 1000 / 60 );
-
 		        };
 	})( win );
 

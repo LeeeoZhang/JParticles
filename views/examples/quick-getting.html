@@ -159,7 +159,7 @@
                     <ul class="mini-text">
                         <li>修改默认配置应放在 <code>new</code> 之前。</li>
                         <li>
-                            每个pjs插件的默认配置请参看具体的
+                            每个pjs插件的默认配置请查看具体的
                             <b>实例及API</b> 。
                         </li>
                     </ul>
@@ -174,7 +174,10 @@
 <script>
     $(function(){
         bind( 0, function( demoElem ){
-            return new Particleground.particle( demoElem );
+            return new Particleground.particle( demoElem, {
+                dis: 60,
+                num: 30
+            });
         });
     });
 </script>

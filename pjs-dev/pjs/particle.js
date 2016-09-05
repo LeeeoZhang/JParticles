@@ -17,7 +17,23 @@
     }
 
     function Particle( selector, options ){
-        if( !util.createCanvas( selector, this ) ){
+        if( util.createCanvas.call( this, selector, Particle, options ) ){
+            //this.set = util.extend( {}, Particle.configDefault, options );
+
+            // 设置事件元素对象
+            if( !util.isElem( this.set.eventElem ) && this.set.eventElem !== document ){
+                this.set.eventElem = this.c;
+            }
+
+            // 移动鼠标点X,Y坐标
+            this.posX = random() * this.cw;
+            this.posY = random() * this.ch;
+
+            this.init();
+        }
+
+        // -- --- --
+        /*if( !util.createCanvas( selector, this ) ){
             return;
         }
 
@@ -38,7 +54,7 @@
 
         if( this.set.range > 0 ){
             this.event();
-        }
+        }*/
     }
 
     Particle.configDefault = {
@@ -69,6 +85,15 @@
 
     var fn = Particle.prototype = {
         version: '1.0.0',
+        init: function(){
+            this.createDot();
+            this.draw();
+            this.resize();
+
+            if( this.set.range > 0 ){
+                this.event();
+            }
+        },
         createDot: function(){
             var set = this.set,
                 speed = set.speed,
@@ -90,11 +115,13 @@
 
             this.dots = dots;
         },
-        draw: function(){
-            var set = this.set,
-                cw = this.cw,
-                ch = this.ch,
-                cxt = this.cxt;
+        draw: function( condition ){
+            condition = condition || {};
+            var isResize = condition.isResize;
+            var set = this.set;
+            var cw = this.cw;
+            var ch = this.ch;
+            var cxt = this.cxt;
 
             cxt.clearRect( 0, 0, cw, ch );
 
@@ -111,17 +138,20 @@
                 cxt.fill();
                 cxt.restore();
 
-                v.x += v.vx;
-                v.y += v.vy;
+                // 如果是窗口尺寸变化，vx和vy保持不变
+                if( !isResize ){
+                    v.x += v.vx;
+                    v.y += v.vy;
 
-                var	x = v.x;
-                var y = v.y;
+                    var	x = v.x;
+                    var y = v.y;
 
-                if( x + r >= cw || x - r <= 0 ){
-                    v.vx *= -1;
-                }
-                if( y + r >= ch || y - r <= 0 ){
-                    v.vy *= -1;
+                    if( x + r >= cw || x - r <= 0 ){
+                        v.vx *= -1;
+                    }
+                    if( y + r >= ch || y - r <= 0 ){
+                        v.vy *= -1;
+                    }
                 }
             });
 
@@ -201,6 +231,14 @@
             }
         });
     };
+
+    /*util.resize( fn, function( scaleX, scaleY ){
+        if( this.set.range > 0 ){
+            this.posX *= scaleX;
+            this.posY *= scaleY;
+            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
+        }
+    });*/
 
     fn.resize = function () {
         util.resize( this, function( scaleX, scaleY ){

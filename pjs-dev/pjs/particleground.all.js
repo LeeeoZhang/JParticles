@@ -128,29 +128,34 @@
         return colorLength ? color : randomColor;
     }
 
-	function createCanvas( selector, context ){
-        if( !canvasSupport ){
-            return false;
+	function createCanvas( selector, constructor, options ){
+        if( canvasSupport ){
+
+            /*if( isElem( selector ) ){
+
+                this.container = selector;
+
+            }else if( typeof selector === 'string' ){
+
+                this.container = doc.querySelector( selector );
+
+            }else{
+                return false;
+            }*/
+
+            if( this.container = isElem( selector ) ? selector : doc.querySelector( selector ) ){
+                context.c = doc.createElement( 'canvas' );
+                context.cw = context.c.width = getCss( context.container, 'width' );
+                context.ch = context.c.height = getCss( context.container, 'height' );
+                context.cxt = context.c.getContext( '2d' );
+                context.paused = false;
+
+                context.container.innerHTML = '';
+                return !!context.container.appendChild( context.c );
+            }
+
         }
-
-        if( isElem( selector ) ){
-
-            context.container = selector;
-
-        }else if( !(context.container = doc.querySelector( selector )) ){
-
-            throw new Error( selector + ' is not defined' );
-
-        }
-
-        context.c = doc.createElement( 'canvas' );
-		context.cw = context.c.width = getCss( context.container, 'width' );
-		context.ch = context.c.height = getCss( context.container, 'height' );
-		context.cxt = context.c.getContext( '2d' );
-        context.paused = false;
-
-        context.container.innerHTML = '';
-        return !!context.container.appendChild( context.c );
+        return false;
     }
 
 	function pause( context, fn ){
@@ -170,6 +175,7 @@
 
     function resize( context, fn ){
         if( context.set.resize ){
+            // 不采用函数节流，会出现延迟的很不爽的效果
             on( win, 'resize', function(){
                 var oldCW = context.cw;
                 var oldCH = context.ch;
@@ -187,7 +193,9 @@
 
                 isFunction( fn ) && fn.call( context, scaleX, scaleY );
 
-                context.paused && context.draw();
+                context.paused && context.draw({
+                    isResize: true
+                });
             });
         }
     }
@@ -197,9 +205,7 @@
 				win.webkitRequestAnimationFrame ||
 				win.mozRequestAnimationFrame ||
 				function( fn ) {
-
 		        	win.setTimeout( fn, 1000 / 60 );
-
 		        };
 	})( win );
 
@@ -297,7 +303,23 @@
     }
 
     function Particle( selector, options ){
-        if( !util.createCanvas( selector, this ) ){
+        if( util.createCanvas.call( this, selector, Particle, options ) ){
+            //this.set = util.extend( {}, Particle.configDefault, options );
+
+            // 设置事件元素对象
+            if( !util.isElem( this.set.eventElem ) && this.set.eventElem !== document ){
+                this.set.eventElem = this.c;
+            }
+
+            // 移动鼠标点X,Y坐标
+            this.posX = random() * this.cw;
+            this.posY = random() * this.ch;
+
+            this.init();
+        }
+
+        // -- --- --
+        /*if( !util.createCanvas( selector, this ) ){
             return;
         }
 
@@ -318,7 +340,7 @@
 
         if( this.set.range > 0 ){
             this.event();
-        }
+        }*/
     }
 
     Particle.configDefault = {
@@ -349,6 +371,15 @@
 
     var fn = Particle.prototype = {
         version: '1.0.0',
+        init: function(){
+            this.createDot();
+            this.draw();
+            this.resize();
+
+            if( this.set.range > 0 ){
+                this.event();
+            }
+        },
         createDot: function(){
             var set = this.set,
                 speed = set.speed,
@@ -370,11 +401,13 @@
 
             this.dots = dots;
         },
-        draw: function(){
-            var set = this.set,
-                cw = this.cw,
-                ch = this.ch,
-                cxt = this.cxt;
+        draw: function( condition ){
+            condition = condition || {};
+            var isResize = condition.isResize;
+            var set = this.set;
+            var cw = this.cw;
+            var ch = this.ch;
+            var cxt = this.cxt;
 
             cxt.clearRect( 0, 0, cw, ch );
 
@@ -391,17 +424,20 @@
                 cxt.fill();
                 cxt.restore();
 
-                v.x += v.vx;
-                v.y += v.vy;
+                // 如果是窗口尺寸变化，vx和vy保持不变
+                if( !isResize ){
+                    v.x += v.vx;
+                    v.y += v.vy;
 
-                var	x = v.x;
-                var y = v.y;
+                    var	x = v.x;
+                    var y = v.y;
 
-                if( x + r >= cw || x - r <= 0 ){
-                    v.vx *= -1;
-                }
-                if( y + r >= ch || y - r <= 0 ){
-                    v.vy *= -1;
+                    if( x + r >= cw || x - r <= 0 ){
+                        v.vx *= -1;
+                    }
+                    if( y + r >= ch || y - r <= 0 ){
+                        v.vy *= -1;
+                    }
                 }
             });
 
@@ -482,6 +518,14 @@
         });
     };
 
+    /*util.resize( fn, function( scaleX, scaleY ){
+        if( this.set.range > 0 ){
+            this.posX *= scaleX;
+            this.posY *= scaleY;
+            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
+        }
+    });*/
+
     fn.resize = function () {
         util.resize( this, function( scaleX, scaleY ){
             if( this.set.range > 0 ){
@@ -498,7 +542,7 @@
 }( window, Particleground );
 
 
-//snow.js
+// snow.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -609,12 +653,14 @@
         }
     };
 
-    //继承公共方法，如pause，open
+    // 继承公共方法，如pause，open
     Particleground.extend( Snow.prototype );
-    //添加实例
+
+    // 添加实例
     Particleground.snow = Snow.prototype.constructor = Snow;
+
 }( window, Particleground );
-//wave.js
+// wave.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -844,8 +890,10 @@
         }
     };
 
-    //继承公共方法，如pause，open
+    // 继承公共方法，如pause，open
     Particleground.extend( Wave.prototype );
-    //添加实例
+
+    // 添加实例
     Particleground.wave = Wave.prototype.constructor = Wave;
+
 }( window, Particleground );

@@ -1,4 +1,4 @@
-//wave.js
+// wave.js
 +function ( win, Particleground ) {
     'use strict';
 
@@ -228,8 +228,10 @@
         }
     };
 
-    //继承公共方法，如pause，open
+    // 继承公共方法，如pause，open
     Particleground.extend( Wave.prototype );
-    //添加实例
+
+    // 添加实例
     Particleground.wave = Wave.prototype.constructor = Wave;
+
 }( window, Particleground );
