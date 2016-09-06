@@ -129,7 +129,7 @@ $(function(){
             if( $('.prettyprint').length ){
                 prettyPrint();
             }else if( $('.quick-getting').length ){
-                'import use use-method config-default'.split(' ').forEach(function( v ){
+                'import use use-method default-config'.split(' ').forEach(function( v ){
                     $.get('/code-tpl/'+ v +'.html', function( msg ){
                         $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                         prettyPrint();

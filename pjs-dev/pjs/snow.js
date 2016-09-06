@@ -18,7 +18,7 @@
         this.resize();
     }
 
-    Snow.configDefault = {
+    Snow.defaultConfig = {
         //全局透明度
         opacity: 1,
         //雪花颜色

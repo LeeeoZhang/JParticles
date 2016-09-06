@@ -21,7 +21,7 @@
         this.resize();
     }
 
-    Wave.configDefault = {
+    Wave.defaultConfig = {
         //全局透明度
         opacity: 1,
         //线条颜色

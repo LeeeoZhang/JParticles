@@ -4,124 +4,95 @@
 
     var util = Particleground.util,
         event = Particleground.event,
-        on = event.on,
-        off = event.off,
-        math = Math,
-        random = math.random,
-        abs = math.abs,
-        pi2 = math.PI * 2;
+        random = Math.random,
+        abs = Math.abs,
+        pi2 = Math.PI * 2;
 
-    function eventHandler( eventType, context ){
-        event[ eventType ]( context.set.eventElem, 'mousemove', context.handler );
-        event[ eventType ]( context.set.eventElem, 'touchmove', context.handler );
+    function eventHandler( context, eventType ){
+        event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
+        event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
     }
 
     function Particle( selector, options ){
-        if( util.createCanvas.call( this, selector, Particle, options ) ){
-            //this.set = util.extend( {}, Particle.configDefault, options );
-
-            // 设置事件元素对象
-            if( !util.isElem( this.set.eventElem ) && this.set.eventElem !== document ){
-                this.set.eventElem = this.c;
-            }
-
-            // 移动鼠标点X,Y坐标
-            this.posX = random() * this.cw;
-            this.posY = random() * this.ch;
-
-            this.init();
-        }
-
-        // -- --- --
-        /*if( !util.createCanvas( selector, this ) ){
-            return;
-        }
-
-        this.set = util.extend( {}, Particle.configDefault, options );
-
-        // 设置事件元素对象
-        if( !util.isElem( this.set.eventElem ) && this.set.eventElem !== document ){
-            this.set.eventElem = this.c;
-        }
-
-        // 移动鼠标点X,Y坐标
-        this.posX = random() * this.cw;
-        this.posY = random() * this.ch;
-
-        this.createDot();
-        this.draw();
-        this.resize();
-
-        if( this.set.range > 0 ){
-            this.event();
-        }*/
+        util.createCanvas( this, Particle, selector, options );
     }
 
-    Particle.configDefault = {
-        // 全局透明度
-        opacity: .6,
+    Particle.defaultConfig = {
         // 粒子颜色，null随机色，或随机给定数组的颜色
         color: null,
         // 粒子运动速度
         speed: 1,
-        // 粒子个数，默认为容器的0.1倍
-        // 传入[0, 1)显示容器相应倍数的值，或传入具体个数[1, +∞)
+        // 粒子个数，默认为容器宽度的0.12倍
+        // 传入(0, 1)显示容器宽度相应倍数的个数，传入[1, +∞)显示具体个数
         num: .12,
         // 粒子最大半径
         max: 2.4,
         // 粒子最小半径
         min: .6,
-        // 连接线段最大距离，即鼠标点的方圆几里的点连接在一起
+        // 两点连接线段的最大值
+        // 在range范围内的两点距离小于dis，则两点之间连接一条线段
         dis: 130,
-        // 连接线段的宽度
+        // 线段的宽度
         lineWidth: .2,
-        // 范围越大，连接的点越多，当range等于0或false时，不连接线段
+        // 定位点的范围，范围越大连接的点越多，当range等于0时，不连接线段，相关值无效
         range: 160,
-        // 触发移动事件的元素，null为canvas，或传入原生元素对象，如document
-        eventElem: null,
-        // 自适应窗口尺寸变化
-        resize: true
+        // 改变定位点坐标的事件元素，null表示canvas画布，或传入原生元素对象，如document等
+        eventElem: null
     };
 
     var fn = Particle.prototype = {
         version: '1.0.0',
         init: function(){
-            this.createDot();
-            this.draw();
-            this.resize();
+            if( this.set.num > 0 ){
+                if( this.set.range > 0 ){
 
-            if( this.set.range > 0 ){
-                this.event();
+                    // 设置移动事件元素
+                    if( !util.isElem( this.set.eventElem ) && this.set.eventElem !== document ){
+                        this.set.eventElem = this.c;
+                    }
+
+                    // 定位点坐标
+                    this.posX = random() * this.cw;
+                    this.posY = random() * this.ch;
+                    this.event();
+                }
+                this.createDot();
+                this.draw();
+                this.resize();
             }
         },
         createDot: function(){
-            var set = this.set,
+            var cw = this.cw,
+                ch = this.ch,
+                set = this.set,
+                limitRandom = util.limitRandom,
                 speed = set.speed,
-                num = set.num >= 1 ? set.num : this.cw * set.num,
-                dots = [],
-                i = 0;
+                max = set.max,
+                min = set.min,
+                num = util.pInt( util.scaleValue( set.num, cw ) ),
+                dots = [], r;
 
-            for( ; i < num; i++ ){
-                var r = util.limitRandom( set.max, set.min );
+            while ( num-- ){
+                r = limitRandom( max, min );
                 dots.push({
-                    x: util.limitRandom( this.cw - r, r ),
-                    y: util.limitRandom( this.ch - r, r ),
+                    x: limitRandom( cw - r, r ),
+                    y: limitRandom( ch - r, r ),
                     r: r,
-                    vx: util.limitRandom( speed, -speed * .5 ) || speed,
-                    vy: util.limitRandom( speed, -speed * .5 ) || speed,
+                    vx: limitRandom( speed, -speed * .5 ) || speed,
+                    vy: limitRandom( speed, -speed * .5 ) || speed,
+                    // 涉及到指向，加对象调用
                     color: this.color()
                 });
             }
 
             this.dots = dots;
         },
-        draw: function( condition ){
-            condition = condition || {};
-            var isResize = condition.isResize;
+        draw: function(){
             var set = this.set;
             var cw = this.cw;
             var ch = this.ch;
             var cxt = this.cxt;
+            var paused = this.paused;
 
             cxt.clearRect( 0, 0, cw, ch );
 
@@ -138,8 +109,8 @@
                 cxt.fill();
                 cxt.restore();
 
-                // 如果是窗口尺寸变化，vx和vy保持不变
-                if( !isResize ){
+                // 暂停的时候，vx和vy保持不变，这样自适应窗口变化的时候不会出现粒子移动的状态
+                if( !paused ){
                     v.x += v.vx;
                     v.y += v.vy;
 
@@ -159,6 +130,7 @@
             if( set.range > 0 ){
                 this.connectDot();
             }
+
             this.requestAnimationFrame();
         },
         connectDot:function(){
@@ -196,49 +168,79 @@
             if( this.set.eventElem !== document ){
                 this.elemOffset = util.offset( this.set.eventElem );
             }
-            this.handler = function ( e ) {
-                this.posX = e.pageX;
-                this.posY = e.pageY;
-                if( this.elemOffset ){
-                    if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
-                        this.posX = e.clientX;
-                        this.posX = e.clientY;
-                    }else{
-                        this.posX -= this.elemOffset.left;
-                        this.posY -= this.elemOffset.top;
+            this.moveHandler = function ( e ) {
+                if( !this.paused ){
+                    this.posX = e.pageX;
+                    this.posY = e.pageY;
+                    if( this.elemOffset ){
+                        if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
+                            this.posX = e.clientX;
+                            this.posX = e.clientY;
+                        }else{
+                            this.posX -= this.elemOffset.left;
+                            this.posY -= this.elemOffset.top;
+                        }
                     }
                 }
             }.bind( this );
-            eventHandler( 'on', this );
+
+            //添加move事件
+            eventHandler( this, 'on' );
         }
     };
 
     // 继承公共方法，如pause，open
     Particleground.extend( fn );
 
-    fn.pause = function () {
+    var rewrite = {
+        pause: function(){
+            eventHandler( this, 'off' );
+        },
+        open: function(){
+            eventHandler( this, 'on' );
+        },
+        resize: function(){
+            this.posX *= scaleX;
+            this.posY *= scaleY;
+            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : null;
+        }
+    };
+
+    for( var key in rewrite ){
+        fn[ key ] = function(){
+            var self = this;
+            return function(){
+                util[ key ]( self, function(){
+                    if( this.set.range > 0 ){
+                        rewrite[ key ].call( this );
+                    }
+                });
+            };
+        };
+    }
+
+    console.log( fn );
+
+    /**
+     * 原型方法 pause，open，resize 的重写优化
+     * 原型方法 color 可否优化，不然每次都得带上 this 指向，不能单纯的使用，预先初始化一次或许可以搞定
+     * connectDot 连接线嵌套循环算法优化
+     */
+    /*fn.pause = function () {
         util.pause( this, function(){
-            if( this.set.range > 0 ){
-                eventHandler( 'off', this );
-            }
+            //if( this.set.range > 0 ){
+                eventHandler( this, 'off' );
+            //}
         });
     };
 
     fn.open = function () {
         util.open( this, function(){
-            if( this.set.range > 0 ){
-                eventHandler( 'on', this );
-            }
+            //if( this.set.range > 0 ){
+                eventHandler( this, 'on' );
+            //}
         });
     };
-
-    /*util.resize( fn, function( scaleX, scaleY ){
-        if( this.set.range > 0 ){
-            this.posX *= scaleX;
-            this.posY *= scaleY;
-            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
-        }
-    });*/
 
     fn.resize = function () {
         util.resize( this, function( scaleX, scaleY ){
@@ -248,7 +250,7 @@
                 this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
             }
         });
-    };
+    };*/
 
     // 添加实例
     Particleground.particle = fn.constructor = Particle;
