@@ -22,7 +22,9 @@
  *  draw: 绘图函数
  */
 /**
- * 注释说明：{object}里的object只表示json格式的对象，其他相应格式对象用function，null，array...
+ * 注释说明：
+ *  {object}里的object只表示json格式的对象，其他相应格式对象用function，null，array...
+ *  {Object}表示对象，如prototype等难以形容的对象
  */
 (function ( factory ){
     if ( typeof module === 'object' && module.exports ) {
@@ -42,10 +44,15 @@
     var floor = Math.floor;
     var isArray = Array.isArray;
     var canvasSupport = !!doc.createElement('canvas').getContext;
+    var regTrimAll = /\s/g;
 
 	function pInt( str ){
 		return parseInt( str, 10 );
 	}
+
+    function trimAll( str ){
+        return str.replace( regTrimAll, '' );
+    }
 
 	function randomColor(){
 		// http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
@@ -139,12 +146,12 @@
      * @param attr {string}
      * @returns {*|string|number}
      */
-    var getCssReg = /^\d+(\.\d+)?[a-z]+$/i;
+    var regGetCss = /^\d+(\.\d+)?[a-z]+$/i;
     function getCss( elem, attr ){
         var val = win.getComputedStyle( elem )[ attr ];
 
         // 对于属性值是200px这样的形式，返回200这样的数字值
-        return getCssReg.test( val ) ? pInt( val ) : val;
+        return regGetCss.test( val ) ? pInt( val ) : val;
     }
 
     /**
@@ -225,14 +232,15 @@
 	function pause( context, callback ){
         // 没有set表示实例创建失败，防止错误调用报错
 		if( context.set && !context.paused ){
-            isFunction( callback ) && callback.call( context );
+            // 传递关键字供特殊使用
+            isFunction( callback ) && callback.call( context, 'pause' );
             context.paused = true;
         }
 	}
 
 	function open( context, callback ){
 		if( context.set && context.paused ){
-            isFunction( callback ) && callback.call( context );
+            isFunction( callback ) && callback.call( context, 'open' );
 			context.paused = false;
 			context.draw();
 		}
@@ -240,17 +248,20 @@
 
     function resize( context, callback ){
         if( context.set && context.set.resize ){
-            // 不采用函数节流，会出现延迟的很不爽的效果
+            // 不采用函数节流，会出现延迟——很不爽的效果
             on( win, 'resize', function(){
                 var oldCW = context.cw;
                 var oldCH = context.ch;
 
+                // 重新回去容器宽高
                 context.cw = context.c.width = getCss( context.container, 'width' );
                 context.ch = context.c.height = getCss( context.container, 'height' );
 
+                // 计算比例
                 var scaleX = context.cw / oldCW;
                 var scaleY = context.ch / oldCH;
 
+                // 重新赋值
                 context.dots.forEach(function( v ){
                     v.x *= scaleX;
                     v.y *= scaleY;
@@ -263,6 +274,22 @@
         }
     }
 
+    /**
+     * 修改原型在 Particleground.inherit 上的方法
+     * 使用：util.modifyPrototype( fn, 'pause', function(){})
+     * @param prototype {Object} 原型对象
+     * @param names {string} 方法名，多个方法名用逗号隔开
+     * @param callback {function} 回调函数
+     */
+    function modifyPrototype( prototype, names, callback ){
+        // 将方法名转成数组格式，如：'pause, open'
+        trimAll( names ).split(',').forEach(function( name ){
+            prototype[ name ] = function(){
+                util[ name ]( this, callback );
+            };
+        });
+    }
+
     // requestAnimationFrame兼容处理
 	win.requestAnimationFrame = (function( win ) {
 		return	win.requestAnimationFrame ||
@@ -273,27 +300,31 @@
 		        };
 	})( win );
 
+    var util = {
+        pInt: pInt,
+        trimAll: trimAll,
+        randomColor: randomColor,
+        limitRandom: limitRandom,
+        extend: extend,
+        typeChecking: typeChecking,
+        isFunction: isFunction,
+        isPlainObject: isPlainObject,
+        isElem: isElem,
+        getCss: getCss,
+        offset: offset,
+        createCanvas: createCanvas,
+        scaleValue: scaleValue,
+        createColor: createColor,
+        pause: pause,
+        open: open,
+        resize: resize,
+        modifyPrototype: modifyPrototype
+    };
+
     var Particleground = {
         version: '1.0.0',
         canvasSupport: canvasSupport,
-        util: {
-            pInt: pInt,
-            randomColor: randomColor,
-            limitRandom: limitRandom,
-            extend: extend,
-            typeChecking: typeChecking,
-            isFunction: isFunction,
-            isPlainObject: isPlainObject,
-            isElem: isElem,
-            getCss: getCss,
-            offset: offset,
-            createCanvas: createCanvas,
-            scaleValue: scaleValue,
-            createColor: createColor,
-            pause: pause,
-            open: open,
-            resize: resize
-        },
+        util: util,
         inherit: {
             color: function(){
                 this.color = createColor( this.set.color );

@@ -12,8 +12,9 @@ const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 
 const fs = require('fs');
+const pkg = require('./package.json');
 
-const VERSION = '1.0.0';
+const VERSION = pkg.version;
 const COPYRIGHT =
 `/**
  * Particleground.js v${ VERSION } (https://github.com/Barrior/Particleground.js)
@@ -69,14 +70,13 @@ let packDirPath = './pjs-dev/pjs/';
 gulp.task('pack-pjs', function () {
     gulp.watch([ packDirPath + '*.js' ], function(){
         fs.readdir(packDirPath, function(err, files){
-            if( err ){
-                return console.error( err );
-            }
+
             files = files.join(' ').replace( /particleground\.js\s|particleground\.all\.js\s/g, '');
             files = ( 'particleground.js ' + files ).split(' ');
             files.forEach(function( v, i, array ){
                 array.splice( i, 1, packDirPath + v );
             });
+
             gulp.src( files )
                 .pipe( concat( 'particleground.all.js' ) )
                 .pipe( gulp.dest( packDirPath ) )

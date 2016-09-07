@@ -22,7 +22,9 @@
  *  draw: 绘图函数
  */
 /**
- * 注释说明：{object}里的object只表示json格式的对象，其他相应格式对象用function，null，array...
+ * 注释说明：
+ *  {object}里的object只表示json格式的对象，其他相应格式对象用function，null，array...
+ *  {Object}表示对象，如prototype等难以形容的对象
  */
 (function ( factory ){
     if ( typeof module === 'object' && module.exports ) {
@@ -42,10 +44,15 @@
     var floor = Math.floor;
     var isArray = Array.isArray;
     var canvasSupport = !!doc.createElement('canvas').getContext;
+    var regTrimAll = /\s/g;
 
 	function pInt( str ){
 		return parseInt( str, 10 );
 	}
+
+    function trimAll( str ){
+        return str.replace( regTrimAll, '' );
+    }
 
 	function randomColor(){
 		// http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
@@ -139,12 +146,12 @@
      * @param attr {string}
      * @returns {*|string|number}
      */
-    var getCssReg = /^\d+(\.\d+)?[a-z]+$/i;
+    var regGetCss = /^\d+(\.\d+)?[a-z]+$/i;
     function getCss( elem, attr ){
         var val = win.getComputedStyle( elem )[ attr ];
 
         // 对于属性值是200px这样的形式，返回200这样的数字值
-        return getCssReg.test( val ) ? pInt( val ) : val;
+        return regGetCss.test( val ) ? pInt( val ) : val;
     }
 
     /**
@@ -225,14 +232,15 @@
 	function pause( context, callback ){
         // 没有set表示实例创建失败，防止错误调用报错
 		if( context.set && !context.paused ){
-            isFunction( callback ) && callback.call( context );
+            // 传递关键字供特殊使用
+            isFunction( callback ) && callback.call( context, 'pause' );
             context.paused = true;
         }
 	}
 
 	function open( context, callback ){
 		if( context.set && context.paused ){
-            isFunction( callback ) && callback.call( context );
+            isFunction( callback ) && callback.call( context, 'open' );
 			context.paused = false;
 			context.draw();
 		}
@@ -240,17 +248,20 @@
 
     function resize( context, callback ){
         if( context.set && context.set.resize ){
-            // 不采用函数节流，会出现延迟的很不爽的效果
+            // 不采用函数节流，会出现延迟——很不爽的效果
             on( win, 'resize', function(){
                 var oldCW = context.cw;
                 var oldCH = context.ch;
 
+                // 重新回去容器宽高
                 context.cw = context.c.width = getCss( context.container, 'width' );
                 context.ch = context.c.height = getCss( context.container, 'height' );
 
+                // 计算比例
                 var scaleX = context.cw / oldCW;
                 var scaleY = context.ch / oldCH;
 
+                // 重新赋值
                 context.dots.forEach(function( v ){
                     v.x *= scaleX;
                     v.y *= scaleY;
@@ -263,6 +274,22 @@
         }
     }
 
+    /**
+     * 修改原型在 Particleground.inherit 上的方法
+     * 使用：util.modifyPrototype( fn, 'pause', function(){})
+     * @param prototype {Object} 原型对象
+     * @param names {string} 方法名，多个方法名用逗号隔开
+     * @param callback {function} 回调函数
+     */
+    function modifyPrototype( prototype, names, callback ){
+        // 将方法名转成数组格式，如：'pause, open'
+        trimAll( names ).split(',').forEach(function( name ){
+            prototype[ name ] = function(){
+                util[ name ]( this, callback );
+            };
+        });
+    }
+
     // requestAnimationFrame兼容处理
 	win.requestAnimationFrame = (function( win ) {
 		return	win.requestAnimationFrame ||
@@ -273,27 +300,31 @@
 		        };
 	})( win );
 
+    var util = {
+        pInt: pInt,
+        trimAll: trimAll,
+        randomColor: randomColor,
+        limitRandom: limitRandom,
+        extend: extend,
+        typeChecking: typeChecking,
+        isFunction: isFunction,
+        isPlainObject: isPlainObject,
+        isElem: isElem,
+        getCss: getCss,
+        offset: offset,
+        createCanvas: createCanvas,
+        scaleValue: scaleValue,
+        createColor: createColor,
+        pause: pause,
+        open: open,
+        resize: resize,
+        modifyPrototype: modifyPrototype
+    };
+
     var Particleground = {
         version: '1.0.0',
         canvasSupport: canvasSupport,
-        util: {
-            pInt: pInt,
-            randomColor: randomColor,
-            limitRandom: limitRandom,
-            extend: extend,
-            typeChecking: typeChecking,
-            isFunction: isFunction,
-            isPlainObject: isPlainObject,
-            isElem: isElem,
-            getCss: getCss,
-            offset: offset,
-            createCanvas: createCanvas,
-            scaleValue: scaleValue,
-            createColor: createColor,
-            pause: pause,
-            open: open,
-            resize: resize
-        },
+        util: util,
         inherit: {
             color: function(){
                 this.color = createColor( this.set.color );
@@ -344,9 +375,31 @@
         abs = Math.abs,
         pi2 = Math.PI * 2;
 
-    function eventHandler( context, eventType ){
-        event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
-        event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
+    /**
+     * 元素及其祖先节点属性判断
+     * @param elem {element} 起始元素
+     * @param property {string} css属性
+     * @param value {string} css属性值
+     * @returns {boolean}
+     */
+    function checkParentsProperty( elem, property, value ){
+        var getCss = util.getCss;
+        while ( elem = elem.offsetParent ){
+            if( getCss( elem, property ) === value ){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function eventHandler( eventType ){
+        var context = this;
+        if( context.set.range > 0 ){
+            // 使用传递过来的关键字判断绑定事件还是移除事件
+            eventType = eventType === 'pause' ? 'off' : 'on';
+            event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
+            event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
+        }
     }
 
     function Particle( selector, options ){
@@ -500,93 +553,54 @@
                 }
             });
         },
+        getElemOffset: function(){
+            return (this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : null);
+        },
         event: function() {
             if( this.set.eventElem !== document ){
-                this.elemOffset = util.offset( this.set.eventElem );
+                this.elemOffset = true;
             }
+
+            // move事件处理函数
             this.moveHandler = function ( e ) {
-                if( !this.paused ){
-                    this.posX = e.pageX;
-                    this.posY = e.pageY;
-                    if( this.elemOffset ){
-                        if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
-                            this.posX = e.clientX;
-                            this.posX = e.clientY;
-                        }else{
-                            this.posX -= this.elemOffset.left;
-                            this.posY -= this.elemOffset.top;
-                        }
+                this.posX = e.pageX;
+                this.posY = e.pageY;
+
+                // 动态计算 elemOffset 值
+                if( this.getElemOffset() ){
+
+                    // 动态判断祖先节点是否具有固定定位，有则使用client计算
+                    if( checkParentsProperty( this.set.eventElem, 'position', 'fixed' ) ){
+                        this.posX = e.clientX;
+                        this.posY = e.clientY;
                     }
+                    this.posX -= this.elemOffset.left;
+                    this.posY -= this.elemOffset.top;
                 }
             }.bind( this );
 
-            //添加move事件
-            eventHandler( this, 'on' );
+            // 添加move事件
+            eventHandler.call( this );
         }
     };
 
     // 继承公共方法，如pause，open
     Particleground.extend( fn );
 
-    var rewrite = {
-        pause: function(){
-            eventHandler( this, 'off' );
-        },
-        open: function(){
-            eventHandler( this, 'on' );
-        },
-        resize: function(){
+    util.modifyPrototype( fn, 'pause, open', eventHandler );
+
+    util.modifyPrototype( fn, 'resize', function( scaleX, scaleY ){
+        if( this.set.range > 0 ){
             this.posX *= scaleX;
             this.posY *= scaleY;
-            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : null;
+            this.getElemOffset();
         }
-    };
-
-    for( var key in rewrite ){
-        fn[ key ] = function(){
-            var self = this;
-            return function(){
-                util[ key ]( self, function(){
-                    if( this.set.range > 0 ){
-                        rewrite[ key ].call( this );
-                    }
-                });
-            };
-        };
-    }
-
-    console.log( fn );
+    });
 
     /**
-     * 原型方法 pause，open，resize 的重写优化
      * 原型方法 color 可否优化，不然每次都得带上 this 指向，不能单纯的使用，预先初始化一次或许可以搞定
      * connectDot 连接线嵌套循环算法优化
      */
-    /*fn.pause = function () {
-        util.pause( this, function(){
-            //if( this.set.range > 0 ){
-                eventHandler( this, 'off' );
-            //}
-        });
-    };
-
-    fn.open = function () {
-        util.open( this, function(){
-            //if( this.set.range > 0 ){
-                eventHandler( this, 'on' );
-            //}
-        });
-    };
-
-    fn.resize = function () {
-        util.resize( this, function( scaleX, scaleY ){
-            if( this.set.range > 0 ){
-                this.posX *= scaleX;
-                this.posY *= scaleY;
-                this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
-            }
-        });
-    };*/
 
     // 添加实例
     Particleground.particle = fn.constructor = Particle;

@@ -8,9 +8,31 @@
         abs = Math.abs,
         pi2 = Math.PI * 2;
 
-    function eventHandler( context, eventType ){
-        event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
-        event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
+    /**
+     * 元素及其祖先节点属性判断
+     * @param elem {element} 起始元素
+     * @param property {string} css属性
+     * @param value {string} css属性值
+     * @returns {boolean}
+     */
+    function checkParentsProperty( elem, property, value ){
+        var getCss = util.getCss;
+        while ( elem = elem.offsetParent ){
+            if( getCss( elem, property ) === value ){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function eventHandler( eventType ){
+        var context = this;
+        if( context.set.range > 0 ){
+            // 使用传递过来的关键字判断绑定事件还是移除事件
+            eventType = eventType === 'pause' ? 'off' : 'on';
+            event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
+            event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
+        }
     }
 
     function Particle( selector, options ){
@@ -164,93 +186,54 @@
                 }
             });
         },
+        getElemOffset: function(){
+            return (this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : null);
+        },
         event: function() {
             if( this.set.eventElem !== document ){
-                this.elemOffset = util.offset( this.set.eventElem );
+                this.elemOffset = true;
             }
+
+            // move事件处理函数
             this.moveHandler = function ( e ) {
-                if( !this.paused ){
-                    this.posX = e.pageX;
-                    this.posY = e.pageY;
-                    if( this.elemOffset ){
-                        if( util.getCss( this.set.eventElem, 'position' ) === 'fixed' ){
-                            this.posX = e.clientX;
-                            this.posX = e.clientY;
-                        }else{
-                            this.posX -= this.elemOffset.left;
-                            this.posY -= this.elemOffset.top;
-                        }
+                this.posX = e.pageX;
+                this.posY = e.pageY;
+
+                // 动态计算 elemOffset 值
+                if( this.getElemOffset() ){
+
+                    // 动态判断祖先节点是否具有固定定位，有则使用client计算
+                    if( checkParentsProperty( this.set.eventElem, 'position', 'fixed' ) ){
+                        this.posX = e.clientX;
+                        this.posY = e.clientY;
                     }
+                    this.posX -= this.elemOffset.left;
+                    this.posY -= this.elemOffset.top;
                 }
             }.bind( this );
 
-            //添加move事件
-            eventHandler( this, 'on' );
+            // 添加move事件
+            eventHandler.call( this );
         }
     };
 
     // 继承公共方法，如pause，open
     Particleground.extend( fn );
 
-    var rewrite = {
-        pause: function(){
-            eventHandler( this, 'off' );
-        },
-        open: function(){
-            eventHandler( this, 'on' );
-        },
-        resize: function(){
+    util.modifyPrototype( fn, 'pause, open', eventHandler );
+
+    util.modifyPrototype( fn, 'resize', function( scaleX, scaleY ){
+        if( this.set.range > 0 ){
             this.posX *= scaleX;
             this.posY *= scaleY;
-            this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : null;
+            this.getElemOffset();
         }
-    };
-
-    for( var key in rewrite ){
-        fn[ key ] = function(){
-            var self = this;
-            return function(){
-                util[ key ]( self, function(){
-                    if( this.set.range > 0 ){
-                        rewrite[ key ].call( this );
-                    }
-                });
-            };
-        };
-    }
-
-    console.log( fn );
+    });
 
     /**
-     * 原型方法 pause，open，resize 的重写优化
      * 原型方法 color 可否优化，不然每次都得带上 this 指向，不能单纯的使用，预先初始化一次或许可以搞定
      * connectDot 连接线嵌套循环算法优化
      */
-    /*fn.pause = function () {
-        util.pause( this, function(){
-            //if( this.set.range > 0 ){
-                eventHandler( this, 'off' );
-            //}
-        });
-    };
-
-    fn.open = function () {
-        util.open( this, function(){
-            //if( this.set.range > 0 ){
-                eventHandler( this, 'on' );
-            //}
-        });
-    };
-
-    fn.resize = function () {
-        util.resize( this, function( scaleX, scaleY ){
-            if( this.set.range > 0 ){
-                this.posX *= scaleX;
-                this.posY *= scaleY;
-                this.elemOffset = this.elemOffset ? util.offset( this.set.eventElem ) : '';
-            }
-        });
-    };*/
 
     // 添加实例
     Particleground.particle = fn.constructor = Particle;
