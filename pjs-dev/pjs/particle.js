@@ -9,7 +9,7 @@
         pi2 = Math.PI * 2;
 
     /**
-     * 元素及其祖先节点属性判断
+     * 检查元素或其祖先节点的属性是否等于预给值
      * @param elem {element} 起始元素
      * @param property {string} css属性
      * @param value {string} css属性值
@@ -25,23 +25,11 @@
         return false;
     }
 
-    function eventHandler( eventType ){
-        var context = this;
-        if( context.set.range > 0 ){
-            // 使用传递过来的关键字判断绑定事件还是移除事件
-            eventType = eventType === 'pause' ? 'off' : 'on';
-            event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
-            event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
-        }
-    }
-
     function Particle( selector, options ){
         util.createCanvas( this, Particle, selector, options );
     }
 
     Particle.defaultConfig = {
-        // 粒子颜色，null随机色，或随机给定数组的颜色
-        color: null,
         // 粒子运动速度
         speed: 1,
         // 粒子个数，默认为容器宽度的0.12倍
@@ -51,12 +39,12 @@
         max: 2.4,
         // 粒子最小半径
         min: .6,
-        // 两点连接线段的最大值
-        // 在range范围内的两点距离小于dis，则两点之间连接一条线段
+        // 两点连线的最大值
+        // 在range范围内的两点距离小于dis，则两点之间连线
         dis: 130,
         // 线段的宽度
         lineWidth: .2,
-        // 定位点的范围，范围越大连接的点越多，当range等于0时，不连接线段，相关值无效
+        // 定位点的范围，范围越大连线越多，当range等于0时，不连线，相关值无效
         range: 160,
         // 改变定位点坐标的事件元素，null表示canvas画布，或传入原生元素对象，如document等
         eventElem: null
@@ -78,15 +66,16 @@
                     this.posY = random() * this.ch;
                     this.event();
                 }
-                this.createDot();
+                this.createDots();
                 this.draw();
                 this.resize();
             }
         },
-        createDot: function(){
+        createDots: function(){
             var cw = this.cw,
                 ch = this.ch,
                 set = this.set,
+                color = this.color,
                 limitRandom = util.limitRandom,
                 speed = set.speed,
                 max = set.max,
@@ -102,8 +91,7 @@
                     r: r,
                     vx: limitRandom( speed, -speed * .5 ) || speed,
                     vy: limitRandom( speed, -speed * .5 ) || speed,
-                    // 涉及到指向，加对象调用
-                    color: this.color()
+                    color: color()
                 });
             }
 
@@ -111,6 +99,10 @@
         },
         draw: function(){
             var set = this.set;
+            if( set.num <= 0 ){
+                return;
+            }
+
             var cw = this.cw;
             var ch = this.ch;
             var cxt = this.cxt;
@@ -148,7 +140,7 @@
                 }
             });
 
-            // 当连接范围小于0时，不连接线段，可以做出球体运动效果
+            // 当连接范围小于0时，不连接线，可以做出球或气泡运动效果
             if( set.range > 0 ){
                 this.connectDot();
             }
@@ -164,25 +156,45 @@
                 posR = set.range,
                 dots = this.dots;
 
-            dots.forEach(function ( v ) {
-                var vx = v.x;
-                var vy = v.y;
+            var connected = {};
+
+            dots.forEach(function ( v, i ) {
+                var vx = v.x,
+                    vy = v.y;
+
                 if( abs( vx - posX ) <= posR &&
                     abs( vy - posY ) <= posR ){
-                    dots.forEach(function ( sib ) {
-                        var sx = sib.x,
-                            sy = sib.y;
-                        if( abs( vx - sx ) <= dis &&
-                            abs( vy - sy ) <= dis ){
-                            cxt.save();
-                            cxt.beginPath();
-                            cxt.moveTo( vx, vy );
-                            cxt.lineTo( sx, sy );
-                            cxt.strokeStyle = v.color;
-                            cxt.stroke();
-                            cxt.restore();
+
+                    var tempVar = connected[i] = {};
+
+                    dots.forEach(function ( sib, j ) {
+
+                        // 优化性能
+                        // connected[j][i]：减少已连接的点的不必要计算
+                        // i !== j: 减少同一个点不必要的计算
+                        var cj = connected[j];
+
+                        if( i !== j && (!cj || cj && !cj[i]) ){
+
+                            var sx = sib.x,
+                                sy = sib.y;
+
+                            if( abs( vx - sx ) <= dis &&
+                                abs( vy - sy ) <= dis ){
+
+                                tempVar[j] = true;
+
+                                cxt.save();
+                                cxt.beginPath();
+                                cxt.moveTo( vx, vy );
+                                cxt.lineTo( sx, sy );
+                                cxt.strokeStyle = v.color;
+                                cxt.stroke();
+                                cxt.restore();
+                            }
                         }
                     });
+
                 }
             });
         },
@@ -220,20 +232,28 @@
     // 继承公共方法，如pause，open
     Particleground.extend( fn );
 
+    function eventHandler( eventType ){
+        var context = this;
+        var set = context.set;
+        if( set.num > 0 &&　set.range > 0 ){
+            // 使用传递过来的关键字判断绑定事件还是移除事件
+            eventType = eventType === 'pause' ? 'off' : 'on';
+            event[ eventType ]( set.eventElem, 'mousemove', context.moveHandler );
+            event[ eventType ]( set.eventElem, 'touchmove', context.moveHandler );
+        }
+    }
+
+    // 修改原型pause，open方法
     util.modifyPrototype( fn, 'pause, open', eventHandler );
 
+    // 修改原型resize方法
     util.modifyPrototype( fn, 'resize', function( scaleX, scaleY ){
-        if( this.set.range > 0 ){
+        if( this.set.num > 0 &&　this.set.range > 0 ){
             this.posX *= scaleX;
             this.posY *= scaleY;
             this.getElemOffset();
         }
     });
-
-    /**
-     * 原型方法 color 可否优化，不然每次都得带上 this 指向，不能单纯的使用，预先初始化一次或许可以搞定
-     * connectDot 连接线嵌套循环算法优化
-     */
 
     // 添加实例
     Particleground.particle = fn.constructor = Particle;

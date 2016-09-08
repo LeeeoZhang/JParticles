@@ -90,11 +90,17 @@
     <script src="../js/event.js"></script>
     <script>
         bind('#demo', function(){
-            return new Particleground.particle( '#demo' );
+            return new Particleground.particle( '#demo'/*, {
+                num: 1000,
+//                max: 20,
+//                min: 18,
+//                dis: 1000,
+//                range: 2000
+            }*/);
         });
 
         // 超过首屏测试
-        bind('#demo2', function(){
+        /*bind('#demo2', function(){
             return new Particleground.particle( '#demo2' );
         });
 
@@ -113,7 +119,7 @@
                 min: 10,
                 speed: 6
             });
-        });
+        });*/
     </script>
 </body>
 </html>

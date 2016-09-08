@@ -2,7 +2,7 @@
  * 规定：
  * configDefault：默认配置项，需挂载到构造函数对象上
  *
- * 原型对象的属性
+ * 对象的属性
  *  set: 参数配置
  *  set.color: 颜色
  *  set.resize: 自适应
@@ -16,6 +16,9 @@
  *  [dot].x: 通过arc绘制的粒子的x值
  *  [dot].y: 通过arc绘制的粒子的y值
  *  paused: {boolean} 是否暂停
+ *
+ * 对象的方法
+ *  color：返回随机或设定好的粒子颜色
  *
  * 原型对象的方法
  *  init: 初始化配置或方法调用
@@ -189,8 +192,10 @@
      * @returns {boolean} 供插件判断是否创建成功，成功继续执行相应代码，不成功则静默失败
      */
     var commonConfig = {
-        // 全局透明度
+        // 画布全局透明度
         opacity: 1,
+        // 粒子颜色，空数组表示随机取色，或赋值特定颜色的数组，如：['red', 'blue', 'green']
+        color: [],
         // 默认true: 自适应窗口尺寸变化
         resize: true
     };
@@ -207,6 +212,7 @@
 
             context.container.innerHTML = '';
             context.container.appendChild( context.c );
+            context.color = setColor( context.set.color );
             context.init();
         }
     }
@@ -221,14 +227,26 @@
         return val > 0 && val < 1 ? scale * val : val;
     }
 
-    function createColor( setColor ){
-        var colorLength = isArray( setColor ) ? setColor.length : false;
-        var color = function(){
-            return setColor[ floor( random() * colorLength ) ];
-        };
-        return colorLength ? color : randomColor;
+    /**
+     * 设置color函数
+     * @param color {string|array} 颜色数组
+     * @returns {function}
+     */
+    function setColor( color ){
+        if( typeof color === 'string' ){
+            return function(){
+                return color;
+            };
+        }else{
+            var colorLength = isArray( color ) ? color.length : false;
+            var recolor = function(){
+                return color[ floor( random() * colorLength ) ];
+            };
+            return colorLength ? recolor : randomColor;
+        }
     }
 
+    // 暂停粒子运动
 	function pause( context, callback ){
         // 没有set表示实例创建失败，防止错误调用报错
 		if( context.set && !context.paused ){
@@ -238,6 +256,7 @@
         }
 	}
 
+    // 开启粒子运动
 	function open( context, callback ){
 		if( context.set && context.paused ){
             isFunction( callback ) && callback.call( context, 'open' );
@@ -246,8 +265,9 @@
 		}
 	}
 
+    // 自适应窗口，重新计算粒子坐标
     function resize( context, callback ){
-        if( context.set && context.set.resize ){
+        if( context.set.resize ){
             // 不采用函数节流，会出现延迟——很不爽的效果
             on( win, 'resize', function(){
                 var oldCW = context.cw;
@@ -300,6 +320,7 @@
 		        };
 	})( win );
 
+    // 工具箱
     var util = {
         pInt: pInt,
         trimAll: trimAll,
@@ -314,7 +335,7 @@
         offset: offset,
         createCanvas: createCanvas,
         scaleValue: scaleValue,
-        createColor: createColor,
+        setColor: setColor,
         pause: pause,
         open: open,
         resize: resize,
@@ -326,10 +347,6 @@
         canvasSupport: canvasSupport,
         util: util,
         inherit: {
-            color: function(){
-                this.color = createColor( this.set.color );
-                return this.color();
-            },
             requestAnimationFrame: function(){
                 !this.paused && win.requestAnimationFrame( this.draw.bind( this ) );
             },
@@ -348,8 +365,7 @@
             off: off
         },
         extend: function( prototype ){
-            extend( prototype, this.inherit );
-            //obj.color();
+            return extend( prototype, this.inherit ), this;
         }
     };
 

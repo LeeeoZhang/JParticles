@@ -2,7 +2,7 @@
  * 规定：
  * configDefault：默认配置项，需挂载到构造函数对象上
  *
- * 原型对象的属性
+ * 对象的属性
  *  set: 参数配置
  *  set.color: 颜色
  *  set.resize: 自适应
@@ -16,6 +16,9 @@
  *  [dot].x: 通过arc绘制的粒子的x值
  *  [dot].y: 通过arc绘制的粒子的y值
  *  paused: {boolean} 是否暂停
+ *
+ * 对象的方法
+ *  color：返回随机或设定好的粒子颜色
  *
  * 原型对象的方法
  *  init: 初始化配置或方法调用
@@ -189,8 +192,10 @@
      * @returns {boolean} 供插件判断是否创建成功，成功继续执行相应代码，不成功则静默失败
      */
     var commonConfig = {
-        // 全局透明度
+        // 画布全局透明度
         opacity: 1,
+        // 粒子颜色，空数组表示随机取色，或赋值特定颜色的数组，如：['red', 'blue', 'green']
+        color: [],
         // 默认true: 自适应窗口尺寸变化
         resize: true
     };
@@ -207,6 +212,7 @@
 
             context.container.innerHTML = '';
             context.container.appendChild( context.c );
+            context.color = setColor( context.set.color );
             context.init();
         }
     }
@@ -221,14 +227,26 @@
         return val > 0 && val < 1 ? scale * val : val;
     }
 
-    function createColor( setColor ){
-        var colorLength = isArray( setColor ) ? setColor.length : false;
-        var color = function(){
-            return setColor[ floor( random() * colorLength ) ];
-        };
-        return colorLength ? color : randomColor;
+    /**
+     * 设置color函数
+     * @param color {string|array} 颜色数组
+     * @returns {function}
+     */
+    function setColor( color ){
+        if( typeof color === 'string' ){
+            return function(){
+                return color;
+            };
+        }else{
+            var colorLength = isArray( color ) ? color.length : false;
+            var recolor = function(){
+                return color[ floor( random() * colorLength ) ];
+            };
+            return colorLength ? recolor : randomColor;
+        }
     }
 
+    // 暂停粒子运动
 	function pause( context, callback ){
         // 没有set表示实例创建失败，防止错误调用报错
 		if( context.set && !context.paused ){
@@ -238,6 +256,7 @@
         }
 	}
 
+    // 开启粒子运动
 	function open( context, callback ){
 		if( context.set && context.paused ){
             isFunction( callback ) && callback.call( context, 'open' );
@@ -246,8 +265,9 @@
 		}
 	}
 
+    // 自适应窗口，重新计算粒子坐标
     function resize( context, callback ){
-        if( context.set && context.set.resize ){
+        if( context.set.resize ){
             // 不采用函数节流，会出现延迟——很不爽的效果
             on( win, 'resize', function(){
                 var oldCW = context.cw;
@@ -300,6 +320,7 @@
 		        };
 	})( win );
 
+    // 工具箱
     var util = {
         pInt: pInt,
         trimAll: trimAll,
@@ -314,7 +335,7 @@
         offset: offset,
         createCanvas: createCanvas,
         scaleValue: scaleValue,
-        createColor: createColor,
+        setColor: setColor,
         pause: pause,
         open: open,
         resize: resize,
@@ -326,10 +347,6 @@
         canvasSupport: canvasSupport,
         util: util,
         inherit: {
-            color: function(){
-                this.color = createColor( this.set.color );
-                return this.color();
-            },
             requestAnimationFrame: function(){
                 !this.paused && win.requestAnimationFrame( this.draw.bind( this ) );
             },
@@ -348,8 +365,7 @@
             off: off
         },
         extend: function( prototype ){
-            extend( prototype, this.inherit );
-            //obj.color();
+            return extend( prototype, this.inherit ), this;
         }
     };
 
@@ -376,7 +392,7 @@
         pi2 = Math.PI * 2;
 
     /**
-     * 元素及其祖先节点属性判断
+     * 检查元素或其祖先节点的属性是否等于预给值
      * @param elem {element} 起始元素
      * @param property {string} css属性
      * @param value {string} css属性值
@@ -392,23 +408,11 @@
         return false;
     }
 
-    function eventHandler( eventType ){
-        var context = this;
-        if( context.set.range > 0 ){
-            // 使用传递过来的关键字判断绑定事件还是移除事件
-            eventType = eventType === 'pause' ? 'off' : 'on';
-            event[ eventType ]( context.set.eventElem, 'mousemove', context.moveHandler );
-            event[ eventType ]( context.set.eventElem, 'touchmove', context.moveHandler );
-        }
-    }
-
     function Particle( selector, options ){
         util.createCanvas( this, Particle, selector, options );
     }
 
     Particle.defaultConfig = {
-        // 粒子颜色，null随机色，或随机给定数组的颜色
-        color: null,
         // 粒子运动速度
         speed: 1,
         // 粒子个数，默认为容器宽度的0.12倍
@@ -418,12 +422,12 @@
         max: 2.4,
         // 粒子最小半径
         min: .6,
-        // 两点连接线段的最大值
-        // 在range范围内的两点距离小于dis，则两点之间连接一条线段
+        // 两点连线的最大值
+        // 在range范围内的两点距离小于dis，则两点之间连线
         dis: 130,
         // 线段的宽度
         lineWidth: .2,
-        // 定位点的范围，范围越大连接的点越多，当range等于0时，不连接线段，相关值无效
+        // 定位点的范围，范围越大连线越多，当range等于0时，不连线，相关值无效
         range: 160,
         // 改变定位点坐标的事件元素，null表示canvas画布，或传入原生元素对象，如document等
         eventElem: null
@@ -445,15 +449,16 @@
                     this.posY = random() * this.ch;
                     this.event();
                 }
-                this.createDot();
+                this.createDots();
                 this.draw();
                 this.resize();
             }
         },
-        createDot: function(){
+        createDots: function(){
             var cw = this.cw,
                 ch = this.ch,
                 set = this.set,
+                color = this.color,
                 limitRandom = util.limitRandom,
                 speed = set.speed,
                 max = set.max,
@@ -469,8 +474,7 @@
                     r: r,
                     vx: limitRandom( speed, -speed * .5 ) || speed,
                     vy: limitRandom( speed, -speed * .5 ) || speed,
-                    // 涉及到指向，加对象调用
-                    color: this.color()
+                    color: color()
                 });
             }
 
@@ -478,6 +482,10 @@
         },
         draw: function(){
             var set = this.set;
+            if( set.num <= 0 ){
+                return;
+            }
+
             var cw = this.cw;
             var ch = this.ch;
             var cxt = this.cxt;
@@ -515,7 +523,7 @@
                 }
             });
 
-            // 当连接范围小于0时，不连接线段，可以做出球体运动效果
+            // 当连接范围小于0时，不连接线，可以做出球或气泡运动效果
             if( set.range > 0 ){
                 this.connectDot();
             }
@@ -531,25 +539,45 @@
                 posR = set.range,
                 dots = this.dots;
 
-            dots.forEach(function ( v ) {
-                var vx = v.x;
-                var vy = v.y;
+            var connected = {};
+
+            dots.forEach(function ( v, i ) {
+                var vx = v.x,
+                    vy = v.y;
+
                 if( abs( vx - posX ) <= posR &&
                     abs( vy - posY ) <= posR ){
-                    dots.forEach(function ( sib ) {
-                        var sx = sib.x,
-                            sy = sib.y;
-                        if( abs( vx - sx ) <= dis &&
-                            abs( vy - sy ) <= dis ){
-                            cxt.save();
-                            cxt.beginPath();
-                            cxt.moveTo( vx, vy );
-                            cxt.lineTo( sx, sy );
-                            cxt.strokeStyle = v.color;
-                            cxt.stroke();
-                            cxt.restore();
+
+                    var tempVar = connected[i] = {};
+
+                    dots.forEach(function ( sib, j ) {
+
+                        // 优化性能
+                        // connected[j][i]：减少已连接的点的不必要计算
+                        // i !== j: 减少同一个点不必要的计算
+                        var cj = connected[j];
+
+                        if( i !== j && (!cj || cj && !cj[i]) ){
+
+                            var sx = sib.x,
+                                sy = sib.y;
+
+                            if( abs( vx - sx ) <= dis &&
+                                abs( vy - sy ) <= dis ){
+
+                                tempVar[j] = true;
+
+                                cxt.save();
+                                cxt.beginPath();
+                                cxt.moveTo( vx, vy );
+                                cxt.lineTo( sx, sy );
+                                cxt.strokeStyle = v.color;
+                                cxt.stroke();
+                                cxt.restore();
+                            }
                         }
                     });
+
                 }
             });
         },
@@ -587,20 +615,28 @@
     // 继承公共方法，如pause，open
     Particleground.extend( fn );
 
+    function eventHandler( eventType ){
+        var context = this;
+        var set = context.set;
+        if( set.num > 0 &&　set.range > 0 ){
+            // 使用传递过来的关键字判断绑定事件还是移除事件
+            eventType = eventType === 'pause' ? 'off' : 'on';
+            event[ eventType ]( set.eventElem, 'mousemove', context.moveHandler );
+            event[ eventType ]( set.eventElem, 'touchmove', context.moveHandler );
+        }
+    }
+
+    // 修改原型pause，open方法
     util.modifyPrototype( fn, 'pause, open', eventHandler );
 
+    // 修改原型resize方法
     util.modifyPrototype( fn, 'resize', function( scaleX, scaleY ){
-        if( this.set.range > 0 ){
+        if( this.set.num > 0 &&　this.set.range > 0 ){
             this.posX *= scaleX;
             this.posY *= scaleY;
             this.getElemOffset();
         }
     });
-
-    /**
-     * 原型方法 color 可否优化，不然每次都得带上 this 指向，不能单纯的使用，预先初始化一次或许可以搞定
-     * connectDot 连接线嵌套循环算法优化
-     */
 
     // 添加实例
     Particleground.particle = fn.constructor = Particle;
@@ -617,38 +653,32 @@
         pi2 = Math.PI * 2;
 
     function Snow( selector, options ){
-        if( !util.createCanvas( selector, this ) ){
-            return;
-        }
-        this.set = util.extend( {}, Snow.configDefault, options );
-
-        this.dots = [];
-        this.createDot();
-        this.draw();
-        this.resize();
+        util.createCanvas( this, Snow, selector, options );
     }
 
     Snow.defaultConfig = {
-        //全局透明度
-        opacity: 1,
-        //雪花颜色
-        color: ['#fff'],
-        //雪花最大半径
+        // 雪花颜色
+        color: '#fff',
+        // 雪花最大半径
         max: 6.5,
-        //雪花最小半径
+        // 雪花最小半径
         min: .4,
-        //运动速度
-        speed: .4,
-        //自适应窗口尺寸变化
-        resize: true
+        // 运动速度
+        speed: .4
     };
 
-    Snow.prototype = {
+    var fn = Snow.prototype = {
         version: '1.0.0',
+        init: function(){
+            this.dots = [];
+            this.createDots();
+            this.draw();
+            this.resize();
+        },
         snowShape: function(){
-            var self = this,
-                cw = self.cw,
-                set = self.set,
+            var color = this.color,
+                cw = this.cw,
+                set = this.set,
                 speed = set.speed,
                 r = util.limitRandom( set.max, set.min );
             return {
@@ -657,14 +687,14 @@
                 r: r,
                 vx: random() || .4,
                 vy: r * speed,
-                color: self.color()
+                color: color()
             };
         },
-        createDot: function(){
-            //随机创建0-6个雪花
-            var count = random() * 6;
+        createDots: function(){
+            // 随机创建0-6个雪花
+            var count = util.pInt( random() * 6 );
             var dots = this.dots;
-            for( var i = 0; i < count; i++ ){
+            while ( count-- ){
                 dots.push( this.snowShape() );
             }
         },
@@ -673,22 +703,19 @@
                 set = self.set,
                 cxt = self.cxt,
                 cw = self.cw,
-                ch = self.ch,
-                dots = self.dots;
+                ch = self.ch;
 
             cxt.clearRect( 0, 0, cw, ch );
-
-            //当canvas宽高改变的时候，全局属性需要重新设置
             cxt.globalAlpha = set.opacity;
 
-            dots.forEach(function( v, i ){
-                var vx = v.x;
-                var vy = v.y;
-                var vr = v.r;
+            self.dots.forEach(function( v, i, array ){
+                var x = v.x;
+                var y = v.y;
+                var r = v.r;
 
                 cxt.save();
                 cxt.beginPath();
-                cxt.arc( vx, vy, vr, 0, pi2 );
+                cxt.arc( x, y, r, 0, pi2 );
                 cxt.fillStyle = v.color;
                 cxt.fill();
                 cxt.restore();
@@ -696,34 +723,35 @@
                 v.x += v.vx;
                 v.y += v.vy;
 
-                //雪花反方向
+                // 雪花反方向飘落
                 if( random() > .99 && random() > .5 ){
                     v.vx *= -1;
                 }
 
-                //雪花从侧边出去，删除
-                if( vx < 0 || vx - vr > cw ){
-                    dots.splice( i, 1 );
-                    dots.push( self.snowShape() );
-                    //雪花从底部出去
-                }else if( vy - vr >= ch ){
-                    dots.splice( i, 1 );
+                // 雪花从侧边出去，删除
+                if( x < 0 || x - r > cw ){
+                    array.splice( i, 1, self.snowShape() );
+
+                // 雪花从底部出去，删除
+                }else if( y - r >= ch ){
+                    array.splice( i, 1 );
                 }
             });
-            //添加雪花
+
+            // 添加雪花
             if( random() > .9 ){
-                self.createDot();
+                self.createDots();
             }
 
-            this.requestAnimationFrame();
+            self.requestAnimationFrame();
         }
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend( Snow.prototype );
+    Particleground.extend( fn );
 
     // 添加实例
-    Particleground.snow = Snow.prototype.constructor = Snow;
+    Particleground.snow = fn.constructor = Snow;
 
 }( window, Particleground );
 // wave.js
