@@ -133,6 +133,11 @@ $(function(){
                     $.get('/code-tpl/'+ v +'.html', function( msg ){
                         $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                         prettyPrint();
+                        if( v === 'default-config' ){
+                            var hash = location.hash;
+                            location.hash = '#';
+                            location.hash = hash;
+                        }
                     });
                 });
             }

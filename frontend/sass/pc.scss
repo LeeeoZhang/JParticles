@@ -6,6 +6,10 @@ pre {
 blockquote {
     padding: 0 rem(20);
     font-size: rem(16);
+    a{
+        text-decoration: none;
+        color: $root-color;
+    }
 }
 
 code {
@@ -270,6 +274,26 @@ $page-left-right: rem(120);
         &:not(:last-child){
             margin-right: rem(10);
         }
+    }
+}
+
+// why-this-tip
+.why-this-tip{
+    &:hover{
+        .pa{
+            display: block;
+        }
+    }
+    .pa{
+        display: none;
+        padding: rem(10);
+        border: 1px solid $gray-border;
+        border-radius: rem(4);
+        box-shadow: rem(4) rem(4) rem(10) 0 $gray-border;
+        background-color: #fff;
+        text-align: justify;
+        font-size: rem(12);
+        top: 110%;
     }
 }
 

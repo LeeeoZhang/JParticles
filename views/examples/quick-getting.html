@@ -17,7 +17,7 @@
                         官网下载
                     </a>
                     界面选择特定的特效打包下载，或者直接
-                    <a class="dotted-line" href="/js/particleground.all.js"
+                    <a class="dotted-line" href="/particleground.js.rar"
                        target="_blank">
                         下载最新版本
                     </a>。
@@ -90,7 +90,7 @@
             <div class="content">
                 <blockquote>
                     <div>
-                        每个用new实例化的对象都包含以下两个方法，为了减少重复劳动，后面的示例就不再特别说明了：
+                        每个用new实例化的对象都包含以下两个方法，为了减少重复劳动，后面的示例就不再赘述啦：
                     </div>
                     <table>
                         <tbody>
@@ -127,39 +127,94 @@
                 </blockquote>
                 <table class="table table-bordered-inner table-striped">
                     <thead>
-                    <tr>
-                        <th>参数</th>
-                        <th>类型</th>
-                        <th>描述</th>
-                    </tr>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>描述</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>selector</td>
-                        <td>string 或 element</td>
-                        <td>必填，选择器字符串或原生DOM元素</td>
-                    </tr>
-                    <tr>
-                        <td>options</td>
-                        <td>object</td>
-                        <td>可选，特效的配置参数</td>
-                    </tr>
+                        <tr>
+                            <td>selector</td>
+                            <td>string 或 element</td>
+                            <td>必填，选择器字符串或原生DOM元素</td>
+                        </tr>
+                        <tr>
+                            <td>options</td>
+                            <td>object</td>
+                            <td>可选，特效的配置参数</td>
+                        </tr>
                     </tbody>
                 </table>
+
                 <blockquote>
                     <div>
-                        2、通过pjs插件暴露的全局接口
-                        <code>Particleground.name.defaultConfig</code>
-                        可方便地修改特效的默认配置，示例如下：
+                        <a id="默认配置参数" href="#默认配置参数">
+                            2、如未特殊说明，每个插件的配置参数都包含如下三个默认配置，同上不再赘述啦。
+                        </a>
                     </div>
                 </blockquote>
-                <pre class="config-default normal-text"></pre>
+                <table class="table table-bordered-inner table-striped">
+                    <thead>
+                        <tr>
+                            <th width="100">名称</th>
+                            <th width="100">默认值</th>
+                            <th width="150">类型</th>
+                            <th width="450">描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>opacity</td>
+                            <td>1</td>
+                            <td>number</td>
+                            <td>画布全局透明度，取值范围：[0-1]</td>
+                        </tr>
+                        <tr>
+                            <td>color</td>
+                            <td>[]</td>
+                            <td>string 或 array</td>
+                            <td class="module module-api">
+                                <div>粒子颜色</div>
+                                <ul>
+                                    <li>
+                                        空数组表示随机取色
+                                    </li>
+                                    <li>
+                                        特定颜色的数组，如：['red', 'blue', 'green']，则表示粒子颜色为这三种色值的随机一种
+                                    </li>
+                                    <li>
+                                        当为string类型时，如：'red'，则表示粒子都填充为红色
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>resize</td>
+                            <td>true</td>
+                            <td>boolean</td>
+                            <td>自适应窗口尺寸变化</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <blockquote>
+                    <div>
+                        <a id="暴露的全局接口" href="#暴露的全局接口">
+                            3、通过pjs插件暴露的全局接口
+                            <code>Particleground.name.defaultConfig</code>
+                            可方便地修改特效的默认配置，示例如下：
+                        </a>
+                    </div>
+                </blockquote>
+                <pre class="default-config normal-text"></pre>
+
                 <div>
                     <h6>小提示：</h6>
                     <ul class="mini-text">
                         <li>修改默认配置应放在 <code>new</code> 之前。</li>
                         <li>
-                            每个pjs插件的默认配置请查看具体的
+                            每个pjs插件的默认配置可以查看右侧对应的
                             <b>实例及API</b> 。
                         </li>
                     </ul>

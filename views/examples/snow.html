@@ -30,24 +30,25 @@ new Particleground.snow( '#demo' );
                 <table class="table table-bordered-inner table-striped">
                     <thead>
                     <tr>
-                        <th>名称</th>
-                        <th>默认值</th>
-                        <th>类型</th>
-                        <th>描述</th>
+                        <th width="100">名称</th>
+                        <th width="100">默认值</th>
+                        <th width="150">类型</th>
+                        <th width="450">描述</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td>opacity</td>
-                        <td>1</td>
-                        <td>number</td>
-                        <td>全局透明度</td>
-                    </tr>
-                    <tr>
                         <td>color</td>
-                        <td>['#fff']</td>
-                        <td>null 或 array</td>
-                        <td>雪花的颜色</td>
+                        <td>'#fff'</td>
+                        <td>string 或 array</td>
+                        <td>
+                            雪花的颜色，
+                            <a class="dotted-line"
+                               href="/examples/quick-getting#默认配置参数"
+                               target="_blank">
+                                查看更多规则
+                            </a>
+                        </td>
                     </tr>
                     <tr>
                         <td>max</td>
@@ -66,12 +67,6 @@ new Particleground.snow( '#demo' );
                         <td>.4</td>
                         <td>number</td>
                         <td>雪花飘落速度</td>
-                    </tr>
-                    <tr>
-                        <td>resize</td>
-                        <td>true</td>
-                        <td>boolean</td>
-                        <td>自适应窗口尺寸变化</td>
                     </tr>
                     </tbody>
                 </table>

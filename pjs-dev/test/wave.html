@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../css/style.css">
     <style>
         [id^="demo"]{
-            width: 900px;
+            width: 80%;
             height: 600px;
             margin: 50px auto;
             border: 1px solid #ccc;
@@ -109,7 +109,7 @@
             });
         });
 
-        bind('#demo2', function(){
+        /*bind('#demo2', function(){
             return new Particleground.wave( '#demo2', {
                 num: 1,
                 fillColor: '#27C9E5',
@@ -151,7 +151,7 @@
                 speed: .3
             });
 
-            /*effect = new Particleground.wave( '#demo3', {
+            /!*effect = new Particleground.wave( '#demo3', {
                 lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 num: 3,
                 //三条线段依次的宽度
@@ -165,7 +165,7 @@
                 //三条线段都只有两个波峰（波纹）
                 rippleNum: 2,
                 speed: .3
-            });*/
+            });*!/
 
             timer = setInterval(function(){
 
@@ -181,11 +181,11 @@
                 // 一条
                 effect.setOffsetTop( process );
                 // 多条
-                /*effect.setOffsetTop( [
+                /!*effect.setOffsetTop( [
                     process,
                     process - 20,
                     process - 40
-                ] );*/
+                ] );*!/
                 setProcess();
 
             }, 30 );
@@ -232,7 +232,7 @@
             }, 30 );
 
             return effect;
-        });
+        });*/
     </script>
 </body>
 </html>

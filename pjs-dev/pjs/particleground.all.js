@@ -755,26 +755,16 @@
         isArray = Array.isArray;
 
     function Wave( selector, options ){
-        if( !util.createCanvas( selector, this ) ){
-            return;
-        }
-        this.set = util.extend( {}, Wave.configDefault, options );
-
-        this.initAttr();
-        this.createDot();
-        this.draw();
-        this.resize();
+        util.createCanvas( this, Wave, selector, options );
     }
 
     Wave.defaultConfig = {
-        //全局透明度
-        opacity: 1,
         //线条颜色
         lineColor: [],
         //填充的背景颜色
         fillColor: [],
         //线条个数
-        num: null,
+        num: 3,
         //线条宽度
         lineWidth: [],
         //线段的横向偏移值，(0, 1)表示波长的倍数，0 & [1, +∞)表示具体数值
@@ -788,16 +778,20 @@
         //运动速度
         speed: [],
         //是否绘制成区域图
-        area: false,
+        fill: false,
         //是否绘制边框
-        stroke: true,
-        //自适应窗口尺寸变化
-        resize: true
+        stroke: true
     };
 
 
     Wave.prototype = {
         version: '1.0.0',
+        init: function(){
+            this.initAttr();
+            this.createDot();
+            this.draw();
+            this.resize();
+        },
         initAttr: function(){
             var self = this;
             var cw = self.cw;

@@ -17,7 +17,7 @@
         }
     }
 
-    [id^="demo"]{
+    .instance{
         height: rem(400) !important;
     }
 }
@@ -149,7 +149,7 @@
         }
     }
 
-    [id^="demo"]{
+    .instance{
         height: rem(180) !important;
     }
 }
