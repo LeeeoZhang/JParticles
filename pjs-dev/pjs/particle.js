@@ -154,47 +154,33 @@
                 posX = this.posX,
                 posY = this.posY,
                 posR = set.range,
-                dots = this.dots;
-
-            var connected = {};
+                dots = this.dots,
+                length = dots.length;
 
             dots.forEach(function ( v, i ) {
-                var vx = v.x,
-                    vy = v.y;
+                var vx = v.x;
+                var vy = v.y;
+                var color = v.color;
 
-                if( abs( vx - posX ) <= posR &&
-                    abs( vy - posY ) <= posR ){
+                while ( ++i < length ){
+                    var sibDot = dots[i];
+                    var sx = sibDot.x;
+                    var sy = sibDot.y;
 
-                    var tempVar = connected[i] = {};
-
-                    dots.forEach(function ( sib, j ) {
-
-                        // 优化性能
-                        // connected[j][i]：减少已连接的点的不必要计算
-                        // i !== j: 减少同一个点不必要的计算
-                        var cj = connected[j];
-
-                        if( i !== j && (!cj || cj && !cj[i]) ){
-
-                            var sx = sib.x,
-                                sy = sib.y;
-
-                            if( abs( vx - sx ) <= dis &&
-                                abs( vy - sy ) <= dis ){
-
-                                tempVar[j] = true;
-
-                                cxt.save();
-                                cxt.beginPath();
-                                cxt.moveTo( vx, vy );
-                                cxt.lineTo( sx, sy );
-                                cxt.strokeStyle = v.color;
-                                cxt.stroke();
-                                cxt.restore();
-                            }
-                        }
-                    });
-
+                    if( abs( vx - sx ) <= dis &&
+                        abs( vy - sy ) <= dis && (
+                        abs( vx - posX ) <= posR &&
+                        abs( vy - posY ) <= posR ||
+                        abs( sx - posX ) <= posR &&
+                        abs( sy - posY ) <= posR ) ){
+                        cxt.save();
+                        cxt.beginPath();
+                        cxt.moveTo( vx, vy );
+                        cxt.lineTo( sx, sy );
+                        cxt.strokeStyle = color;
+                        cxt.stroke();
+                        cxt.restore();
+                    }
                 }
             });
         },

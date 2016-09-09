@@ -57,7 +57,8 @@
                 set = self.set,
                 cxt = self.cxt,
                 cw = self.cw,
-                ch = self.ch;
+                ch = self.ch,
+                paused = self.paused;
 
             cxt.clearRect( 0, 0, cw, ch );
             cxt.globalAlpha = set.opacity;
@@ -74,26 +75,28 @@
                 cxt.fill();
                 cxt.restore();
 
-                v.x += v.vx;
-                v.y += v.vy;
+                if( !paused ){
+                    v.x += v.vx;
+                    v.y += v.vy;
 
-                // 雪花反方向飘落
-                if( random() > .99 && random() > .5 ){
-                    v.vx *= -1;
-                }
+                    // 雪花反方向飘落
+                    if( random() > .99 && random() > .5 ){
+                        v.vx *= -1;
+                    }
 
-                // 雪花从侧边出去，删除
-                if( x < 0 || x - r > cw ){
-                    array.splice( i, 1, self.snowShape() );
+                    // 雪花从侧边出去，删除
+                    if( x < 0 || x - r > cw ){
+                        array.splice( i, 1, self.snowShape() );
 
-                // 雪花从底部出去，删除
-                }else if( y - r >= ch ){
-                    array.splice( i, 1 );
+                        // 雪花从底部出去，删除
+                    }else if( y - r >= ch ){
+                        array.splice( i, 1 );
+                    }
                 }
             });
 
             // 添加雪花
-            if( random() > .9 ){
+            if( !paused && random() > .9 ){
                 self.createDots();
             }
 
