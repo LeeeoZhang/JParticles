@@ -93,17 +93,17 @@
     <script>
         bind('#demo', function(){
             return new Particleground.wave( '#demo', {
-                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 num: 3,
-                //三条线段依次的宽度
-                lineWidth: [.5, .7,.9],
-                //三条线段依次的右偏移值
-                offsetLeft: [2, 1, 0],
-                //三条线段都向上偏移容器高度的0.75倍
+                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
+                // 三条线依次的边框宽度
+                lineWidth: [ .5, .7, .9 ],
+                // 三条线依次的偏移值
+                offsetLeft: [ 2, 1, 0 ],
+                // 三条线都向下偏移容器高度的0.75倍
                 offsetTop: .75,
-                //三条线段依次的波峰高度
-                crest: [8, 12, 16],
-                //三条线段都只有两个波峰（波纹）
+                // 三条线依次的波峰高度
+                crest: [ 8, 12, 16 ],
+                // 三条线都只有两个波峰(波纹)
                 rippleNum: 2,
                 speed: .07
             });
