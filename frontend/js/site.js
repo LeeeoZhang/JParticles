@@ -134,9 +134,8 @@ $(function(){
                         $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                         prettyPrint();
                         if( v === 'default-config' ){
-                            var hash = location.hash;
-                            location.hash = '#';
-                            location.hash = hash;
+                            var offset = $(location.hash).offset();
+                            offset && $(window).scrollTop( offset.top );
                         }
                     });
                 });
@@ -158,7 +157,6 @@ $(function(){
             var $main = $('#page-example > .com-body > .main');
             var handler = function(){
                 if( !isMobile ){
-                    console.log('in');
                     var scrollTop = $win.scrollTop();
                     var clientHeight = $win.height();
                     var pageHeight = $doc.outerHeight();

@@ -10,6 +10,7 @@ const cssmin = require('gulp-clean-css');
 const htmlmin = require('gulp-htmlmin');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
+const zip = require('gulp-zip');
 
 const fs = require('fs');
 const pkg = require('./package.json');
@@ -94,6 +95,16 @@ gulp.task('build-prod', function () {
     setTimeout(function(){
         addCopyright()
     }, 1000 );
+});
+
+// move production to web site
+gulp.task('move', function () {
+    gulp.src( prodDir + 'particleground.all.js' )
+        .pipe( gulp.dest( 'public/js' ) );
+
+    gulp.src( prodDir + '*' )
+        .pipe( zip('particleground.js.zip') )
+        .pipe( gulp.dest( 'public' ) );
 });
 
 function addCopyright(){

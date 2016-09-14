@@ -91,6 +91,10 @@
     <script src="../pjs/particleground.all.js"></script>
     <script src="../js/event.js"></script>
     <script>
+        /*bind('#demo', function(){
+            return new Particleground.wave( '#demo' );
+        });*/
+
         bind('#demo', function(){
             return new Particleground.wave( '#demo', {
                 num: 3,
@@ -99,26 +103,24 @@
                 lineWidth: [ .5, .7, .9 ],
                 // 三条线依次的偏移值
                 offsetLeft: [ 2, 1, 0 ],
-                // 三条线都向下偏移容器高度的0.75倍
+                // 三条线都向下偏移容器高度的0.75倍, [ 0.75, 0.5, 0.3 ]
                 offsetTop: .75,
                 // 三条线依次的波峰高度
-                crest: [ 8, 12, 16 ],
+                crestHeight: [ 8, 12, 16 ],
                 // 三条线都只有两个波峰(波纹)
                 rippleNum: 2,
                 speed: .07
             });
         });
 
-        /*bind('#demo2', function(){
+        bind('#demo2', function(){
             return new Particleground.wave( '#demo2', {
                 num: 1,
                 fillColor: '#27C9E5',
-                crest: 8,
+                crestHeight: 8,
                 offsetTop: .75,
                 rippleNum: 3,
-                //绘制成区域
-                area: true,
-                //线条的边框
+                fill: true,
                 stroke: false,
                 speed: .07
             });
@@ -141,17 +143,15 @@
             effect = new Particleground.wave( '#demo3', {
                 num: 1,
                 fillColor: '#27C9E5',
-                crest: 8,
+                crestHeight: 8,
                 offsetTop: process,
                 rippleNum: 3,
-                //绘制成区域
-                area: true,
-                //线条的边框
+                fill: true,
                 stroke: false,
                 speed: .3
             });
 
-            /!*effect = new Particleground.wave( '#demo3', {
+            /*effect = new Particleground.wave( '#demo3', {
                 lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 num: 3,
                 //三条线段依次的宽度
@@ -161,11 +161,11 @@
                 //三条线段都向上偏移容器高度的0.75倍
                 offsetTop: process,
                 //三条线段依次的波峰高度
-                crest: [8, 12, 16],
+                crestHeight: [8, 12, 16],
                 //三条线段都只有两个波峰（波纹）
                 rippleNum: 2,
                 speed: .3
-            });*!/
+            });*/
 
             timer = setInterval(function(){
 
@@ -181,11 +181,11 @@
                 // 一条
                 effect.setOffsetTop( process );
                 // 多条
-                /!*effect.setOffsetTop( [
+                /*effect.setOffsetTop( [
                     process,
                     process - 20,
                     process - 40
-                ] );*!/
+                ] );*/
                 setProcess();
 
             }, 30 );
@@ -205,12 +205,12 @@
             setProcess();
 
             effect = new Particleground.wave( '#demo4', {
-                num: 1,
-                fillColor: '#27C9E5',
-                crest: 8,
+                num: 3,
+                fillColor: 'rgba(0,0,0,.25)',
+                crestHeight: [ 8, 12, 16 ],
                 offsetTop: process,
-                rippleNum: 3,
-                area: true,
+                rippleNum: [2, 3, 4],
+                fill: true,
                 stroke: false,
                 speed: .3
             });
@@ -232,7 +232,7 @@
             }, 30 );
 
             return effect;
-        });*/
+        });
     </script>
 </body>
 </html>

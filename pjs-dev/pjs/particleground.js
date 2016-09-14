@@ -282,10 +282,14 @@
                 var scaleY = context.ch / oldCH;
 
                 // 重新赋值
-                context.dots.forEach(function( v ){
-                    v.x *= scaleX;
-                    v.y *= scaleY;
-                });
+                if( isArray( context.dots ) ){
+                    context.dots.forEach(function( v ){
+                        if( isPlainObject( v ) ){
+                            v.x *= scaleX;
+                            v.y *= scaleY;
+                        }
+                    });
+                }
 
                 isFunction( callback ) && callback.call( context, scaleX, scaleY );
 

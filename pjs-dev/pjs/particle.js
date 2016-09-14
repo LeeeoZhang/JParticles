@@ -142,12 +142,12 @@
 
             // 当连接范围小于0时，不连接线，可以做出球或气泡运动效果
             if( set.range > 0 ){
-                this.connectDot();
+                this.connectDots();
             }
 
             this.requestAnimationFrame();
         },
-        connectDot:function(){
+        connectDots:function(){
             var cxt = this.cxt,
                 set = this.set,
                 dis = set.dis,
@@ -222,6 +222,7 @@
         var context = this;
         var set = context.set;
         if( set.num > 0 &&　set.range > 0 ){
+
             // 使用传递过来的关键字判断绑定事件还是移除事件
             eventType = eventType === 'pause' ? 'off' : 'on';
             event[ eventType ]( set.eventElem, 'mousemove', context.moveHandler );

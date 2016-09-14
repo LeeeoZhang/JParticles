@@ -1,7 +1,7 @@
 {% extends '../common/examples-body.html' %}
 
 {% block main %}
-    <div class="main-content">
+    <div class="main-content wave">
         <div class="instance" data-ctrl="none">
             <div class="demo"></div>
         </div>
@@ -19,33 +19,32 @@
                 <pre>
 <code class="prettyprint normal-text">
 new Particleground.wave( '#demo', {
-    color: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
     num: 3,
+    lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
     //三条线段依次的宽度
-    lineWidth: [.5, .7,.9],
+    lineWidth: [.5, .7, .9],
     //三条线段依次的右偏移值
     offsetLeft: [2, 1, 0],
     //三条线段都向上偏移容器高度的0.75倍
     offsetTop: .75,
     //三条线段依次的波峰高度
-    crest: [8, 12, 16],
+    crestHeight: [10, 14, 18],
     //三条线段都只有两个波峰（波纹）
     rippleNum: 2,
-    speed: .07
+    speed: .1
 });
 </code>
                 </pre>
             </div>
         </div>
 
-        <div class="module">
+        <div class="instance-box">
             <h5 class="caption">
-                <a id="水切面" href="#水切面">水切面效果：</a>
+                <a id="水切面" href="#水切面">水切面特效：</a>
             </h5>
-        </div>
-
-        <div class="instance">
-            <div class="demo"></div>
+            <div class="instance">
+                <div class="demo"></div>
+            </div>
         </div>
 
         <div class="module">
@@ -67,6 +66,42 @@ new Particleground.wave( '#demo-2', {
     stroke: false,
     speed: .07
 });
+</code>
+                </pre>
+            </div>
+        </div>
+
+        <div class="instance-box instance-loading">
+            <h5 class="caption">
+                <a id="加载动画" href="#加载动画">水晶球loading动画：</a>
+            </h5>
+            <div class="instance">
+                <div class="demo"></div>
+                <div class="instance-loading-process text-center-vertical">
+                    0%
+                </div>
+            </div>
+        </div>
+
+        <div class="module">
+            <h5 class="caption">
+                <a id="源代码3" href="#源代码3">查看源代码：</a>
+            </h5>
+            <div class="content">
+                <pre>
+<code class="prettyprint normal-text">
+new Particleground.wave( '#demo-3', {
+    num: 1,
+    fillColor: '#27C9E5',
+    crestHeight: 4,
+    offsetTop: .5,
+    rippleNum: 3,
+    fill: true,
+    stroke: false,
+    speed: .1
+});
+
+// 注：样式方面需要将canvas设置成圆形，如：border-radius: 50%;
 </code>
                 </pre>
             </div>
@@ -182,12 +217,12 @@ new Particleground.wave( '#demo-2', {
     $(function(){
         bind( 0, function( demoElem ){
             return new Particleground.wave( demoElem, {
-                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 num: 3,
+                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 lineWidth: [.5, .7,.9],
                 offsetLeft: [2, 1, 0],
                 offsetTop: .75,
-                crest: [10, 14, 18],
+                crestHeight: [10, 14, 18],
                 rippleNum: window.isMobile ? 1 : 2,
                 speed: .1
             });
@@ -197,13 +232,28 @@ new Particleground.wave( '#demo-2', {
             return new Particleground.wave( demoElem, {
                 num: 1,
                 fillColor: '#27C9E5',
-                crest: 8,
+                crestHeight: 8,
                 offsetTop: .75,
                 rippleNum: 3,
-                area: true,
+                fill: true,
                 stroke: false,
                 speed: .07
             });
+        });
+
+        bind( 2, function( demoElem ){
+            var effect = new Particleground.wave( demoElem, {
+                num: 1,
+                fillColor: '#27C9E5',
+                crestHeight: 4,
+                offsetTop: .5,
+                rippleNum: 3,
+                fill: true,
+                stroke: false,
+                speed: .1
+            });
+
+            return effect;
         });
     });
 </script>
