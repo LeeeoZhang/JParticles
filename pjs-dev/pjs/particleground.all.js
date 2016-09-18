@@ -373,6 +373,8 @@
         }
     };
 
+    win.Particleground = Particleground;
+
     // AMD. Register as an anonymous module.
     // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
     // 导致后面的插件找不到Particleground对象，报错
@@ -382,11 +384,10 @@
         } );
     }
 
-    win.Particleground = Particleground;
 	return Particleground;
 }));
 // particle.js
-+function ( win, Particleground ) {
++function ( Particleground ) {
     'use strict';
 
     var util = Particleground.util,
@@ -632,11 +633,11 @@
     // 添加实例
     Particleground.particle = fn.constructor = Particle;
 
-}( window, Particleground );
+}( Particleground );
 
 
 // snow.js
-+function ( win, Particleground ) {
++function ( Particleground ) {
     'use strict';
 
     var util = Particleground.util,
@@ -747,9 +748,19 @@
     // 添加实例
     Particleground.snow = fn.constructor = Snow;
 
-}( window, Particleground );
+}( Particleground );
+/**
+ * Created by weid on 2016/9/18.
+ */
+
+
+//var pjs = require('./particleground.all');
+//console.log( pjs )
+
+var jq = require('../../public/js/jquery');
+console.log( jq() )
 // wave.js
-+function ( win, Particleground ) {
++function ( Particleground ) {
     'use strict';
 
     var util = Particleground.util,
@@ -988,4 +999,4 @@
     // 添加实例
     Particleground.wave = fn.constructor = Wave;
 
-}( window, Particleground );
+}( Particleground );

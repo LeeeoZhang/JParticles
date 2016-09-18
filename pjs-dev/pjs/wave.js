@@ -1,5 +1,5 @@
 // wave.js
-+function ( win, Particleground ) {
++function ( Particleground ) {
     'use strict';
 
     var util = Particleground.util,
@@ -238,4 +238,4 @@
     // 添加实例
     Particleground.wave = fn.constructor = Wave;
 
-}( window, Particleground );
+}( Particleground );
