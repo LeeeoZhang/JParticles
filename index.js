@@ -1,4 +1,6 @@
 
+var pkg = require('./package.json');
 
-var pjs = require('./pjs-production/1.0.0/particleground.all');
-console.log( pjs )
+var VERSION = pkg.version;
+
+module.exports = require('./pjs-production/'+ VERSION +'/particleground.all');

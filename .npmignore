@@ -1,4 +1,3 @@
-.idea/
-node_modules/
 *
 !/pjs-production/*
+!index.js
