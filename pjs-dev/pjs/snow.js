@@ -1,5 +1,5 @@
 // snow.js
-+function ( win, Particleground ) {
++function ( Particleground ) {
     'use strict';
 
     var util = Particleground.util,
@@ -110,4 +110,4 @@
     // 添加实例
     Particleground.snow = fn.constructor = Snow;
 
-}( window, Particleground );
+}( Particleground );

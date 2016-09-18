@@ -1,5 +1,5 @@
 // particle.js
-+function ( win, Particleground ) {
++function ( Particleground ) {
     'use strict';
 
     var util = Particleground.util,
@@ -245,5 +245,5 @@
     // 添加实例
     Particleground.particle = fn.constructor = Particle;
 
-}( window, Particleground );
+}( Particleground );
 

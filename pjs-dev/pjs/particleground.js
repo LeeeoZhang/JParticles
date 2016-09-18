@@ -373,6 +373,8 @@
         }
     };
 
+    win.Particleground = Particleground;
+
     // AMD. Register as an anonymous module.
     // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
     // 导致后面的插件找不到Particleground对象，报错
@@ -382,6 +384,5 @@
         } );
     }
 
-    win.Particleground = Particleground;
 	return Particleground;
 }));
