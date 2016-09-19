@@ -24,8 +24,22 @@ const COPYRIGHT =
  */
 `;
 
+let online = false;
+
 gulp.task('sass',function(){
-   gulp.src('frontend/sass/build.scss')
+    if( online ){
+        return gulp.src('frontend/sass/build.scss')
+            .pipe(sass())
+            .pipe(
+                autoprefixer({
+                    browsers: [ 'IE >= 9', 'Firefox > 10', 'chrome > 10' ]
+                })
+            )
+            .pipe(cssmin())
+            .pipe(rename('site.css'))
+            .pipe(gulp.dest('public/css/'))
+    }
+    gulp.src('frontend/sass/build.scss')
        .pipe(sourcemaps.init())
        .pipe(
            sass({
@@ -44,17 +58,16 @@ gulp.task('sass',function(){
 });
 
 gulp.task('js',function(){
-   gulp.src('frontend/js/site.js')
+    if( online ){
+        return gulp.src('frontend/js/site.js')
+            .pipe(uglify())
+            .pipe(gulp.dest('public/js/'))
+    }
+    gulp.src('frontend/js/site.js')
        .pipe(sourcemaps.init())
        .pipe(uglify())
        .pipe(sourcemaps.write('./map'))
        .pipe(gulp.dest('public/js/'))
-});
-
-gulp.task('eslint', function() {
-    gulp.src('frontend/js/*.js')
-        .pipe(eslint())
-        .pipe(eslint.format())
 });
 
 gulp.task('default',function(){
@@ -64,6 +77,12 @@ gulp.task('default',function(){
     gulp.watch(['frontend/js/*.js'],function(){
         gulp.run('js');
     });
+});
+
+gulp.task('online', function(){
+    online = true;
+    gulp.run('sass');
+    gulp.run('js');
 });
 
 // pack pjs to dev environment

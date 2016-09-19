@@ -581,6 +581,13 @@ $page-left-right: rem(120);
                     text-align: center;
                     position: absolute;
                 }
+                >.ctrl{
+                    >.btn{
+                        &:last-child{
+                            margin-top: rem(10);
+                        }
+                    }
+                }
             }
             canvas{
                 border-radius: 50%;

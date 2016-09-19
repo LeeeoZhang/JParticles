@@ -1,1 +1,0 @@
-var jq=require("../../public/js/jquery");console.log(jq());

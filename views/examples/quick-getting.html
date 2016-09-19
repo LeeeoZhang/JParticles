@@ -9,7 +9,7 @@
                 </a>
             </h5>
             <div class="content">
-                <blockquote>通过以下两种方式获取pjs：</blockquote>
+                <blockquote>通过以下三种方式获取pjs：</blockquote>
                 <p class="text-indent">
                     1、从
                     <a class="dotted-line" href="/download"
@@ -31,7 +31,10 @@
                     </a>
                     上的整个项目，在
                     <code>pjs-production</code>
-                    文件夹下选择你需要使用的版本的js文件。
+                    文件夹下选择你所需的js版本文件。
+                </p>
+                <p class="text-indent">
+                    3、通过<code>npm install Particleground.js</code>安装pjs。
                 </p>
             </div>
         </div>
@@ -200,14 +203,25 @@
 
                 <blockquote>
                     <div>
-                        <a id="暴露的全局接口" href="#暴露的全局接口">
-                            3、通过pjs插件暴露的全局接口
+                        <a id="配置接口" href="#配置接口">
+                            3、通过pjs插件暴露的配置接口
                             <code>Particleground.name.defaultConfig</code>
-                            可方便地修改特效的默认配置，示例如下：
+                            可方便地修改某个特效的默认配置，示例如下：
                         </a>
                     </div>
                 </blockquote>
                 <pre class="default-config normal-text"></pre>
+
+                <blockquote>
+                    <div>
+                        <a id="全局接口" href="#全局接口">
+                            4、通过pjs插件暴露的全局接口
+                            <code>Particleground.commonConfig</code>
+                            可方便地修改所有特效的公共默认配置，当前公共默认配置如下：
+                        </a>
+                    </div>
+                </blockquote>
+                <pre class="common-config normal-text"></pre>
 
                 <div>
                     <h6>小提示：</h6>
