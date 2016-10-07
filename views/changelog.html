@@ -12,33 +12,47 @@
                     <span class="version">{{val.version}}</span>
                     <time class="date">&nbsp;( {{val.date}} )</time>
                 </div>
-                <ul>
-                    {% for key, val in val.description %}
-                    <li>{{val}}</li>
-                    {% endfor %}
-                </ul>
-                {% if val.bugs %}
-                <div class="accordion">
-                    <header class="header">修复的Bug</header>
-                    <div class="content">
-                        <ul>
-                            {% for key, val in val.bugs %}
-                            <li>{{val}}</li>
-                            {% endfor %}
-                        </ul>
+
+                {% if val.description %}
+                    <div class="description">
+                        {% for key, val in val.description %}
+                            {{val}}<br>
+                        {% endfor %}
                     </div>
-                </div>
                 {% endif %}
+
+                {% if val.feature %}
+                    <div class="subtitle">[新特性]</div>
+                    <ul>
+                        {% for key, val in val.feature %}
+                        <li>{{val}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if val.optimizing %}
+                    <div class="subtitle">[功能优化]</div>
+                    <ul>
+                        {% for key, val in val.optimizing %}
+                        <li>{{val}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if val.bugs %}
+                    <div class="subtitle">[问题修复]</div>
+                    <ul>
+                        {% for key, val in val.bugs %}
+                        <li>{{val}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                
             </div>
             {% endfor %}
         </div>
     </div>
 
     {% include 'common/footer.html' %}
-    <script>
-        $('#page-changelog').on('click', '.accordion > .header', function(){
-            $(this).next().stop().slideToggle(600);
-        });
-    </script>
 </body>
 {% endblock %}

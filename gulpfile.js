@@ -24,6 +24,8 @@ const COPYRIGHT =
  */
 `;
 
+const dist = './public/dist';
+const src = './public/src';
 let online = false;
 
 gulp.task('sass',function(){
@@ -37,9 +39,9 @@ gulp.task('sass',function(){
             )
             .pipe(cssmin())
             .pipe(rename('site.css'))
-            .pipe(gulp.dest('public/css/'))
+            .pipe(gulp.dest(`${dist}/css/`))
     }
-    gulp.src('frontend/sass/build.scss')
+    gulp.src(`${src}/sass/build.scss`)
        .pipe(sourcemaps.init())
        .pipe(
            sass({
@@ -54,27 +56,24 @@ gulp.task('sass',function(){
        .pipe(cssmin())
        .pipe(rename('site.css'))
        .pipe(sourcemaps.write('./map'))
-       .pipe(gulp.dest('public/css/'))
+       .pipe(gulp.dest(`${dist}/css/`))
 });
 
 gulp.task('js',function(){
     if( online ){
-        return gulp.src('frontend/js/site.js')
+        return gulp.src(`${src}/js/site.js`)
             .pipe(uglify())
-            .pipe(gulp.dest('public/js/'))
+            .pipe(gulp.dest(`${dist}/js/`))
     }
-    gulp.src('frontend/js/site.js')
-       .pipe(sourcemaps.init())
-       .pipe(uglify())
-       .pipe(sourcemaps.write('./map'))
-       .pipe(gulp.dest('public/js/'))
+    gulp.src(`${src}/js/site.js`)
+       .pipe(gulp.dest(`${dist}/js/`))
 });
 
 gulp.task('default',function(){
-    gulp.watch(['frontend/sass/*.scss'],function(){
+    gulp.watch([`${src}/sass/*.scss`],function(){
         gulp.run('sass');
     });
-    gulp.watch(['frontend/js/*.js'],function(){
+    gulp.watch([`${src}/js/*.js`],function(){
         gulp.run('js');
     });
 });
@@ -109,21 +108,18 @@ let prodDir = `pjs-production/${ VERSION }/`;
 gulp.task('build-prod', function () {
     gulp.src( packDirPath + '*.js' )
         .pipe( uglify() )
-        .pipe( gulp.dest( prodDir ) );
-
-    setTimeout(function(){
-        addCopyright()
-    }, 1000 );
+        .pipe( gulp.dest( prodDir ) )
+        .on('end', addCopyright);
 });
 
 // move production to web site
 gulp.task('move', function () {
     gulp.src( prodDir + 'particleground.all.js' )
-        .pipe( gulp.dest( 'public/js' ) );
+        .pipe( gulp.dest( `${dist}/js/` ) );
 
     gulp.src( prodDir + '*' )
         .pipe( zip('particleground.js.zip') )
-        .pipe( gulp.dest( 'public' ) );
+        .pipe( gulp.dest( dist ) );
 });
 
 function addCopyright(){
