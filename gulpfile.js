@@ -30,7 +30,7 @@ let online = false;
 
 gulp.task('sass',function(){
     if( online ){
-        return gulp.src('frontend/sass/build.scss')
+        return gulp.src(`${src}/sass/build.scss`)
             .pipe(sass())
             .pipe(
                 autoprefixer({
