@@ -2,16 +2,15 @@ const gulp  = require('gulp');
 const sourcemaps = require('gulp-sourcemaps');
 const eslint = require('gulp-eslint');
 const rename = require('gulp-rename');
-
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const cssmin = require('gulp-clean-css');
-
 const htmlmin = require('gulp-htmlmin');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 const zip = require('gulp-zip');
 
+const cp = require('child_process');
 const fs = require('fs');
 const pkg = require('./package.json');
 
@@ -80,6 +79,11 @@ gulp.task('default',function(){
 
 gulp.task('online', function(){
     online = true;
+    ['css', 'js'].forEach(v => {
+        cp.exec(`rm -rf ${dist}/${v}/map`, (err, stdout, stderr) => {
+            !err && console.log(`${dist}/${v}/map【文件夹删除成功】`);
+        });
+    });
     gulp.run('sass');
     gulp.run('js');
 });
