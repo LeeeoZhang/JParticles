@@ -88,6 +88,16 @@ gulp.task('online', function(){
     gulp.run('js');
 });
 
+gulp.task('npm', function(){
+   fs.readFile('./NPMREADME.md', (err, data) => {
+       if( !err ){
+           fs.writeFile('./README.md', data, (err) => {
+               !err && console.log('README.md【改写成功】');
+           })
+       }
+   });
+});
+
 // pack pjs to dev environment
 let packDirPath = './pjs-dev/pjs/';
 gulp.task('pack-pjs', function () {
