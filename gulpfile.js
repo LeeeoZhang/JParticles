@@ -2,16 +2,15 @@ const gulp  = require('gulp');
 const sourcemaps = require('gulp-sourcemaps');
 const eslint = require('gulp-eslint');
 const rename = require('gulp-rename');
-
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const cssmin = require('gulp-clean-css');
-
 const htmlmin = require('gulp-htmlmin');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 const zip = require('gulp-zip');
 
+const cp = require('child_process');
 const fs = require('fs');
 const pkg = require('./package.json');
 
@@ -24,8 +23,24 @@ const COPYRIGHT =
  */
 `;
 
+const dist = './public/dist';
+const src = './public/src';
+let online = false;
+
 gulp.task('sass',function(){
-   gulp.src('frontend/sass/build.scss')
+    if( online ){
+        return gulp.src(`${src}/sass/build.scss`)
+            .pipe(sass())
+            .pipe(
+                autoprefixer({
+                    browsers: [ 'IE >= 9', 'Firefox > 10', 'chrome > 10' ]
+                })
+            )
+            .pipe(cssmin())
+            .pipe(rename('site.css'))
+            .pipe(gulp.dest(`${dist}/css/`))
+    }
+    gulp.src(`${src}/sass/build.scss`)
        .pipe(sourcemaps.init())
        .pipe(
            sass({
@@ -40,30 +55,37 @@ gulp.task('sass',function(){
        .pipe(cssmin())
        .pipe(rename('site.css'))
        .pipe(sourcemaps.write('./map'))
-       .pipe(gulp.dest('public/css/'))
+       .pipe(gulp.dest(`${dist}/css/`))
 });
 
 gulp.task('js',function(){
-   gulp.src('frontend/js/site.js')
-       .pipe(sourcemaps.init())
-       .pipe(uglify())
-       .pipe(sourcemaps.write('./map'))
-       .pipe(gulp.dest('public/js/'))
-});
-
-gulp.task('eslint', function() {
-    gulp.src('frontend/js/*.js')
-        .pipe(eslint())
-        .pipe(eslint.format())
+    if( online ){
+        return gulp.src(`${src}/js/site.js`)
+            .pipe(uglify())
+            .pipe(gulp.dest(`${dist}/js/`))
+    }
+    gulp.src(`${src}/js/site.js`)
+       .pipe(gulp.dest(`${dist}/js/`))
 });
 
 gulp.task('default',function(){
-    gulp.watch(['frontend/sass/*.scss'],function(){
+    gulp.watch([`${src}/sass/*.scss`],function(){
         gulp.run('sass');
     });
-    gulp.watch(['frontend/js/*.js'],function(){
+    gulp.watch([`${src}/js/*.js`],function(){
         gulp.run('js');
     });
+});
+
+gulp.task('online', function(){
+    online = true;
+    ['css', 'js'].forEach(v => {
+        cp.exec(`rm -rf ${dist}/${v}/map`, (err, stdout, stderr) => {
+            !err && console.log(`${dist}/${v}/map【文件夹删除成功】`);
+        });
+    });
+    gulp.run('sass');
+    gulp.run('js');
 });
 
 // pack pjs to dev environment
@@ -90,21 +112,18 @@ let prodDir = `pjs-production/${ VERSION }/`;
 gulp.task('build-prod', function () {
     gulp.src( packDirPath + '*.js' )
         .pipe( uglify() )
-        .pipe( gulp.dest( prodDir ) );
-
-    setTimeout(function(){
-        addCopyright()
-    }, 1000 );
+        .pipe( gulp.dest( prodDir ) )
+        .on('end', addCopyright);
 });
 
 // move production to web site
 gulp.task('move', function () {
     gulp.src( prodDir + 'particleground.all.js' )
-        .pipe( gulp.dest( 'public/js' ) );
+        .pipe( gulp.dest( `${dist}/js/` ) );
 
     gulp.src( prodDir + '*' )
         .pipe( zip('particleground.js.zip') )
-        .pipe( gulp.dest( 'public' ) );
+        .pipe( gulp.dest( dist ) );
 });
 
 function addCopyright(){

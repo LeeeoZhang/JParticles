@@ -191,19 +191,11 @@
      * @param options {object} 用户配置选项
      * @returns {boolean} 供插件判断是否创建成功，成功继续执行相应代码，不成功则静默失败
      */
-    var commonConfig = {
-        // 画布全局透明度
-        opacity: 1,
-        // 粒子颜色，空数组表示随机取色，或赋值特定颜色的数组，如：['red', 'blue', 'green']
-        color: [],
-        // 默认true: 自适应窗口尺寸变化
-        resize: true
-    };
 	function createCanvas( context, constructor, selector, options ){
         if( canvasSupport &&
             (context.container = isElem( selector ) ? selector : doc.querySelector( selector )) ){
 
-            context.set = extend( {}, commonConfig, constructor.defaultConfig, options );
+            context.set = extend( true, {}, Particleground.commonConfig, constructor.defaultConfig, options );
             context.c = doc.createElement( 'canvas' );
             context.cw = context.c.width = getCss( context.container, 'width' );
             context.ch = context.c.height = getCss( context.container, 'height' );
@@ -233,17 +225,14 @@
      * @returns {function}
      */
     function setColor( color ){
-        if( typeof color === 'string' ){
-            return function(){
+        var colorLength = isArray( color ) ? color.length : false;
+        var recolor = function(){
+            return color[ floor( random() * colorLength ) ];
+        };
+        return typeof color !== 'string' ? colorLength ? recolor : randomColor :
+            function(){
                 return color;
             };
-        }else{
-            var colorLength = isArray( color ) ? color.length : false;
-            var recolor = function(){
-                return color[ floor( random() * colorLength ) ];
-            };
-            return colorLength ? recolor : randomColor;
-        }
     }
 
     // 暂停粒子运动
@@ -349,6 +338,14 @@
     var Particleground = {
         version: '1.0.0',
         canvasSupport: canvasSupport,
+        commonConfig: {
+            // 画布全局透明度
+            opacity: 1,
+            // 粒子颜色，空数组表示随机取色，或赋值特定颜色的数组，如：['red', 'blue', 'green']
+            color: [],
+            // 默认true: 自适应窗口尺寸变化
+            resize: true
+        },
         util: util,
         inherit: {
             requestAnimationFrame: function(){
@@ -749,16 +746,6 @@
     Particleground.snow = fn.constructor = Snow;
 
 }( Particleground );
-/**
- * Created by weid on 2016/9/18.
- */
-
-
-//var pjs = require('./particleground.all');
-//console.log( pjs )
-
-var jq = require('../../public/js/jquery');
-console.log( jq() )
 // wave.js
 +function ( Particleground ) {
     'use strict';

@@ -25,15 +25,15 @@ $(function(){
     // common function
     function loadjs( url, callback, error ){
         var script = document.createElement('script');
-        script.onload = callback;
-        script.onerror = error;
+        script.onload = callback || function(){};
+        script.onerror = error || function(){};
         script.src = url;
         document.getElementsByTagName('head')[0].appendChild( script );
     }
     function loadcss( url, callback, error ){
         var link = document.createElement('link');
-        link.onload = callback;
-        link.onerror = error;
+        link.onload = callback || function(){};
+        link.onerror = error || function(){};
         link.href = url;
         link.rel = 'stylesheet';
         document.getElementsByTagName('head')[0].appendChild( link );
@@ -122,6 +122,15 @@ $(function(){
     }
     setFooter();
 
+    // 数据统计
+    (function(){
+        if( isProdEnv ){
+            setTimeout(function(){
+                loadjs('https://s11.cnzz.com/z_stat.php?id=1260419466&web_id=1260419466');
+            }, 1000 );
+        }
+    })();
+
     if( $('#page-example').length ){
 
         // load and prettify code templates
@@ -129,11 +138,11 @@ $(function(){
             if( $('.prettyprint').length ){
                 prettyPrint();
             }else if( $('.quick-getting').length ){
-                'import use use-method default-config'.split(' ').forEach(function( v ){
+                'import use use-method default-config common-config'.split(' ').forEach(function( v ){
                     $.get('/code-tpl/'+ v +'.html', function( msg ){
                         $( '.' + v ).text( msg ).addClass( 'prettyprint' );
                         prettyPrint();
-                        if( v === 'default-config' ){
+                        if( v === 'common-config' ){
                             var offset = $(location.hash).offset();
                             offset && $(window).scrollTop( offset.top );
                         }

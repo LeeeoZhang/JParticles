@@ -1,6 +1,6 @@
 {
   "name": "Particleground.js",
-  "description": "A lightweight canvas plugin that to create some cool effects in your web page.",
+  "description": "A concise, efficient, and lightweight canvas plugin for building some cool particle effects.",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

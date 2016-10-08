@@ -39,7 +39,7 @@ new Particleground.particle( '#demo', {
                 <pre>
 <code class="prettyprint normal-text">
 new Particleground.particle( '#demo', {
-    //range等于0，表示不连线
+    // range等于0，表示不连线
     range: 0,
     max: 20,
     num: 18,
@@ -130,65 +130,20 @@ new Particleground.particle( '#demo', {
 
         <div class="module module-api">
             <h5 class="caption">
-                <a id="API公共参数" href="#API公共参数">
-                    API公共参数
-                </a>
-                <a class="pr why-this-tip"
-                    href="/examples/quick-getting#默认配置参数">
-                    <small>（为什么会出现这个？这个是什么？）</small>
-                    <div class="pa">
-                        如无特别说明，像opacity，color，resize这三个API在每个pjs插件配置上都存在，
-                        为了节省重复劳动，已将参数说明信息放置在
-                        【5分钟上手Particleground.js -> 配置 -> 2】下，
-                        但是担心第一次点击实例及API导航进来不知是咋回事，
-                        故再多出现一次，往后的实例将不再出现。
-                    </div>
+                <a id="小提示" href="#小提示">
+                    <small>小提示：</small>
                 </a>
             </h5>
-            <div class="content">
-                <table class="table table-bordered-inner table-striped">
-                    <thead>
-                    <tr>
-                        <th width="100">名称</th>
-                        <th width="100">默认值</th>
-                        <th width="150">类型</th>
-                        <th width="450">描述</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>opacity</td>
-                        <td>1</td>
-                        <td>number</td>
-                        <td>画布全局透明度，取值范围：[0-1]</td>
-                    </tr>
-                    <tr>
-                        <td>color</td>
-                        <td>[]</td>
-                        <td>string 或 array</td>
-                        <td class="module module-api">
-                            <div>粒子颜色</div>
-                            <ul>
-                                <li>
-                                    空数组表示随机取色
-                                </li>
-                                <li>
-                                    特定颜色的数组，如：['red', 'blue', 'green']，则表示粒子颜色为这三种色值的随机一种
-                                </li>
-                                <li>
-                                    当为string类型时，如：'red'，则表示粒子都填充为红色
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>resize</td>
-                        <td>true</td>
-                        <td>boolean</td>
-                        <td>自适应窗口尺寸变化</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="text-indent">
+                好像少了3个配置API，和开启、暂停2个方法？
+                <a class="dotted-line"
+                   href="/examples/quick-getting#默认配置参数">
+                    是的，省略的3个API说明请点击这里，
+                </a>
+                <a class="dotted-line"
+                   href="/examples/quick-getting#进阶">
+                    省略的2个方法说明请点击这里。
+                </a>
             </div>
         </div>
     </div>
