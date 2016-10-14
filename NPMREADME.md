@@ -8,7 +8,7 @@
 npm install Particleground.js
 
 // using
-require('Particleground.js');
+const Particleground = require('Particleground.js');
 new Particleground.particle('#demo');
 ```
 	
@@ -56,7 +56,7 @@ new Particleground.particle('#demo');
 
 
 ## 文档 · Document
-[打开漂亮的官网查阅详细文档：http://particleground.duapp.com/examples/preface](http://particleground.duapp.com/examples/preface)
+[打开官网查阅详细文档：http://particleground.duapp.com/examples/preface](http://particleground.duapp.com/examples/preface)
 
 
 

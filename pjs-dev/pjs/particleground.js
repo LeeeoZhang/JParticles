@@ -47,6 +47,8 @@
     var floor = Math.floor;
     var isArray = Array.isArray;
     var canvasSupport = !!doc.createElement('canvas').getContext;
+    var defaultCanvasWidth = 485;
+    var defaultCanvasHeight = 300;
     var regTrimAll = /\s/g;
 
 	function pInt( str ){
@@ -183,6 +185,10 @@
         elem.removeEventListener( evtName, handler );
     }
 
+    function setCanvasWH( context ){
+        context.cw = context.c.width = getCss( context.container, 'width' ) || defaultCanvasWidth;
+        context.ch = context.c.height = getCss( context.container, 'height' ) || defaultCanvasHeight;
+    }
     /**
      * 插件公共属性继承
      * @param context {this} 实例对象的上下文环境
@@ -197,10 +203,10 @@
 
             context.set = extend( true, {}, Particleground.commonConfig, constructor.defaultConfig, options );
             context.c = doc.createElement( 'canvas' );
-            context.cw = context.c.width = getCss( context.container, 'width' );
-            context.ch = context.c.height = getCss( context.container, 'height' );
             context.cxt = context.c.getContext( '2d' );
             context.paused = false;
+
+            setCanvasWH( context );
 
             context.container.innerHTML = '';
             context.container.appendChild( context.c );
@@ -262,9 +268,8 @@
                 var oldCW = context.cw;
                 var oldCH = context.ch;
 
-                // 重新回去容器宽高
-                context.cw = context.c.width = getCss( context.container, 'width' );
-                context.ch = context.c.height = getCss( context.container, 'height' );
+                // 重新设置canvas宽高
+                setCanvasWH( context );
 
                 // 计算比例
                 var scaleX = context.cw / oldCW;
