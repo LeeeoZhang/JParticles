@@ -56,6 +56,19 @@ code {
     }
 }
 
+.margin-top-10{
+    margin-top: rem(10) !important;
+}
+.margin-bottom-10{
+    margin-bottom: rem(10) !important;
+}
+.margin-top-15{
+    margin-top: rem(15) !important;
+}
+.margin-bottom-15{
+    margin-bottom: rem(15) !important;
+}
+
 // syntax highlight
 pre {
     margin: 0;
@@ -534,6 +547,13 @@ $page-left-right: rem(120);
                 width: rem(280);
                 height: rem(280) !important;
                 border-radius: 50%;
+                >.demo{
+                    border-radius: 50%;
+                    overflow: hidden;
+                    canvas{
+                        border-radius: 50%;
+                    }
+                }
                 >.instance-loading-process{
                     width: 100%;
                     font-size: rem(26);
@@ -548,9 +568,6 @@ $page-left-right: rem(120);
                         }
                     }
                 }
-            }
-            canvas{
-                border-radius: 50%;
             }
         }
     }
