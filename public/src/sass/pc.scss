@@ -69,6 +69,13 @@ code {
     margin-bottom: rem(15) !important;
 }
 
+// comments by duoshuo
+.comments{
+    margin-top: rem(100);
+    padding-top: rem(20);
+    border-top: rem(2) dashed $gray-border;
+}
+
 // syntax highlight
 pre {
     margin: 0;
