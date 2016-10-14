@@ -77,6 +77,7 @@ gulp.task('default',function(){
     });
 });
 
+// use for branch duapp
 gulp.task('online', function(){
     online = true;
     ['css', 'js'].forEach(v => {
@@ -86,6 +87,17 @@ gulp.task('online', function(){
     });
     gulp.run('sass');
     gulp.run('js');
+});
+
+// use for npm publish
+gulp.task('npm', function(){
+    fs.readFile('./NPMREADME.md', (err, data) => {
+        if( !err ){
+            fs.writeFile('./README.md', data, (err) => {
+                !err && console.log('README.md【改写成功】');
+            })
+        }
+    });
 });
 
 // pack pjs to dev environment
