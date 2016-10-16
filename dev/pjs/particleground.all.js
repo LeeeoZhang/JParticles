@@ -31,9 +31,7 @@
  */
 (function ( factory ){
     if ( typeof module === 'object' && module.exports ) {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports,
-        // like Node.
+        // CMD, like Node.
         module.exports = factory();
     } else {
         // Browser
@@ -377,13 +375,12 @@
 
     win.Particleground = Particleground;
 
-    // AMD. Register as an anonymous module.
     // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
     // 导致后面的插件找不到Particleground对象，报错
     if ( typeof define === 'function' && define.amd ) {
-        define( function() {
+        define(function() {
             return Particleground;
-        } );
+        });
     }
 
 	return Particleground;
