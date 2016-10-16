@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        #demo{
+            width: 900px;
+            height: 600px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .btn-box{
+            text-align: center;
+        }
+        .btn{
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="demo"></div>
+    <div class="btn-box">
+        <button class="btn btn-primary" type="button" data-open>
+            open
+        </button>
+        <button class="btn btn-danger" type="button" data-pause>
+            pause
+        </button>
+    </div>
+
+
+
+    <script src="../js/require.js"></script>
+    <script>
+        /*
+        require(['../pjs/particleground'], function( pjs ){
+            require(['../pjs/particle'], function(){
+
+                var demo = new pjs.particle( '#demo' );
+
+                document.addEventListener( 'click', function( event ){
+                    var target = event.target;
+                    if( target.getAttribute('data-open') !== null ){
+                        demo.open();
+                    }else if( target.getAttribute('data-pause') !== null ){
+                        demo.pause();
+                    }
+                });
+
+            });
+        });
+        */
+        require(['../pjs/particleground.all'], function( pjs ){
+
+            var demo = new pjs.particle( '#demo' );
+
+            document.addEventListener( 'click', function( event ){
+                var target = event.target;
+                if( target.getAttribute('data-open') !== null ){
+                    demo.open();
+                }else if( target.getAttribute('data-pause') !== null ){
+                    demo.pause();
+                }
+            });
+
+        });
+    </script>
+
+    <!--
+        如果使用标签加载pjs，但是页面也同时引用require这样的amd加载器，
+        需要将pjs放在require加载之前，如下，或者使用amd的方式加载pjs，如上
+    -->
+    <!--
+    <script src="../pjs/particleground.js"></script>
+    <script src="../pjs/particle.js"></script>
+    <script src="../js/require.js"></script>
+    <script>
+        var demo = new Particleground.particle( '#demo' );
+
+        document.addEventListener( 'click', function( event ){
+            var target = event.target;
+            if( target.getAttribute('data-open') !== null ){
+                demo.open();
+            }else if( target.getAttribute('data-pause') !== null ){
+                demo.pause();
+            }
+        });
+    </script>
+    -->
+</body>
+</html>

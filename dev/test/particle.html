@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        [id^="demo"]{
+            width: 70%;
+            height: 600px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .btn-box{
+            text-align: center;
+        }
+        .btn{
+            font-size: 20px;
+        }
+
+        .instance2{
+            margin-top: 1000px;
+        }
+
+        #demo3{
+            width: 360px;
+            height: 200px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+        }
+
+        #demo3 + .btn-box{
+            position: fixed;
+            top: 40px;
+            left: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instance">
+        <div id="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
+
+    <div class="instance instance2">
+        <div id="demo2"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
+
+    <div class="instance instance3">
+        <div id="demo3"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
+
+    <div class="instance instance4">
+        <div id="demo4"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
+
+    <script src="../pjs/particleground.all.js"></script>
+    <script src="../js/event.js"></script>
+    <script>
+        bind('#demo', function(){
+            return new Particleground.particle( '#demo', {
+                num: 100
+            });
+        });
+
+        // 超过首屏测试
+        bind('#demo2', function(){
+            return new Particleground.particle( '#demo2' );
+        });
+
+        // 固定定位测试
+        bind('#demo3', function(){
+            return new Particleground.particle( '#demo3' );
+        });
+
+        // 无线段测试
+        bind('#demo4', function(){
+            return new Particleground.particle( '#demo4', {
+                // range为0，不连接线
+                range: 0,
+                num: 10,
+                max: 20,
+                min: 10,
+                speed: 6
+            });
+        });
+    </script>
+</body>
+</html>

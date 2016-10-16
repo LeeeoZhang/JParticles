@@ -15,7 +15,7 @@ new Particleground.particle('#demo');
 
 
 
-## 华丽丽的介绍 · Description
+## 介绍 · Intro
 
 > Particleground.js（以下简称pjs）是一款基于canvas的不依赖于其他库的简洁，高效，轻量级的纯js粒子运动特效插件。提供一些比较绚丽，实用的特效应用于界面，希望能达到锦上添花的作用，给用户带来些许惊喜。
 
@@ -60,5 +60,5 @@ new Particleground.particle('#demo');
 
 
 
-## 许可协议 · License
+## 协议 · License
 [MIT](http://www.opensource.org/licenses/mit-license.php)

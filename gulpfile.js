@@ -101,7 +101,7 @@ gulp.task('npm', function(){
 });
 
 // pack pjs to dev environment
-let packDirPath = './pjs-dev/pjs/';
+let packDirPath = './dev/pjs/';
 gulp.task('pack-pjs', function () {
     gulp.watch([ packDirPath + '*.js' ], function(){
         fs.readdir(packDirPath, function(err, files){
@@ -120,7 +120,7 @@ gulp.task('pack-pjs', function () {
 });
 
 // build pjs production
-let prodDir = `pjs-production/${ VERSION }/`;
+let prodDir = `./production/`;
 gulp.task('build-prod', function () {
     gulp.src( packDirPath + '*.js' )
         .pipe( uglify() )
