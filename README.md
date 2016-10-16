@@ -18,10 +18,10 @@
 
 最低兼容ie9，请于<a href="http://caniuse.com/#search=canvas" target="_blank">这里</a>查看浏览器对canvas的支持列表，对于不支持canvas的浏览器则会静默地失败。
 
-# 托管与交流
+# 交流
 
-pjs整站并插件代码托管于[Github](https://github.com/Barrior/Particleground.js)，用于下载，交流。欢迎<a href="http://shang.qq.com/wpa/qunwpa?idkey=f548e3f94e0040a2ac5adfe4fec6915ef67c8c1b6ba5784ff6d5049c6135a759" target="_blank">QQ群</a>交流。同时如果您有什么好的建议、想法，或者遇到bug，欢迎提交问题到[issues](https://github.com/Barrior/Particleground.js/issues)，帮助pjs改进，留下您的芳名。
+欢迎<a href="http://shang.qq.com/wpa/qunwpa?idkey=f548e3f94e0040a2ac5adfe4fec6915ef67c8c1b6ba5784ff6d5049c6135a759" target="_blank">QQ群</a>交流。或官网留言，或提交问题，想法，建议到[issues](https://github.com/Barrior/Particleground.js/issues)，帮助pjs改进，留下您的芳名。
 
-# 许可协议
+# 协议
 
 <a href="http://www.opensource.org/licenses/mit-license.php" target="_blank">MIT</a>
