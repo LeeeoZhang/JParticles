@@ -1,5 +1,20 @@
 var changelog = [
     {
+        version: 'v1.0.1',
+        date: '2016.10.16',
+
+        // 新特性
+        feature: null,
+
+        // 功能优化
+        optimizing: null,
+
+        // 问题修正
+        bugs: [
+            '修复IE9以下浏览器报错'
+        ]
+    },
+    {
         version: '正式版 v1.0.0',
         date: '2016.10.14',
         description: [

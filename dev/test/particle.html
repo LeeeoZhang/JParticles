@@ -90,13 +90,9 @@
     <script src="../js/event.js"></script>
     <script>
         bind('#demo', function(){
-            return new Particleground.particle( '#demo'/*, {
-                num: 200,
-//                max: 20,
-//                min: 18,
-//                dis: 2000,
-//                range: 2000
-            }*/);
+            return new Particleground.particle( '#demo', {
+                num: 100
+            });
         });
 
         // 超过首屏测试

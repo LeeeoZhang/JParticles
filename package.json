@@ -1,9 +1,11 @@
 {
   "name": "Particleground.js",
   "description": "A concise, efficient, and lightweight canvas plugin for building some cool particle effects.",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "main": "production/particleground.all.js",
   "scripts": {
-    "start": "node ./bin/www.js"
+    "start": "node ./bin/www.js",
+    "dev": "npm i && gulp pack-pjs"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -45,6 +47,6 @@
   "keywords": [
     "pjs",
     "Particleground.js",
-    "particle effects"
+    "Particle effects"
   ]
 }
