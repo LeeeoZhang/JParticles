@@ -1,7 +1,7 @@
 {
   "name": "Particleground.js",
   "description": "A concise, efficient, and lightweight canvas plugin for building some cool particle effects.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "production/particleground.all.js",
   "scripts": {
     "start": "npm i && gulp pack-pjs"

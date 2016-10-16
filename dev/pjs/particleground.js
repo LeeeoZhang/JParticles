@@ -120,7 +120,8 @@
      * @returns {boolean}
      */
     function typeChecking( obj, type ){
-        return toString.call( obj ) === type;
+        // ie 下直接调用 toString 报错
+        return Object.prototype.toString.call( obj ) === type;
     }
 
     function isFunction( obj ){
@@ -299,11 +300,13 @@
      */
     function modifyPrototype( prototype, names, callback ){
         // 将方法名转成数组格式，如：'pause, open'
-        trimAll( names ).split(',').forEach(function( name ){
-            prototype[ name ] = function(){
-                util[ name ]( this, callback );
-            };
-        });
+        if( canvasSupport ){
+            trimAll( names ).split(',').forEach(function( name ){
+                prototype[ name ] = function(){
+                    util[ name ]( this, callback );
+                };
+            });
+        }
     }
 
     // requestAnimationFrame兼容处理
@@ -339,7 +342,7 @@
     };
 
     var Particleground = {
-        version: '1.0.0',
+        version: '1.0.1',
         canvasSupport: canvasSupport,
         commonConfig: {
             // 画布全局透明度
