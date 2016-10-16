@@ -118,7 +118,7 @@ timer = setInterval(function(){
         offsetTop = -10;
     }
 
-    // 通过 setOffsetTop() 方法不断地更改offsetTop属性，达到loading的效果
+    // 通过 setOffsetTop() 方法不断地更改offsetTop属性值，达到loading的效果
     effect.setOffsetTop( offsetTop );
 }, 30 );
 
@@ -210,6 +210,36 @@ timer = setInterval(function(){
                         <td>boolean</td>
                         <td>是否绘制边框，设置为false相关值无效</td>
                     </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="module module-api">
+            <h5 class="caption"><a id="方法" href="#方法">方法</a></h5>
+            <div class="content">
+                <ul class="margin-bottom-15">
+                    <li>
+                        <code class="normal-text">.setOffsetTop( offsetTopVal )</code>
+                    </li>
+                    <li>
+                        更改 offsetTop 属性值。
+                    </li>
+                </ul>
+                <table class="table table-bordered-inner table-striped">
+                    <thead>
+                    <tr>
+                        <th width="200">参数名</th>
+                        <th width="200">类型</th>
+                        <th width="600">描述</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>offsetTopVal</td>
+                            <td>number</td>
+                            <td>(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
