@@ -69,7 +69,7 @@
      * @returns {number}
      */
 	function limitRandom( max, min ){
-		return random() * ( max - min ) + min;
+		return max === min ? max : (random() * (max - min) + min);
 	}
 
     /**
@@ -225,6 +225,16 @@
     }
 
     /**
+     * 计算速度值
+     * @param max {number}
+     * @param min {number}
+     * @returns {number}
+     */
+    function calcSpeed(max, min){
+        return (limitRandom( max, min ) || max) * (random() > .5 ? 1 : -1);
+    }
+
+    /**
      * 设置color函数
      * @param color {string|array} 颜色数组
      * @returns {function}
@@ -334,6 +344,7 @@
         offset: offset,
         createCanvas: createCanvas,
         scaleValue: scaleValue,
+        calcSpeed: calcSpeed,
         setColor: setColor,
         pause: pause,
         open: open,
@@ -342,7 +353,7 @@
     };
 
     var Particleground = {
-        version: '1.0.1',
+        version: '1.1.0',
         canvasSupport: canvasSupport,
         commonConfig: {
             // 画布全局透明度

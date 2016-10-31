@@ -4,6 +4,7 @@
 
     var util = Particleground.util,
         random = Math.random,
+        abs = Math.abs,
         pi2 = Math.PI * 2;
 
     function Snow( selector, options ){
@@ -13,16 +14,14 @@
     Snow.defaultConfig = {
         // 雪花颜色
         color: '#fff',
-        // 雪花最大半径
-        max: 6.5,
-        // 雪花最小半径
-        min: .4,
-        // 运动速度
-        speed: .4
+        maxR: 6.5,
+        minR: .4,
+        maxSpeed: .6,
+        minSpeed: 0
     };
 
     var fn = Snow.prototype = {
-        version: '1.0.0',
+        version: '1.1.0',
         init: function(){
             this.dots = [];
             this.createDots();
@@ -30,18 +29,20 @@
             this.resize();
         },
         snowShape: function(){
-            var color = this.color,
-                cw = this.cw,
-                set = this.set,
-                speed = set.speed,
-                r = util.limitRandom( set.max, set.min );
+            var set = this.set,
+                calcSpeed = util.calcSpeed,
+                maxSpeed = set.maxSpeed,
+                minSpeed = set.minSpeed,
+                r = util.limitRandom( set.maxR, set.minR );
             return {
-                x: random() * cw,
+                x: random() * this.cw,
                 y: -r,
                 r: r,
-                vx: random() || .4,
-                vy: r * speed,
-                color: color()
+                vx: calcSpeed( maxSpeed, minSpeed ),
+
+                // r 越大，设置垂直速度越快，这样比较有近快远慢的层次效果
+                vy: abs( r * calcSpeed( maxSpeed, minSpeed ) ),
+                color: this.color()
             };
         },
         createDots: function(){
