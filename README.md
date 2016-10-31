@@ -1,4 +1,5 @@
 # Particleground.js
+[![npm version](https://badge.fury.io/js/Particleground.js.svg)](https://badge.fury.io/js/Particleground.js)
 
 官网：[http://particleground.duapp.com/](http://particleground.duapp.com/)
 
