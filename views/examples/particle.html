@@ -187,10 +187,14 @@ new Particleground.particle( '#demo', {
 <script>
     $(function(){
         bind( 0, function( demoElem ){
-            return new Particleground.particle( demoElem, {
+            var settings = {
                 distance: 90,
                 range: 100
-            });
+            };
+            if( window.isMobile ){
+                settings.distance = 30;
+            }
+            return new Particleground.particle( demoElem, settings );
         });
 
         bind( 1, function( demoElem ){

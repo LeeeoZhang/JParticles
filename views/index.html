@@ -8,7 +8,7 @@
     <section class="profile text-center-vertical">
         <div class="title">Particleground.js</div>
         <div class="describe">
-            简洁，高效，轻量级的纯js粒子运动特效插件。
+            一个简洁，高效，轻量级的canvas粒子运动特效插件库。
             <a class="readmore" href="/examples/preface">了解更多</a>
         </div>
         <div class="usage">
@@ -25,10 +25,12 @@
                 eventElem: document
             };
             if( window.isMobile ){
-                settings.range = 0;
-                settings.max = 20;
-                settings.num = 18;
-                settings.speed = 3;
+                settings.opacity = .6;
+                settings.distance = 60;
+                settings.range = 200;
+                settings.maxR = 4;
+                settings.num = .14;
+                settings.maxSpeed = .6;
             }
             new Particleground.particle( '.bg', settings );
         });
