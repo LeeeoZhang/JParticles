@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var changelog = require('../db/changelog');
+var changelog = require('../changelog');
 var menuData = require('./com-header-menu-data');
 
 router.get('/', function(req, res, next) {

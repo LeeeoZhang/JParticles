@@ -30,18 +30,20 @@
     }
 
     Particle.defaultConfig = {
-        // 粒子运动速度
-        speed: 1,
         // 粒子个数，默认为容器宽度的0.12倍
         // 传入(0, 1)显示容器宽度相应倍数的个数，传入[1, +∞)显示具体个数
         num: .12,
-        // 粒子最大半径
-        max: 2.4,
-        // 粒子最小半径
-        min: .6,
+        // 粒子最大半径(0, +∞)
+        maxR: 2.4,
+        // 粒子最小半径(0, +∞)
+        minR: .6,
+        // 粒子最大运动速度(0, +∞)
+        maxSpeed: 1,
+        // 粒子最小运动速度(0, +∞)
+        minSpeed: 0,
         // 两点连线的最大值
-        // 在range范围内的两点距离小于dis，则两点之间连线
-        dis: 130,
+        // 在range范围内的两点距离小于distance，则两点之间连线
+        distance: 130,
         // 线段的宽度
         lineWidth: .2,
         // 定位点的范围，范围越大连线越多，当range等于0时，不连线，相关值无效
@@ -51,7 +53,7 @@
     };
 
     var fn = Particle.prototype = {
-        version: '1.0.0',
+        version: '1.1.0',
         init: function(){
             if( this.set.num > 0 ){
                 if( this.set.range > 0 ){
@@ -77,20 +79,22 @@
                 set = this.set,
                 color = this.color,
                 limitRandom = util.limitRandom,
-                speed = set.speed,
-                max = set.max,
-                min = set.min,
+                calcSpeed = util.calcSpeed,
+                maxSpeed = set.maxSpeed,
+                minSpeed = set.minSpeed,
+                maxR = set.maxR,
+                minR = set.minR,
                 num = util.pInt( util.scaleValue( set.num, cw ) ),
                 dots = [], r;
 
             while ( num-- ){
-                r = limitRandom( max, min );
+                r = limitRandom( maxR, minR );
                 dots.push({
                     x: limitRandom( cw - r, r ),
                     y: limitRandom( ch - r, r ),
                     r: r,
-                    vx: limitRandom( speed, -speed * .5 ) || speed,
-                    vy: limitRandom( speed, -speed * .5 ) || speed,
+                    vx: calcSpeed( maxSpeed, minSpeed ),
+                    vy: calcSpeed( maxSpeed, minSpeed ),
                     color: color()
                 });
             }
@@ -150,7 +154,7 @@
         connectDots:function(){
             var cxt = this.cxt,
                 set = this.set,
-                dis = set.dis,
+                dis = set.distance,
                 posX = this.posX,
                 posY = this.posY,
                 posR = set.range,

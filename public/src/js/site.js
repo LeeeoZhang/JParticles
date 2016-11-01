@@ -117,6 +117,8 @@ $(function(){
                 zIndex: 8,
                 bottom: 0
             });
+        }else{
+            $('.com-footer').removeAttr('style');
         }
         $('.com-footer').show();
     }
@@ -165,15 +167,13 @@ $(function(){
             var $menu = $('#page-example > .com-body > .menu');
             var $main = $('#page-example > .com-body > .main');
             var handler = function(){
-                if( !isMobile ){
-                    var scrollTop = $win.scrollTop();
-                    var clientHeight = $win.height();
-                    var pageHeight = $doc.outerHeight();
-                    var footerHeight = $footer.outerHeight();
-                    var touchFooter = scrollTop + clientHeight > pageHeight - footerHeight;
-                    $menu[ scrollTop > $main.offset().top ? 'addClass' : 'removeClass' ]('fixed');
-                    $menu.css('bottom', touchFooter ? footerHeight : 0);
-                }
+                var scrollTop = $win.scrollTop();
+                //var clientHeight = $win.height();
+                //var pageHeight = $doc.outerHeight();
+                //var footerHeight = $footer.outerHeight();
+                //var touchFooter = scrollTop + clientHeight > pageHeight - footerHeight;
+                $menu[ scrollTop > $main.offset().top ? 'addClass' : 'removeClass' ]('fixed');
+                //$menu.css('bottom', touchFooter ? footerHeight : 0);
             };
             handler();
             $win.on('resize, scroll', handler);

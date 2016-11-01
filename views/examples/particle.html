@@ -18,7 +18,7 @@
 <code class="prettyprint normal-text">
 new Particleground.particle( '#demo', {
     // 两粒子圆心点连线的最大距离为90
-    dis: 90,
+    distance: 90,
     // 在定位点半径为100内的所有粒子，两粒子圆心点之间满足dis，则连线
     range: 100
 });
@@ -41,9 +41,9 @@ new Particleground.particle( '#demo', {
 new Particleground.particle( '#demo', {
     // range等于0，表示不连线
     range: 0,
-    max: 20,
     num: 18,
-    speed: 3
+    maxR: 20,
+    maxSpeed: 3
 });
 </code>
                 </pre>
@@ -74,24 +74,36 @@ new Particleground.particle( '#demo', {
                         </td>
                     </tr>
                     <tr>
-                        <td>max</td>
+                        <td>maxR<sup>1.1.0+</sup></td>
                         <td>2.4</td>
                         <td>number</td>
                         <td>粒子最大半径</td>
                     </tr>
                     <tr>
-                        <td>min</td>
+                        <td>minR<sup>1.1.0+</sup></td>
                         <td>.6</td>
                         <td>number</td>
                         <td>粒子最小半径</td>
                     </tr>
                     <tr>
-                        <td>dis</td>
+                        <td>maxSpeed<sup>1.1.0+</sup></td>
+                        <td>1</td>
+                        <td>number</td>
+                        <td>粒子最大运动速度(0, +∞)</td>
+                    </tr>
+                    <tr>
+                        <td>minSpeed<sup>1.1.0+</sup></td>
+                        <td>0</td>
+                        <td>number</td>
+                        <td>粒子最小运动速度(0, +∞)</td>
+                    </tr>
+                    <tr>
+                        <td>distance<sup>1.1.0+</sup></td>
                         <td>130</td>
                         <td>number</td>
                         <td>
                             粒子两圆心点连线的最大值，
-                            在range范围内的两圆心点距离小于dis，则两粒子之间连线
+                            在range范围内的两圆心点距离小于distance，则两粒子之间连线
                         </td>
                     </tr>
                     <tr>
@@ -110,17 +122,39 @@ new Particleground.particle( '#demo', {
                         </td>
                     </tr>
                     <tr>
-                        <td>speed</td>
-                        <td>1</td>
-                        <td>number</td>
-                        <td>粒子运动速度</td>
-                    </tr>
-                    <tr>
                         <td>eventElem</td>
                         <td>null</td>
                         <td>null 或 element</td>
                         <td>
                             改变定位点坐标的事件元素，null表示canvas画布，或传入原生元素对象，如document等
+                        </td>
+                    </tr>
+                    <tr class="api-del">
+                        <td><del>max</del><sup>1.1.0-</sup></td>
+                        <td><del>2.4</del></td>
+                        <td><del>number</del></td>
+                        <td><del>粒子最大半径</del></td>
+                    <tr class="api-del">
+                        <td><del>min</del><sup>1.1.0-</sup></td>
+                        <td><del>.6</del></td>
+                        <td><del>number</del></td>
+                        <td><del>粒子最小半径</del></td>
+                    </tr>
+                    <tr class="api-del">
+                        <td><del>speed</del><sup>1.1.0-</sup></td>
+                        <td><del>1</del></td>
+                        <td><del>number</del></td>
+                        <td><del>粒子运动速度</del></td>
+                    </tr>
+                    <tr class="api-del">
+                        <td><del>dis</del><sup>1.1.0-</sup></td>
+                        <td><del>130</del></td>
+                        <td><del>number</del></td>
+                        <td>
+                            <del>
+                                粒子两圆心点连线的最大值，
+                                在range范围内的两圆心点距离小于dis，则两粒子之间连线
+                            </del>
                         </td>
                     </tr>
                     </tbody>
@@ -154,7 +188,7 @@ new Particleground.particle( '#demo', {
     $(function(){
         bind( 0, function( demoElem ){
             return new Particleground.particle( demoElem, {
-                dis: 90,
+                distance: 90,
                 range: 100
             });
         });
@@ -162,9 +196,9 @@ new Particleground.particle( '#demo', {
         bind( 1, function( demoElem ){
             return new Particleground.particle( demoElem, {
                 range: 0,
-                max: 20,
                 num: 18,
-                speed: 3
+                maxR: 20,
+                maxSpeed: 3
             });
         });
     });

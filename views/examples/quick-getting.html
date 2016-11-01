@@ -35,7 +35,7 @@
                     文件夹下引入所需的js文件。
                 </p>
                 <p class="text-indent">
-                    3、通过<code>npm install Particleground.js</code>安装pjs。
+                    3、通过<code>npm install Particleground.js --save</code>安装pjs。
                 </p>
             </div>
         </div>
@@ -245,7 +245,7 @@
     $(function(){
         bind( 0, function( demoElem ){
             return new Particleground.particle( demoElem, {
-                dis: 60,
+                distance: 60,
                 num: 30
             });
         });

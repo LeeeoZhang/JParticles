@@ -5,16 +5,11 @@
     <title>Title</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        body{
-            /*background-color: #000;*/
-        }
         [id^="demo"]{
-            width: 80%;
+            width: 70%;
             height: 600px;
             margin: 50px auto;
             border: 1px solid #ccc;
-            background: url(http://particleground.duapp.com/img/merry-christmas.jpg) no-repeat;
-            background-size: 100% 100%;
         }
         .btn-box{
             text-align: center;
@@ -28,22 +23,29 @@
     <div class="instance">
         <div id="demo"></div>
         <div class="btn-box">
-            <button class="btn btn-primary" type="button" data-open>
+            <button id="open" class="btn btn-primary" type="button">
                 open
             </button>
-            <button class="btn btn-danger" type="button" data-pause>
+            <button id="pause" class="btn btn-danger" type="button">
                 pause
             </button>
         </div>
     </div>
 
-
     <script src="../pjs/particleground.all.js"></script>
-    <script src="../js/event.js"></script>
     <script>
-        bind('#demo', function(){
-            return new Particleground.snow( '#demo' );
+        var effect = new Particleground.particle( '#demo', {
+            num: 100,
+            resize: false
         });
+
+        document.getElementById('open').onclick = function(){
+            effect.open();
+        };
+
+        document.getElementById('pause').onclick = function(){
+            effect.pause();
+        };
     </script>
 </body>
 </html>

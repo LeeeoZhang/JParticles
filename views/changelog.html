@@ -9,11 +9,11 @@
             {% for key, val in changelog %}
             <div class="box">
                 <div class="title">
-                    <span class="version">{{val.version}}</span>
+                    <span class="version">v{{val.version}}</span>
                     <time class="date">&nbsp;( {{val.date}} )</time>
                 </div>
 
-                {% if val.description %}
+                {% if val.description && val.description.length %}
                     <div class="description">
                         {% for key, val in val.description %}
                             {{val}}<br>
@@ -21,7 +21,7 @@
                     </div>
                 {% endif %}
 
-                {% if val.feature %}
+                {% if val.feature && val.feature.length %}
                     <div class="subtitle">[新特性]</div>
                     <ul>
                         {% for key, val in val.feature %}
@@ -30,7 +30,7 @@
                     </ul>
                 {% endif %}
 
-                {% if val.optimizing %}
+                {% if val.optimizing && val.optimizing.length %}
                     <div class="subtitle">[功能优化]</div>
                     <ul>
                         {% for key, val in val.optimizing %}
@@ -39,7 +39,7 @@
                     </ul>
                 {% endif %}
 
-                {% if val.bugs %}
+                {% if val.bugs && val.bugs.length %}
                     <div class="subtitle">[问题修复]</div>
                     <ul>
                         {% for key, val in val.bugs %}
