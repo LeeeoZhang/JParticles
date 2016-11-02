@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         #demo{
             width: 900px;
@@ -32,11 +32,11 @@
 
 
 
-    <script src="../js/require.js"></script>
+    <script src="js/require.js"></script>
     <script>
         /*
-        require(['../pjs/particleground'], function( pjs ){
-            require(['../pjs/particle'], function(){
+        require(['../dev/particleground'], function( pjs ){
+            require(['../dev/particle'], function(){
 
                 var demo = new pjs.particle( '#demo' );
 
@@ -52,7 +52,7 @@
             });
         });
         */
-        require(['../pjs/particleground.all'], function( pjs ){
+        require(['../dev/particleground.all'], function( pjs ){
 
             var demo = new pjs.particle( '#demo' );
 
@@ -73,9 +73,9 @@
         需要将pjs放在require加载之前，如下，或者使用amd的方式加载pjs，如上
     -->
     <!--
-    <script src="../pjs/particleground.js"></script>
-    <script src="../pjs/particle.js"></script>
-    <script src="../js/require.js"></script>
+    <script src="../dev/particleground.js"></script>
+    <script src="../dev/particle.js"></script>
+    <script src="js/require.js"></script>
     <script>
         var demo = new Particleground.particle( '#demo' );
 

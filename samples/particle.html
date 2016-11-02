@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         [id^="demo"]{
             width: 70%;
@@ -86,8 +86,8 @@
         </div>
     </div>
 
-    <script src="../pjs/particleground.all.js"></script>
-    <script src="../js/event.js"></script>
+    <script src="../dev/particleground.all.js"></script>
+    <script src="js/event.js"></script>
     <script>
         bind('#demo', function(){
             return new Particleground.particle( '#demo', {
@@ -111,9 +111,9 @@
                 // range为0，不连接线
                 range: 0,
                 num: 10,
-                max: 20,
-                min: 10,
-                speed: 6
+                maxR: 20,
+                minR: 10,
+                maxSpeed: 6
             });
         });
     </script>

@@ -101,7 +101,7 @@ gulp.task('npm', function(){
 });
 
 // pack pjs to dev environment
-let packDirPath = './dev/pjs/';
+let packDirPath = './dev/';
 gulp.task('pack-pjs', function () {
     gulp.watch([ packDirPath + '*.js' ], function(){
         fs.readdir(packDirPath, function(err, files){
