@@ -8,11 +8,7 @@
     "prod": "gulp build-prod"
   },
   "devDependencies": {
-    "eslint": "^3.3.0",
-    "eslint-config-standard": "^5.3.5",
-    "eslint-plugin-promise": "^2.0.1",
-    "eslint-plugin-react": "^6.1.0",
-    "eslint-plugin-standard": "^2.0.0",
+    "eslint": "^3.9.1",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-clean-css": "^2.0.7",
