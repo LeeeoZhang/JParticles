@@ -1,6 +1,6 @@
 /**
  * 规定：
- * configDefault：默认配置项，需挂载到构造函数对象上
+ * defaultConfig：默认配置项，需挂载到构造函数对象上
  *
  * 对象的属性
  *  set: 参数配置
@@ -29,19 +29,17 @@
  *  {object}里的object只表示json格式的对象，其他相应格式对象用function，null，array...
  *  {Object}表示对象，如prototype等难以形容的对象
  */
-(function ( factory ){
-    if ( typeof module === 'object' && module.exports ) {
-        // CMD, like Node.
+(function (factory) {
+    if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
-        // Browser
         factory();
     }
-}(function (){
-	'use strict';
-	var win = window;
+}(function () {
+    'use strict';
+    var win = window;
     var doc = document;
-	var	random = Math.random;
+    var random = Math.random;
     var floor = Math.floor;
     var isArray = Array.isArray;
     var canvasSupport = !!doc.createElement('canvas').getContext;
@@ -49,18 +47,18 @@
     var defaultCanvasHeight = 300;
     var regTrimAll = /\s/g;
 
-	function pInt( str ){
-		return parseInt( str, 10 );
-	}
-
-    function trimAll( str ){
-        return str.replace( regTrimAll, '' );
+    function pInt(str) {
+        return parseInt(str, 10);
     }
 
-	function randomColor(){
-		// http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
-		return '#' + random().toString( 16 ).slice( -6 );
-	}
+    function trimAll(str) {
+        return str.replace(regTrimAll, '');
+    }
+
+    function randomColor() {
+        // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+        return '#' + random().toString(16).slice(-6);
+    }
 
     /**
      * 限制随机数的范围
@@ -68,9 +66,9 @@
      * @param min {number}
      * @returns {number}
      */
-	function limitRandom( max, min ){
-		return max === min ? max : (random() * (max - min) + min);
-	}
+    function limitRandom(max, min) {
+        return max === min ? max : (random() * (max - min) + min);
+    }
 
     /**
      * 对象的复制，跟jQuery extend方法一致
@@ -78,33 +76,32 @@
      * extend( [ deep ,] target, object1 [, objectN ] )
      * @returns {object}
      */
-    function extend(){
+    function extend() {
         // 站在jQuery的肩膀之上
         var arg = arguments,
-            target = arg[ 0 ] || {},
+            target = arg[0] || {},
             deep = false,
             length = arg.length,
             i = 1,
             value, attr;
 
-        if( typeof target === 'boolean' ){
+        if (typeof target === 'boolean') {
             deep = target;
-            target = arg[ 1 ] || {};
+            target = arg[1] || {};
             i++;
         }
 
-        for( ; i < length; i++ ){
-            for( attr in arg[ i ] ){
+        for (; i < length; i++) {
+            for (attr in arg[i]) {
 
-                value = arg[ i ][ attr ];
+                value = arg[i][attr];
 
-                if( deep && ( isPlainObject( value ) || isArray( value ) ) ){
+                if (deep && (isPlainObject(value) || isArray(value))) {
 
-                    target[ attr ] =
-                        extend( deep, isArray( value ) ? [] : {}, value );
+                    target[attr] = extend(deep, isArray(value) ? [] : {}, value);
 
-                }else{
-                    target[ attr ] = value;
+                } else {
+                    target[attr] = value;
                 }
 
             }
@@ -119,17 +116,17 @@
      * @param type {string} 对象所属类型
      * @returns {boolean}
      */
-    function typeChecking( obj, type ){
+    function typeChecking(obj, type) {
         // ie 下直接调用 toString 报错
-        return Object.prototype.toString.call( obj ) === type;
+        return Object.prototype.toString.call(obj) === type;
     }
 
-    function isFunction( obj ){
-        return typeChecking( obj, '[object Function]' );
+    function isFunction(obj) {
+        return typeChecking(obj, '[object Function]');
     }
 
-    function isPlainObject( obj ){
-        return typeChecking( obj, '[object Object]' );
+    function isPlainObject(obj) {
+        return typeChecking(obj, '[object Object]');
     }
 
     /**
@@ -137,7 +134,7 @@
      * @param arg {*}
      * @returns {boolean}
      */
-    function isElem( arg ){
+    function isElem(arg) {
         // document(nodeType===9)不能是element，因为它没有很多element该有的属性
         // 如用getComputedStyle获取不到它的宽高，就会报错
         // 当传入0的时候，不加!!会返回0，而不是Boolean值
@@ -151,11 +148,12 @@
      * @returns {*|string|number}
      */
     var regGetCss = /^\d+(\.\d+)?[a-z]+$/i;
-    function getCss( elem, attr ){
-        var val = win.getComputedStyle( elem )[ attr ];
+
+    function getCss(elem, attr) {
+        var val = win.getComputedStyle(elem)[attr];
 
         // 对于属性值是200px这样的形式，返回200这样的数字值
-        return regGetCss.test( val ) ? pInt( val ) : val;
+        return regGetCss.test(val) ? pInt(val) : val;
     }
 
     /**
@@ -163,10 +161,10 @@
      * @param elem {element}
      * @returns {{left: (number), top: (number)}}
      */
-    function offset( elem ){
+    function offset(elem) {
         var left = elem.offsetLeft || 0;
-        var top  = elem.offsetTop || 0;
-        while ( elem = elem.offsetParent ){
+        var top = elem.offsetTop || 0;
+        while (elem = elem.offsetParent) {
             left += elem.offsetLeft;
             top += elem.offsetTop;
         }
@@ -176,18 +174,19 @@
         };
     }
 
-    function on( elem, evtName, handler ){
-        elem.addEventListener( evtName, handler );
+    function on(elem, evtName, handler) {
+        elem.addEventListener(evtName, handler);
     }
 
-    function off( elem, evtName, handler ){
-        elem.removeEventListener( evtName, handler );
+    function off(elem, evtName, handler) {
+        elem.removeEventListener(evtName, handler);
     }
 
-    function setCanvasWH( context ){
-        context.cw = context.c.width = getCss( context.container, 'width' ) || defaultCanvasWidth;
-        context.ch = context.c.height = getCss( context.container, 'height' ) || defaultCanvasHeight;
+    function setCanvasWH(context) {
+        context.cw = context.c.width = getCss(context.container, 'width') || defaultCanvasWidth;
+        context.ch = context.c.height = getCss(context.container, 'height') || defaultCanvasHeight;
     }
+
     /**
      * 插件公共属性继承
      * @param context {this} 实例对象的上下文环境
@@ -196,20 +195,20 @@
      * @param options {object} 用户配置选项
      * @returns {boolean} 供插件判断是否创建成功，成功继续执行相应代码，不成功则静默失败
      */
-	function createCanvas( context, constructor, selector, options ){
-        if( canvasSupport &&
-            (context.container = isElem( selector ) ? selector : doc.querySelector( selector )) ){
+    function createCanvas(context, constructor, selector, options) {
+        if (canvasSupport &&
+            (context.container = isElem(selector) ? selector : doc.querySelector(selector))) {
 
-            context.set = extend( true, {}, Particleground.commonConfig, constructor.defaultConfig, options );
-            context.c = doc.createElement( 'canvas' );
-            context.cxt = context.c.getContext( '2d' );
+            context.set = extend(true, {}, Particleground.commonConfig, constructor.defaultConfig, options);
+            context.c = doc.createElement('canvas');
+            context.cxt = context.c.getContext('2d');
             context.paused = false;
 
-            setCanvasWH( context );
+            setCanvasWH(context);
 
             context.container.innerHTML = '';
-            context.container.appendChild( context.c );
-            context.color = setColor( context.set.color );
+            context.container.appendChild(context.c);
+            context.color = setColor(context.set.color);
             context.init();
         }
     }
@@ -220,7 +219,7 @@
      * @param scale {number} 被乘数
      * @returns {number}
      */
-    function scaleValue( val, scale ){
+    function scaleValue(val, scale) {
         return val > 0 && val < 1 ? scale * val : val;
     }
 
@@ -230,8 +229,8 @@
      * @param min {number}
      * @returns {number}
      */
-    function calcSpeed(max, min){
-        return (limitRandom( max, min ) || max) * (random() > .5 ? 1 : -1);
+    function calcSpeed(max, min) {
+        return (limitRandom(max, min) || max) * (random() > .5 ? 1 : -1);
     }
 
     /**
@@ -239,62 +238,62 @@
      * @param color {string|array} 颜色数组
      * @returns {function}
      */
-    function setColor( color ){
-        var colorLength = isArray( color ) ? color.length : false;
-        var recolor = function(){
-            return color[ floor( random() * colorLength ) ];
+    function setColor(color) {
+        var colorLength = isArray(color) ? color.length : false;
+        var recolor = function () {
+            return color[floor(random() * colorLength)];
         };
         return typeof color !== 'string' ? colorLength ? recolor : randomColor :
-            function(){
+            function () {
                 return color;
             };
     }
 
     // 暂停粒子运动
-	function pause( context, callback ){
+    function pause(context, callback) {
         // 没有set表示实例创建失败，防止错误调用报错
-		if( context.set && !context.paused ){
+        if (context.set && !context.paused) {
             // 传递关键字供特殊使用
-            isFunction( callback ) && callback.call( context, 'pause' );
+            isFunction(callback) && callback.call(context, 'pause');
             context.paused = true;
         }
-	}
+    }
 
     // 开启粒子运动
-	function open( context, callback ){
-		if( context.set && context.paused ){
-            isFunction( callback ) && callback.call( context, 'open' );
-			context.paused = false;
-			context.draw();
-		}
-	}
+    function open(context, callback) {
+        if (context.set && context.paused) {
+            isFunction(callback) && callback.call(context, 'open');
+            context.paused = false;
+            context.draw();
+        }
+    }
 
     // 自适应窗口，重新计算粒子坐标
-    function resize( context, callback ){
-        if( context.set.resize ){
+    function resize(context, callback) {
+        if (context.set.resize) {
             // 不采用函数节流，会出现延迟——很不爽的效果
-            on( win, 'resize', function(){
+            on(win, 'resize', function () {
                 var oldCW = context.cw;
                 var oldCH = context.ch;
 
                 // 重新设置canvas宽高
-                setCanvasWH( context );
+                setCanvasWH(context);
 
                 // 计算比例
                 var scaleX = context.cw / oldCW;
                 var scaleY = context.ch / oldCH;
 
                 // 重新赋值
-                if( isArray( context.dots ) ){
-                    context.dots.forEach(function( v ){
-                        if( isPlainObject( v ) ){
+                if (isArray(context.dots)) {
+                    context.dots.forEach(function (v) {
+                        if (isPlainObject(v)) {
                             v.x *= scaleX;
                             v.y *= scaleY;
                         }
                     });
                 }
 
-                isFunction( callback ) && callback.call( context, scaleX, scaleY );
+                isFunction(callback) && callback.call(context, scaleX, scaleY);
 
                 context.paused && context.draw();
             });
@@ -308,26 +307,26 @@
      * @param names {string} 方法名，多个方法名用逗号隔开
      * @param callback {function} 回调函数
      */
-    function modifyPrototype( prototype, names, callback ){
+    function modifyPrototype(prototype, names, callback) {
         // 将方法名转成数组格式，如：'pause, open'
-        if( canvasSupport ){
-            trimAll( names ).split(',').forEach(function( name ){
-                prototype[ name ] = function(){
-                    util[ name ]( this, callback );
+        if (canvasSupport) {
+            trimAll(names).split(',').forEach(function (name) {
+                prototype[name] = function () {
+                    util[name](this, callback);
                 };
             });
         }
     }
 
     // requestAnimationFrame兼容处理
-	win.requestAnimationFrame = (function( win ) {
-		return	win.requestAnimationFrame ||
-				win.webkitRequestAnimationFrame ||
-				win.mozRequestAnimationFrame ||
-				function( fn ) {
-		        	win.setTimeout( fn, 1000 / 60 );
-		        };
-	})( win );
+    win.requestAnimationFrame = (function (win) {
+        return win.requestAnimationFrame ||
+            win.webkitRequestAnimationFrame ||
+            win.mozRequestAnimationFrame ||
+            function (fn) {
+                win.setTimeout(fn, 1000 / 60);
+            };
+    })(win);
 
     // 工具箱
     var util = {
@@ -365,37 +364,37 @@
         },
         util: util,
         inherit: {
-            requestAnimationFrame: function(){
-                !this.paused && win.requestAnimationFrame( this.draw.bind( this ) );
+            requestAnimationFrame: function () {
+                !this.paused && win.requestAnimationFrame(this.draw.bind(this));
             },
-            pause: function(){
-                pause( this );
+            pause: function () {
+                pause(this);
             },
-            open: function(){
-                open( this );
+            open: function () {
+                open(this);
             },
-            resize: function(){
-                resize( this );
+            resize: function () {
+                resize(this);
             }
         },
         event: {
             on: on,
             off: off
         },
-        extend: function( prototype ){
-            return extend( prototype, this.inherit ), this;
+        extend: function (prototype) {
+            return extend(prototype, this.inherit), this;
         }
     };
 
     win.Particleground = Particleground;
 
     // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
-    // 导致后面的插件找不到Particleground对象，报错
-    if ( typeof define === 'function' && define.amd ) {
-        define(function() {
+    // 会导致后面的插件找不到Particleground对象而报错
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
             return Particleground;
         });
     }
 
-	return Particleground;
+    return Particleground;
 }));
