@@ -18,7 +18,7 @@ const COPYRIGHT =
 const devPath = './dev/';
 const prodPath = './production/';
 
-// pack pjs to dev environment
+// pack pjs on dev environment
 gulp.task('pack-pjs', () => {
     gulp.watch([devPath + '*.js'], () => {
         fs.readdir(devPath, (err, files) => {
