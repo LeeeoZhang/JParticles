@@ -1,5 +1,5 @@
 # JParticles [![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
-> 中文 | [English](./language/README_en.md)
+> 中文 | [English](./README_en.md)
 
 官网：[barrior.github.io/JParticles](http://barrior.github.io/JParticles/) || [particleground.duapp.com](http://particleground.duapp.com/)
 
@@ -31,7 +31,7 @@
 
 ### 交流
 
-如果您遇到问题，或者好的建议，欢迎提交到 [issues](https://github.com/Barrior/Particleground.js/issues) （建议），或者 [QQ](http://shang.qq.com/wpa/qunwpa?idkey=f548e3f94e0040a2ac5adfe4fec6915ef67c8c1b6ba5784ff6d5049c6135a759) 群交流；万分感谢，帮助 `JParticles` 改进。
+如果您遇到问题，或者好的建议，欢迎提交到 [issues](https://github.com/Barrior/JParticles/issues) （建议），或者 [QQ](http://shang.qq.com/wpa/qunwpa?idkey=f548e3f94e0040a2ac5adfe4fec6915ef67c8c1b6ba5784ff6d5049c6135a759) 群交流；万分感谢，帮助 `JParticles` 改进。
 
 
 ### 协议

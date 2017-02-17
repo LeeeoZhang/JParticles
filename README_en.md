@@ -1,6 +1,6 @@
 # JParticles [![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
 
-> English | [中文](../README.md)
+> English | [中文](./README.md)
 
 [Homepage & API Documentation](http://barrior.github.io/JParticles/)
 
