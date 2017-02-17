@@ -1,8 +1,8 @@
 {
-  "name": "Particleground.js",
-  "description": "A concise, efficient, and lightweight canvas plugin for building some cool particle effects.",
+  "name": "JParticles",
+  "description": "A succinct, efficient, and lightweight Canvas plugin library for building some cool particle effects.",
   "version": "1.1.0",
-  "main": "production/particleground.all.js",
+  "main": "production/jparticles.all.js",
   "scripts": {
     "dev": "gulp pack-pjs",
     "prod": "gulp build-prod"
@@ -18,17 +18,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Barrior/Particleground.js.git"
+    "url": "git+https://github.com/Barrior/JParticles.git"
   },
   "author": "Barrior",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Barrior/Particleground.js/issues"
+    "url": "https://github.com/Barrior/JParticles/issues"
   },
-  "homepage": "pjs.barrior.me",
+  "homepage": "barrior.github.io/JParticles",
   "keywords": [
-    "pjs",
-    "Particleground.js",
+    "JParticles",
     "Particle effects"
   ]
 }
