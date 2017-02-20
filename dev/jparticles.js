@@ -199,7 +199,7 @@
         if (canvasSupport &&
             (context.container = isElem(selector) ? selector : doc.querySelector(selector))) {
 
-            context.set = extend(true, {}, Particleground.commonConfig, constructor.defaultConfig, options);
+            context.set = extend(true, {}, JParticles.commonConfig, constructor.defaultConfig, options);
             context.c = doc.createElement('canvas');
             context.cxt = context.c.getContext('2d');
             context.paused = false;
@@ -301,8 +301,8 @@
     }
 
     /**
-     * 修改原型在 Particleground.inherit 上的方法
-     * 使用：util.modifyPrototype( fn, 'pause', function(){})
+     * 修改原型在 JParticles.inherit 上的方法
+     * 使用：utils.modifyPrototype(fn, 'pause', function(){})
      * @param prototype {Object} 原型对象
      * @param names {string} 方法名，多个方法名用逗号隔开
      * @param callback {function} 回调函数
@@ -312,7 +312,7 @@
         if (canvasSupport) {
             trimAll(names).split(',').forEach(function (name) {
                 prototype[name] = function () {
-                    util[name](this, callback);
+                    utils[name](this, callback);
                 };
             });
         }
@@ -329,7 +329,7 @@
     })(win);
 
     // 工具箱
-    var util = {
+    var utils = {
         pInt: pInt,
         trimAll: trimAll,
         randomColor: randomColor,
@@ -351,7 +351,7 @@
         modifyPrototype: modifyPrototype
     };
 
-    var Particleground = {
+    var JParticles = {
         version: '1.1.0',
         canvasSupport: canvasSupport,
         commonConfig: {
@@ -362,7 +362,7 @@
             // 默认true: 自适应窗口尺寸变化
             resize: true
         },
-        util: util,
+        utils: utils,
         inherit: {
             requestAnimationFrame: function () {
                 !this.paused && win.requestAnimationFrame(this.draw.bind(this));
@@ -386,15 +386,15 @@
         }
     };
 
-    win.Particleground = Particleground;
+    win.JParticles = JParticles;
 
     // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
-    // 会导致后面的插件找不到Particleground对象而报错
+    // 会导致后面的插件找不到JParticles对象而报错
     if (typeof define === 'function' && define.amd) {
         define(function () {
-            return Particleground;
+            return JParticles;
         });
     }
 
-    return Particleground;
+    return JParticles;
 }));

@@ -1,9 +1,9 @@
 // particle.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
-        event = Particleground.event,
+    var utils = JParticles.utils,
+        event = JParticles.event,
         random = Math.random,
         abs = Math.abs,
         pi2 = Math.PI * 2;
@@ -16,7 +16,7 @@
      * @returns {boolean}
      */
     function checkParentsProperty(elem, property, value) {
-        var getCss = util.getCss;
+        var getCss = utils.getCss;
         while (elem = elem.offsetParent) {
             if (getCss(elem, property) === value) {
                 return true;
@@ -26,7 +26,7 @@
     }
 
     function Particle(selector, options) {
-        util.createCanvas(this, Particle, selector, options);
+        utils.createCanvas(this, Particle, selector, options);
     }
 
     Particle.defaultConfig = {
@@ -59,7 +59,7 @@
                 if (this.set.range > 0) {
 
                     // 设置移动事件元素
-                    if (!util.isElem(this.set.eventElem) && this.set.eventElem !== document) {
+                    if (!utils.isElem(this.set.eventElem) && this.set.eventElem !== document) {
                         this.set.eventElem = this.c;
                     }
 
@@ -78,13 +78,13 @@
                 ch = this.ch,
                 set = this.set,
                 color = this.color,
-                limitRandom = util.limitRandom,
-                calcSpeed = util.calcSpeed,
+                limitRandom = utils.limitRandom,
+                calcSpeed = utils.calcSpeed,
                 maxSpeed = set.maxSpeed,
                 minSpeed = set.minSpeed,
                 maxR = set.maxR,
                 minR = set.minR,
-                num = util.pInt(util.scaleValue(set.num, cw)),
+                num = utils.pInt(utils.scaleValue(set.num, cw)),
                 dots = [], r;
 
             while (num--) {
@@ -189,7 +189,7 @@
             });
         },
         getElemOffset: function () {
-            return (this.elemOffset = this.elemOffset ? util.offset(this.set.eventElem) : null);
+            return (this.elemOffset = this.elemOffset ? utils.offset(this.set.eventElem) : null);
         },
         event: function () {
             if (this.set.eventElem !== document) {
@@ -220,7 +220,7 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
     function eventHandler(eventType) {
         var context = this;
@@ -235,10 +235,10 @@
     }
 
     // 修改原型pause，open方法
-    util.modifyPrototype(fn, 'pause, open', eventHandler);
+    utils.modifyPrototype(fn, 'pause, open', eventHandler);
 
     // 修改原型resize方法
-    util.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
+    utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
         if (this.set.num > 0 && this.set.range > 0) {
             this.posX *= scaleX;
             this.posY *= scaleY;
@@ -247,7 +247,7 @@
     });
 
     // 添加实例
-    Particleground.particle = fn.constructor = Particle;
+    JParticles.particle = fn.constructor = Particle;
 
-}(Particleground);
+}(JParticles);
 

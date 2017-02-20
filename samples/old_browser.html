@@ -32,18 +32,18 @@
         </div>
     </div>
 
-    <script src="../dev/particleground.all.js"></script>
+    <script src="../dev/jparticles.all.js"></script>
     <script>
-        var effect = new Particleground.particle( '#demo', {
+        var effect = new JParticles.particle('#demo', {
             num: 100,
             resize: false
         });
 
-        document.getElementById('open').onclick = function(){
+        document.getElementById('open').onclick = function () {
             effect.open();
         };
 
-        document.getElementById('pause').onclick = function(){
+        document.getElementById('pause').onclick = function () {
             effect.pause();
         };
     </script>

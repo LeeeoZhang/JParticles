@@ -86,28 +86,28 @@
         </div>
     </div>
 
-    <script src="../dev/particleground.all.js"></script>
+    <script src="../dev/jparticles.all.js"></script>
     <script src="js/event.js"></script>
     <script>
-        bind('#demo', function(){
-            return new Particleground.particle( '#demo', {
+        bind('#demo', function () {
+            return new JParticles.particle('#demo', {
                 num: 100
             });
         });
 
         // 超过首屏测试
-        bind('#demo2', function(){
-            return new Particleground.particle( '#demo2' );
+        bind('#demo2', function () {
+            return new JParticles.particle('#demo2');
         });
 
         // 固定定位测试
-        bind('#demo3', function(){
-            return new Particleground.particle( '#demo3' );
+        bind('#demo3', function () {
+            return new JParticles.particle('#demo3');
         });
 
         // 无线段测试
-        bind('#demo4', function(){
-            return new Particleground.particle( '#demo4', {
+        bind('#demo4', function () {
+            return new JParticles.particle('#demo4', {
                 // range为0，不连接线
                 range: 0,
                 num: 10,

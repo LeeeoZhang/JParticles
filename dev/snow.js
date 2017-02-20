@@ -1,14 +1,14 @@
 // snow.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
+    var utils = JParticles.utils,
         random = Math.random,
         abs = Math.abs,
         pi2 = Math.PI * 2;
 
     function Snow(selector, options) {
-        util.createCanvas(this, Snow, selector, options);
+        utils.createCanvas(this, Snow, selector, options);
     }
 
     Snow.defaultConfig = {
@@ -30,10 +30,10 @@
         },
         snowShape: function () {
             var set = this.set,
-                calcSpeed = util.calcSpeed,
+                calcSpeed = utils.calcSpeed,
                 maxSpeed = set.maxSpeed,
                 minSpeed = set.minSpeed,
-                r = util.limitRandom(set.maxR, set.minR);
+                r = utils.limitRandom(set.maxR, set.minR);
             return {
                 x: random() * this.cw,
                 y: -r,
@@ -47,7 +47,7 @@
         },
         createDots: function () {
             // 随机创建0-6个雪花
-            var count = util.pInt(random() * 6);
+            var count = utils.pInt(random() * 6);
             var dots = this.dots;
             while (count--) {
                 dots.push(this.snowShape());
@@ -106,9 +106,9 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
     // 添加实例
-    Particleground.snow = fn.constructor = Snow;
+    JParticles.snow = fn.constructor = Snow;
 
-}(Particleground);
+}(JParticles);

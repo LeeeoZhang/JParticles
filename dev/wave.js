@@ -1,11 +1,11 @@
 // wave.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
-        limitRandom = util.limitRandom,
-        randomColor = util.randomColor,
-        scaleValue = util.scaleValue,
+    var utils = JParticles.utils,
+        limitRandom = utils.limitRandom,
+        randomColor = utils.randomColor,
+        scaleValue = utils.scaleValue,
         random = Math.random,
         sin = Math.sin,
         pi2 = Math.PI * 2,
@@ -13,7 +13,7 @@
         isArray = Array.isArray;
 
     function Wave(selector, options) {
-        util.createCanvas(this, Wave, selector, options);
+        utils.createCanvas(this, Wave, selector, options);
     }
 
     Wave.defaultConfig = {
@@ -40,7 +40,6 @@
         // 是否绘制边框，设置为false相关值无效
         stroke: true
     };
-
 
     var fn = Wave.prototype = {
         version: '1.0.0',
@@ -143,7 +142,7 @@
 
                 this.set.offsetTop.forEach(function (v, i, array) {
 
-                    // topVal[ i ] || v: 当传入的topVal数组少于自身数组的长度，
+                    // topVal[i] || v: 当传入的topVal数组少于自身数组的长度，
                     // 超出部分保持它的原有值，以保证不出现undefined
                     array[i] = isArray(topVal) ? ( topVal[i] || v ) : topVal;
                 });
@@ -198,7 +197,7 @@
                     cxt[j ? 'lineTo' : 'moveTo'](
                         v.x,
 
-                        // y = A sin（ ωx + φ ）+ h
+                        // y = A sin ( ωx + φ ) + h
                         crestHeight * sin(v.y + offsetLeft) + offsetTop
                     );
                     !paused && ( v.y -= speed );
@@ -222,9 +221,9 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
-    util.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
+    utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
         if (this.set.num > 0) {
             this.dots.forEach(function (lineDots) {
                 lineDots.forEach(function (v) {
@@ -236,6 +235,6 @@
     });
 
     // 添加实例
-    Particleground.wave = fn.constructor = Wave;
+    JParticles.wave = fn.constructor = Wave;
 
-}(Particleground);
+}(JParticles);

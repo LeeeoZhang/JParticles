@@ -30,54 +30,52 @@
         </button>
     </div>
 
-
-
     <script src="js/require.js"></script>
     <script>
-        /*
-        require(['../dev/particleground'], function( pjs ){
-            require(['../dev/particle'], function(){
 
-                var demo = new pjs.particle( '#demo' );
+        require(['../dev/jparticles'], function (jps) {
+            require(['../dev/particle'], function () {
 
-                document.addEventListener( 'click', function( event ){
+                var demo = new jps.particle('#demo');
+
+                document.addEventListener('click', function (event) {
                     var target = event.target;
-                    if( target.getAttribute('data-open') !== null ){
+                    if (target.getAttribute('data-open') !== null) {
                         demo.open();
-                    }else if( target.getAttribute('data-pause') !== null ){
+                    } else if (target.getAttribute('data-pause') !== null) {
                         demo.pause();
                     }
                 });
 
             });
         });
-        */
-        require(['../dev/particleground.all'], function( pjs ){
 
-            var demo = new pjs.particle( '#demo' );
+        /*require(['../dev/jparticles.all'], function (jps) {
 
-            document.addEventListener( 'click', function( event ){
+            var demo = new jps.particle('#demo');
+
+            document.addEventListener('click', function (event) {
                 var target = event.target;
-                if( target.getAttribute('data-open') !== null ){
+                if (target.getAttribute('data-open') !== null) {
                     demo.open();
-                }else if( target.getAttribute('data-pause') !== null ){
+                } else if (target.getAttribute('data-pause') !== null) {
                     demo.pause();
                 }
             });
 
-        });
+        });*/
     </script>
 
     <!--
-        如果使用标签加载pjs，但是页面也同时引用require这样的amd加载器，
-        需要将pjs放在require加载之前，如下，或者使用amd的方式加载pjs，如上
+        如果使用标签加载 JParticles，但是页面也同时引用require这样的amd加载器，
+        需要将 JParticles 放在require加载之前，如下，或者使用amd的方式加载 JParticles，如上
     -->
     <!--
-    <script src="../dev/particleground.js"></script>
+    <script src="../dev/jparticles.js"></script>
     <script src="../dev/particle.js"></script>
     <script src="js/require.js"></script>
     <script>
-        var demo = new Particleground.particle( '#demo' );
+        var demo = new JParticles.particle( '#demo' );
 
         document.addEventListener( 'click', function( event ){
             var target = event.target;

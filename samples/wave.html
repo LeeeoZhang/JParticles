@@ -100,33 +100,33 @@
     </div>
 
 
-    <script src="../dev/particleground.all.js"></script>
+    <script src="../dev/jparticles.all.js"></script>
     <script src="js/event.js"></script>
     <script>
-        bind('#demo', function(){
-            return new Particleground.wave( '#demo' );
+        bind('#demo', function () {
+            return new JParticles.wave('#demo');
         });
 
-        bind('#demo1', function(){
-            return new Particleground.wave( '#demo1', {
+        bind('#demo1', function () {
+            return new JParticles.wave('#demo1', {
                 num: 3,
                 lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 // 三条线依次的边框宽度
-                lineWidth: [ .5, .7, .9 ],
+                lineWidth: [.5, .7, .9],
                 // 三条线依次的偏移值
-                offsetLeft: [ 2, 1, 0 ],
+                offsetLeft: [2, 1, 0],
                 // 三条线都向下偏移容器高度的0.75倍, [ 0.75, 0.5, 0.3 ]
                 offsetTop: .75,
                 // 三条线依次的波峰高度
-                crestHeight: [ 8, 12, 16 ],
+                crestHeight: [8, 12, 16],
                 // 三条线都只有两个波峰(波纹)
                 rippleNum: 2,
                 speed: .07
             });
         });
 
-        bind('#demo2', function(){
-            return new Particleground.wave( '#demo2', {
+        bind('#demo2', function () {
+            return new JParticles.wave('#demo2', {
                 num: 1,
                 fillColor: '#27C9E5',
                 crestHeight: 8,
@@ -138,21 +138,22 @@
             });
         });
 
-        bind('#demo3', function(){
+        bind('#demo3', function () {
             var d3 = document.querySelector('#demo3');
             var processElem = document.querySelector('#process');
-            var elemHeight = parseInt( getComputedStyle(d3, false).height ) - 8;
+            var elemHeight = parseInt(getComputedStyle(d3, false).height) - 8;
             var process = elemHeight;
             var timer = null;
             var effect = null;
 
-            function setProcess(){
+            function setProcess() {
                 var per = ( (elemHeight - process) / elemHeight * 100 ).toFixed();
                 processElem.innerHTML = per + '%';
             }
+
             setProcess();
 
-            effect = new Particleground.wave( '#demo3', {
+            effect = new JParticles.wave('#demo3', {
                 num: 1,
                 fillColor: '#27C9E5',
                 crestHeight: 8,
@@ -163,7 +164,7 @@
                 speed: .3
             });
 
-            /*effect = new Particleground.wave( '#demo3', {
+            /*effect = new JParticles.wave( '#demo3', {
                 lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 num: 3,
                 //三条线段依次的宽度
@@ -179,19 +180,19 @@
                 speed: .3
             });*/
 
-            timer = setInterval(function(){
+            timer = setInterval(function () {
 
-                if( process <= 0 ){
+                if (process <= 0) {
                     process = 0;
                     setProcess();
-                    effect.setOffsetTop( -8 );
+                    effect.setOffsetTop(-8);
                     effect.pause();
-                    return clearInterval( timer );
+                    return clearInterval(timer);
                 }
 
                 process -= 3;
                 // 一条
-                effect.setOffsetTop( process );
+                effect.setOffsetTop(process);
                 // 多条
                 /*effect.setOffsetTop( [
                     process,
@@ -200,26 +201,27 @@
                 ] );*/
                 setProcess();
 
-            }, 30 );
+            }, 30);
 
             return effect;
         });
 
-        bind('#demo4', function(){
+        bind('#demo4', function () {
             var processElem = document.querySelector('#process4');
             var process = 0.9;
             var timer = null;
             var effect = null;
 
-            function setProcess(){
+            function setProcess() {
                 processElem.innerHTML = ( (1 - process) * 100 ).toFixed() + '%';
             }
+
             setProcess();
 
-            effect = new Particleground.wave( '#demo4', {
+            effect = new JParticles.wave('#demo4', {
                 num: 3,
                 fillColor: 'rgba(0,0,0,.25)',
-                crestHeight: [ 8, 12, 16 ],
+                crestHeight: [8, 12, 16],
                 offsetTop: process,
                 rippleNum: [2, 3, 4],
                 fill: true,
@@ -227,21 +229,21 @@
                 speed: .3
             });
 
-            timer = setInterval(function(){
+            timer = setInterval(function () {
 
-                if( process <= 0.01 ){
+                if (process <= 0.01) {
                     process = 0;
                     setProcess();
-                    effect.setOffsetTop( -8 );
+                    effect.setOffsetTop(-8);
                     effect.pause();
-                    return clearInterval( timer );
+                    return clearInterval(timer);
                 }
 
                 process -= 0.01;
-                effect.setOffsetTop( process );
+                effect.setOffsetTop(process);
                 setProcess();
 
-            }, 30 );
+            }, 30);
 
             return effect;
         });

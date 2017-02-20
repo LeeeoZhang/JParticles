@@ -4,8 +4,8 @@
   "version": "1.1.0",
   "main": "production/jparticles.all.js",
   "scripts": {
-    "dev": "gulp pack-pjs",
-    "prod": "gulp build-prod"
+    "dev": "gulp --gulpfile gulpfile.dev.js",
+    "prod": "gulp --gulpfile gulpfile.prod.js"
   },
   "devDependencies": {
     "eslint": "^3.9.1",

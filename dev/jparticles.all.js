@@ -199,7 +199,7 @@
         if (canvasSupport &&
             (context.container = isElem(selector) ? selector : doc.querySelector(selector))) {
 
-            context.set = extend(true, {}, Particleground.commonConfig, constructor.defaultConfig, options);
+            context.set = extend(true, {}, JParticles.commonConfig, constructor.defaultConfig, options);
             context.c = doc.createElement('canvas');
             context.cxt = context.c.getContext('2d');
             context.paused = false;
@@ -301,8 +301,8 @@
     }
 
     /**
-     * 修改原型在 Particleground.inherit 上的方法
-     * 使用：util.modifyPrototype( fn, 'pause', function(){})
+     * 修改原型在 JParticles.inherit 上的方法
+     * 使用：utils.modifyPrototype( fn, 'pause', function(){})
      * @param prototype {Object} 原型对象
      * @param names {string} 方法名，多个方法名用逗号隔开
      * @param callback {function} 回调函数
@@ -312,7 +312,7 @@
         if (canvasSupport) {
             trimAll(names).split(',').forEach(function (name) {
                 prototype[name] = function () {
-                    util[name](this, callback);
+                    utils[name](this, callback);
                 };
             });
         }
@@ -329,7 +329,7 @@
     })(win);
 
     // 工具箱
-    var util = {
+    var utils = {
         pInt: pInt,
         trimAll: trimAll,
         randomColor: randomColor,
@@ -351,7 +351,7 @@
         modifyPrototype: modifyPrototype
     };
 
-    var Particleground = {
+    var JParticles = {
         version: '1.1.0',
         canvasSupport: canvasSupport,
         commonConfig: {
@@ -362,7 +362,7 @@
             // 默认true: 自适应窗口尺寸变化
             resize: true
         },
-        util: util,
+        utils: utils,
         inherit: {
             requestAnimationFrame: function () {
                 !this.paused && win.requestAnimationFrame(this.draw.bind(this));
@@ -386,29 +386,29 @@
         }
     };
 
-    win.Particleground = Particleground;
+    win.JParticles = JParticles;
 
     // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
-    // 会导致后面的插件找不到Particleground对象而报错
+    // 会导致后面的插件找不到JParticles对象而报错
     if (typeof define === 'function' && define.amd) {
         define(function () {
-            return Particleground;
+            return JParticles;
         });
     }
 
-    return Particleground;
+    return JParticles;
 }));
 // lowpoly.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
+    var utils = JParticles.utils,
         random = Math.random,
         abs = Math.abs,
         pi2 = Math.PI * 2;
 
     function Lowpoly(selector, options) {
-        util.createCanvas(this, Lowpoly, selector, options);
+        utils.createCanvas(this, Lowpoly, selector, options);
     }
 
     Lowpoly.defaultConfig = {
@@ -427,10 +427,10 @@
         },
         snowShape: function () {
             var set = this.set,
-                calcSpeed = util.calcSpeed,
+                calcSpeed = utils.calcSpeed,
                 maxSpeed = set.maxSpeed,
                 minSpeed = set.minSpeed,
-                r = util.limitRandom(set.maxR, set.minR);
+                r = utils.limitRandom(set.maxR, set.minR);
             return {
                 x: random() * this.cw,
                 y: -r,
@@ -444,7 +444,7 @@
         },
         createDots: function () {
             // 随机创建0-6个雪花
-            var count = util.pInt(random() * 6);
+            var count = utils.pInt(random() * 6);
             var dots = this.dots;
             while (count--) {
                 dots.push(this.snowShape());
@@ -503,18 +503,18 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
     // 添加实例
-    Particleground.lowpoly = fn.constructor = Lowpoly;
+    JParticles.lowpoly = fn.constructor = Lowpoly;
 
-}(Particleground);
+}(JParticles);
 // particle.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
-        event = Particleground.event,
+    var utils = JParticles.utils,
+        event = JParticles.event,
         random = Math.random,
         abs = Math.abs,
         pi2 = Math.PI * 2;
@@ -527,7 +527,7 @@
      * @returns {boolean}
      */
     function checkParentsProperty(elem, property, value) {
-        var getCss = util.getCss;
+        var getCss = utils.getCss;
         while (elem = elem.offsetParent) {
             if (getCss(elem, property) === value) {
                 return true;
@@ -537,7 +537,7 @@
     }
 
     function Particle(selector, options) {
-        util.createCanvas(this, Particle, selector, options);
+        utils.createCanvas(this, Particle, selector, options);
     }
 
     Particle.defaultConfig = {
@@ -570,7 +570,7 @@
                 if (this.set.range > 0) {
 
                     // 设置移动事件元素
-                    if (!util.isElem(this.set.eventElem) && this.set.eventElem !== document) {
+                    if (!utils.isElem(this.set.eventElem) && this.set.eventElem !== document) {
                         this.set.eventElem = this.c;
                     }
 
@@ -589,13 +589,13 @@
                 ch = this.ch,
                 set = this.set,
                 color = this.color,
-                limitRandom = util.limitRandom,
-                calcSpeed = util.calcSpeed,
+                limitRandom = utils.limitRandom,
+                calcSpeed = utils.calcSpeed,
                 maxSpeed = set.maxSpeed,
                 minSpeed = set.minSpeed,
                 maxR = set.maxR,
                 minR = set.minR,
-                num = util.pInt(util.scaleValue(set.num, cw)),
+                num = utils.pInt(utils.scaleValue(set.num, cw)),
                 dots = [], r;
 
             while (num--) {
@@ -700,7 +700,7 @@
             });
         },
         getElemOffset: function () {
-            return (this.elemOffset = this.elemOffset ? util.offset(this.set.eventElem) : null);
+            return (this.elemOffset = this.elemOffset ? utils.offset(this.set.eventElem) : null);
         },
         event: function () {
             if (this.set.eventElem !== document) {
@@ -731,7 +731,7 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
     function eventHandler(eventType) {
         var context = this;
@@ -746,10 +746,10 @@
     }
 
     // 修改原型pause，open方法
-    util.modifyPrototype(fn, 'pause, open', eventHandler);
+    utils.modifyPrototype(fn, 'pause, open', eventHandler);
 
     // 修改原型resize方法
-    util.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
+    utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
         if (this.set.num > 0 && this.set.range > 0) {
             this.posX *= scaleX;
             this.posY *= scaleY;
@@ -758,22 +758,22 @@
     });
 
     // 添加实例
-    Particleground.particle = fn.constructor = Particle;
+    JParticles.particle = fn.constructor = Particle;
 
-}(Particleground);
+}(JParticles);
 
 
 // snow.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
+    var utils = JParticles.utils,
         random = Math.random,
         abs = Math.abs,
         pi2 = Math.PI * 2;
 
     function Snow(selector, options) {
-        util.createCanvas(this, Snow, selector, options);
+        utils.createCanvas(this, Snow, selector, options);
     }
 
     Snow.defaultConfig = {
@@ -795,10 +795,10 @@
         },
         snowShape: function () {
             var set = this.set,
-                calcSpeed = util.calcSpeed,
+                calcSpeed = utils.calcSpeed,
                 maxSpeed = set.maxSpeed,
                 minSpeed = set.minSpeed,
-                r = util.limitRandom(set.maxR, set.minR);
+                r = utils.limitRandom(set.maxR, set.minR);
             return {
                 x: random() * this.cw,
                 y: -r,
@@ -812,7 +812,7 @@
         },
         createDots: function () {
             // 随机创建0-6个雪花
-            var count = util.pInt(random() * 6);
+            var count = utils.pInt(random() * 6);
             var dots = this.dots;
             while (count--) {
                 dots.push(this.snowShape());
@@ -871,20 +871,20 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
     // 添加实例
-    Particleground.snow = fn.constructor = Snow;
+    JParticles.snow = fn.constructor = Snow;
 
-}(Particleground);
+}(JParticles);
 // wave.js
-+function (Particleground) {
++function (JParticles) {
     'use strict';
 
-    var util = Particleground.util,
-        limitRandom = util.limitRandom,
-        randomColor = util.randomColor,
-        scaleValue = util.scaleValue,
+    var utils = JParticles.utils,
+        limitRandom = utils.limitRandom,
+        randomColor = utils.randomColor,
+        scaleValue = utils.scaleValue,
         random = Math.random,
         sin = Math.sin,
         pi2 = Math.PI * 2,
@@ -892,7 +892,7 @@
         isArray = Array.isArray;
 
     function Wave(selector, options) {
-        util.createCanvas(this, Wave, selector, options);
+        utils.createCanvas(this, Wave, selector, options);
     }
 
     Wave.defaultConfig = {
@@ -1101,9 +1101,9 @@
     };
 
     // 继承公共方法，如pause，open
-    Particleground.extend(fn);
+    JParticles.extend(fn);
 
-    util.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
+    utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
         if (this.set.num > 0) {
             this.dots.forEach(function (lineDots) {
                 lineDots.forEach(function (v) {
@@ -1115,6 +1115,6 @@
     });
 
     // 添加实例
-    Particleground.wave = fn.constructor = Wave;
+    JParticles.wave = fn.constructor = Wave;
 
-}(Particleground);
+}(JParticles);
