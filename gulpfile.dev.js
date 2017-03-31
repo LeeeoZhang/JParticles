@@ -9,7 +9,7 @@ const destPath = './production/';
 
 // Pack all js to generating 'jparticles.all.js' at dev directory.
 gulp.task('pack', () => {
-    gulp.watch([devPath + '*.js'], () => {
+    gulp.watch([devPath + '!jparticles\.all.js'], () => {
         fs.readdir(devPath, (err, files) => {
 
             files = files.join(' ').replace(/jparticles\.js\s|jparticles\.all\.js\s/g, '');
@@ -29,11 +29,11 @@ gulp.task('compile', () => {
     gulp.src(devPath + '*.js')
         .pipe(sourcemaps.init())
         .pipe(babel({
-            presets: ['es2015']
+            presets: ['es2015', 'stage-0']
         }))
         .pipe(sourcemaps.write('./maps/', {
             includeContent: false,
-            sourceRoot: '../../dev'
+            sourceRoot: `../${devPath}`
         }))
         .pipe(gulp.dest(destPath));
 });

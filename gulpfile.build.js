@@ -9,7 +9,7 @@ const pkg = require('./package.json');
 const VERSION = pkg.version;
 const COPYRIGHT =
 `/**
- * JParticles v${ VERSION } (https://github.com/Barrior/JParticles)
+ * JParticles v${VERSION} (https://github.com/Barrior/JParticles)
  * Copyright 2016 Barrior <Barrior@qq.com>
  * Licensed under the MIT (https://opensource.org/licenses/MIT)
  */
@@ -17,9 +17,9 @@ const COPYRIGHT =
 
 const path = './production/';
 
-// Building JParticles.
+// Build JParticles.
 gulp.task('build', () => {
-    gulp.src('./dev/*.js')
+    gulp.src(`./${path}/*.js`)
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())
