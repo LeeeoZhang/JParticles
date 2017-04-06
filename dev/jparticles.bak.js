@@ -36,25 +36,23 @@
         factory();
     }
 }(function () {
-    const win = window;
-    const doc = document;
-    const random = Math.random;
-    const floor = Math.floor;
-    const isArray = Array.isArray;
-    const canvasSupport = !!doc.createElement('canvas').getContext;
-    const defaultCanvasWidth = 485;
-    const defaultCanvasHeight = 300;
-    const RegExp = {
-        trimAll: /\s/g,
-        styleValue: /^\d+(\.\d+)?[a-z]+$/i
-    };
+    'use strict';
+    var win = window;
+    var doc = document;
+    var random = Math.random;
+    var floor = Math.floor;
+    var isArray = Array.isArray;
+    var canvasSupport = !!doc.createElement('canvas').getContext;
+    var defaultCanvasWidth = 485;
+    var defaultCanvasHeight = 300;
+    var regTrimAll = /\s/g;
 
     function pInt(str) {
         return parseInt(str, 10);
     }
 
     function trimAll(str) {
-        return str.replace(RegExp.trimAll, '');
+        return str.replace(regTrimAll, '');
     }
 
     function randomColor() {
@@ -80,7 +78,7 @@
      */
     function extend() {
         // 站在jQuery的肩膀之上
-        let arg = arguments,
+        var arg = arguments,
             target = arg[0] || {},
             deep = false,
             length = arg.length,
@@ -119,7 +117,7 @@
      * @returns {boolean}
      */
     function typeChecking(obj, type) {
-        // 直接使用 toString.call(obj) 在 ie 会下报错
+        // ie 下直接调用 toString 报错
         return Object.prototype.toString.call(obj) === type;
     }
 
@@ -147,13 +145,15 @@
      * 获取对象的css属性值
      * @param elem {element}
      * @param attr {string}
-     * @returns {string|number}
+     * @returns {*|string|number}
      */
-    function getCss(elem, attr) {
-        const val = win.getComputedStyle(elem)[attr];
+    var regGetCss = /^\d+(\.\d+)?[a-z]+$/i;
 
-        // 对于属性值是 200px 这样的形式，返回 200 这样的数字值
-        return RegExp.styleValue.test(val) ? pInt(val) : val;
+    function getCss(elem, attr) {
+        var val = win.getComputedStyle(elem)[attr];
+
+        // 对于属性值是200px这样的形式，返回200这样的数字值
+        return regGetCss.test(val) ? pInt(val) : val;
     }
 
     /**
@@ -162,8 +162,8 @@
      * @returns {{left: (number), top: (number)}}
      */
     function offset(elem) {
-        let left = elem.offsetLeft || 0;
-        let top = elem.offsetTop || 0;
+        var left = elem.offsetLeft || 0;
+        var top = elem.offsetTop || 0;
         while (elem = elem.offsetParent) {
             left += elem.offsetLeft;
             top += elem.offsetTop;
@@ -239,8 +239,8 @@
      * @returns {function}
      */
     function setColor(color) {
-        let colorLength = isArray(color) ? color.length : false;
-        let recolor = function () {
+        var colorLength = isArray(color) ? color.length : false;
+        var recolor = function () {
             return color[floor(random() * colorLength)];
         };
         return typeof color !== 'string' ? colorLength ? recolor : randomColor :
@@ -318,98 +318,83 @@
         }
     }
 
-    class Origin {
-        static commonConfig = {
+    // requestAnimationFrame兼容处理
+    win.requestAnimationFrame = (function (win) {
+        return win.requestAnimationFrame ||
+            win.webkitRequestAnimationFrame ||
+            win.mozRequestAnimationFrame ||
+            function (fn) {
+                win.setTimeout(fn, 1000 / 60);
+            };
+    })(win);
+
+    // 工具箱
+    var utils = {
+        pInt: pInt,
+        trimAll: trimAll,
+        randomColor: randomColor,
+        limitRandom: limitRandom,
+        extend: extend,
+        typeChecking: typeChecking,
+        isFunction: isFunction,
+        isPlainObject: isPlainObject,
+        isElem: isElem,
+        getCss: getCss,
+        offset: offset,
+        createCanvas: createCanvas,
+        scaleValue: scaleValue,
+        calcSpeed: calcSpeed,
+        setColor: setColor,
+        pause: pause,
+        open: open,
+        resize: resize,
+        modifyPrototype: modifyPrototype
+    };
+
+    var JParticles = {
+        version: '1.1.0',
+        canvasSupport: canvasSupport,
+        commonConfig: {
             // 画布全局透明度
             opacity: 1,
             // 粒子颜色，空数组表示随机取色，或赋值特定颜色的数组，如：['red', 'blue', 'green']
             color: [],
             // 默认true: 自适应窗口尺寸变化
             resize: true
-        };
-        constructor(constructor, selector, options) {
-            if (canvasSupport &&
-                (this.container = isElem(selector) ? selector : doc.querySelector(selector))) {
-
-                this.set = extend(true, {}, Public.commonConfig, constructor.defaultConfig, options);
-                this.c = doc.createElement('canvas');
-                this.cxt = this.c.getContext('2d');
-                this.paused = false;
-
-                setCanvasWH(this);
-
-                this.container.innerHTML = '';
-                this.container.appendChild(this.c);
-                this.color = setColor(this.set.color);
-                this.init();
+        },
+        utils: utils,
+        inherit: {
+            requestAnimationFrame: function () {
+                !this.paused && win.requestAnimationFrame(this.draw.bind(this));
+            },
+            pause: function () {
+                pause(this);
+            },
+            open: function () {
+                open(this);
+            },
+            resize: function () {
+                resize(this);
             }
         },
-        requestAnimationFrame() {
-            !this.paused && win.requestAnimationFrame(this.draw.bind(this));
+        event: {
+            on: on,
+            off: off
         },
-        pause() {
-            pause(this);
-        },
-        open() {
-            open(this);
-        },
-        resize() {
-            resize(this);
+        extend: function (prototype) {
+            return extend(prototype, this.inherit), this;
         }
-    }
-
-    // requestAnimationFrame 兼容处理
-    win.requestAnimationFrame = (win => {
-        return win.requestAnimationFrame
-            || win.webkitRequestAnimationFrame
-            || win.mozRequestAnimationFrame
-            || function (fn) {
-                win.setTimeout(fn, 1000 / 60);
-            };
-    })(win);
-
-    // 工具箱
-    const utils = {
-        canvasSupport,
-        RegExp,
-        pInt,
-        trimAll,
-        randomColor,
-        limitRandom,
-        extend,
-        typeChecking,
-        isFunction,
-        isPlainObject,
-        isElem,
-        getCss,
-        offset,
-        createCanvas,
-        scaleValue,
-        calcSpeed,
-        setColor,
-        pause,
-        open,
-        on,
-        off,
-        resize,
-        modifyPrototype
-    };
-
-    const JParticles = {
-        version: '1.1.0',
-        utils,
-        Origin
     };
 
     win.JParticles = JParticles;
 
-    // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
-    // 导致后面的插件找不到 JParticles 对象而报错
+    // AMD 加载方式放在头部，factory函数会比后面的插件延迟执行
+    // 会导致后面的插件找不到JParticles对象而报错
     if (typeof define === 'function' && define.amd) {
-        define(() => {
+        define(function () {
             return JParticles;
         });
-    } else {
-        return JParticles;
     }
+
+    return JParticles;
 }));

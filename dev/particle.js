@@ -1,12 +1,43 @@
-// particle.js
 +function (JParticles) {
-    'use strict';
 
-    var utils = JParticles.utils,
-        event = JParticles.event,
-        random = Math.random,
-        abs = Math.abs,
-        pi2 = Math.PI * 2;
+    const utils = JParticles.utils;
+    const random = Math.random;
+    const abs = Math.abs;
+    const twicePI = Math.PI * 2;
+
+    JParticles.particle = class Particle extends JParticles.Origin {
+        constructor(selector, options) {
+            super(Particle, selector, options);
+        }
+        init() {
+
+        }
+        draw() {
+
+        }
+        createDots() {
+
+        }
+        connectDots() {
+
+        }
+        getElemOffset() {
+
+        }
+        event() {
+
+        }
+        parallax() {
+
+        }
+    };
+
+    Object.assign(Particle.prototype, {
+
+    });
+    utils.modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
+    new JParticles.particle('#demo', {});
+
 
     /**
      * 检查元素或其祖先节点的属性是否等于预给值
@@ -122,7 +153,7 @@
                 var r = v.r;
                 cxt.save();
                 cxt.beginPath();
-                cxt.arc(v.x, v.y, r, 0, pi2);
+                cxt.arc(v.x, v.y, r, 0, twicePI);
                 cxt.fillStyle = v.color;
                 cxt.fill();
                 cxt.restore();
