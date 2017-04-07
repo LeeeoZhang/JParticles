@@ -1,1 +1,234 @@
-+function(t){"use strict";function e(t,s){i.createCanvas(this,e,t,s)}var i=t.utils,s=i.limitRandom,o=i.randomColor,r=i.scaleValue,a=Math.random,n=Math.sin,f=2*Math.PI,l="undefined",h=Array.isArray;e.defaultConfig={num:3,fillColor:[],lineColor:[],lineWidth:[],offsetLeft:[],offsetTop:[],crestHeight:[],rippleNum:[],speed:[],fill:!1,stroke:!0};var c=e.prototype={version:"1.0.0",init:function(){this.set.num>0&&(this.rippleLength=[],this.attrNormalize(),this.createDots(),this.draw(),this.resize())},attrNormalize:function(){["fillColor","lineColor","lineWidth","offsetLeft","offsetTop","crestHeight","rippleNum","speed","fill","stroke"].forEach(function(t){this.attrProcessor(t)}.bind(this))},attrProcessor:function(t){var e=this.set.num,i=this.set[t],s=i,o="offsetLeft"===t?this.cw:this.ch;for(h(i)||(s=this.set[t]=[]);e--;){var r=h(i)?i[e]:i;s[e]=typeof r===l?this.generateAttrVal(t):this.scaleValue(t,r,o),"rippleNum"===t&&(this.rippleLength[e]=this.cw/s[e])}},scaleValue:function(t,e,i){return"offsetTop"===t||"offsetLeft"===t||"crestHeight"===t?r(e,i):e},generateAttrVal:function(t){var e=this.cw,i=this.ch;switch(t){case"lineColor":case"fillColor":t=o();break;case"lineWidth":t=s(2,.2);break;case"offsetLeft":t=a()*e;break;case"offsetTop":case"crestHeight":t=a()*i;break;case"rippleNum":t=s(e/2,1);break;case"speed":t=s(.4,.1);break;case"fill":t=!1;break;case"stroke":t=!0}return t},setOffsetTop:function(t){this.set.num>0&&(!h(t)&&t>0&&t<1&&(t*=this.ch),this.set.offsetTop.forEach(function(e,i,s){s[i]=h(t)?t[i]||e:t}))},createDots:function(){for(var t=this.dots=[],e=this.rippleLength,i=this.cw,s=this.set.num;s--;){for(var o=[],r=f/e[s],a=0;a<i;a++)o.push({x:a,y:a*r});t[s]=o}},draw:function(){var t=this.set;if(!(t.num<=0)){var e=this.cxt,i=this.cw,s=this.ch,o=this.paused;e.clearRect(0,0,i,s),e.globalAlpha=t.opacity,this.dots.forEach(function(r,a){var f=t.crestHeight[a],l=t.offsetLeft[a],h=t.offsetTop[a],c=t.speed[a];e.save(),e.beginPath(),r.forEach(function(t,i){e[i?"lineTo":"moveTo"](t.x,f*n(t.y+l)+h),!o&&(t.y-=c)}),t.fill[a]&&(e.lineTo(i,s),e.lineTo(0,s),e.closePath(),e.fillStyle=t.fillColor[a],e.fill()),t.stroke[a]&&(e.lineWidth=t.lineWidth[a],e.strokeStyle=t.lineColor[a],e.stroke()),e.restore()}),this.requestAnimationFrame()}}};t.extend(c),i.modifyPrototype(c,"resize",function(t,e){this.set.num>0&&this.dots.forEach(function(i){i.forEach(function(i){i.x*=t,i.y*=e})})}),t.wave=c.constructor=e}(JParticles);
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+// wave.js
++function (JParticles) {
+    'use strict';
+
+    var utils = JParticles.utils,
+        limitRandom = utils.limitRandom,
+        randomColor = utils.randomColor,
+        _scaleValue = utils.scaleValue,
+        random = Math.random,
+        sin = Math.sin,
+        pi2 = Math.PI * 2,
+        UNDEFINED = 'undefined',
+        isArray = Array.isArray;
+
+    function Wave(selector, options) {
+        utils.createCanvas(this, Wave, selector, options);
+    }
+
+    Wave.defaultConfig = {
+        // 波纹个数
+        num: 3,
+        // 波纹背景颜色，当fill设置为true时生效
+        fillColor: [],
+        // 波纹线条(边框)颜色，当stroke设置为true时生效
+        lineColor: [],
+        // 线条宽度
+        lineWidth: [],
+        // 线条的横向偏移值，(0, 1)表示容器宽度的倍数，[1, +∞)表示具体数值
+        offsetLeft: [],
+        // 线条的纵向偏移值，线条中点到元素顶部的距离，(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值
+        offsetTop: [],
+        // 波峰高度，(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值
+        crestHeight: [],
+        // 波纹个数，即正弦周期个数
+        rippleNum: [],
+        // 运动速度
+        speed: [],
+        // 是否填充背景色，设置为false相关值无效
+        fill: false,
+        // 是否绘制边框，设置为false相关值无效
+        stroke: true
+    };
+
+    var fn = Wave.prototype = {
+        version: '1.0.0',
+        init: function init() {
+            if (this.set.num > 0) {
+
+                // 线条波长，每个周期(2π)在canvas上的实际长度
+                this.rippleLength = [];
+
+                this.attrNormalize();
+                this.createDots();
+                this.draw();
+                this.resize();
+            }
+        },
+        attrNormalize: function attrNormalize() {
+            ['fillColor', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'rippleNum', 'speed', 'fill', 'stroke'].forEach(function (attr) {
+
+                this.attrProcessor(attr);
+            }.bind(this));
+        },
+        attrProcessor: function attrProcessor(attr) {
+            var num = this.set.num;
+            var attrVal = this.set[attr];
+            var std = attrVal;
+            var scale = attr === 'offsetLeft' ? this.cw : this.ch;
+
+            if (!isArray(attrVal)) {
+                std = this.set[attr] = [];
+            }
+
+            // 将数组、字符串、数字、布尔类型属性标准化，假设num=3，如：
+            // crestHeight: []或[2]或[2, 2], 标准化成: [2, 2, 2]
+            // crestHeight: 2, 标准化成: [2, 2, 2]
+            // 注意：(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值，其他属性同理
+            while (num--) {
+                var val = isArray(attrVal) ? attrVal[num] : attrVal;
+
+                std[num] = (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === UNDEFINED ? this.generateAttrVal(attr) : this.scaleValue(attr, val, scale);
+
+                if (attr === 'rippleNum') {
+                    this.rippleLength[num] = this.cw / std[num];
+                }
+            }
+        },
+        scaleValue: function scaleValue(attr, val, scale) {
+            if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
+                return _scaleValue(val, scale);
+            }
+            return val;
+        },
+        generateAttrVal: function generateAttrVal(attr) {
+            var cw = this.cw;
+            var ch = this.ch;
+
+            switch (attr) {
+                case 'lineColor':
+                case 'fillColor':
+                    attr = randomColor();
+                    break;
+                case 'lineWidth':
+                    attr = limitRandom(2, .2);
+                    break;
+                case 'offsetLeft':
+                    attr = random() * cw;
+                    break;
+                case 'offsetTop':
+                case 'crestHeight':
+                    attr = random() * ch;
+                    break;
+                case 'rippleNum':
+                    attr = limitRandom(cw / 2, 1);
+                    break;
+                case 'speed':
+                    attr = limitRandom(.4, .1);
+                    break;
+                case 'fill':
+                    attr = false;
+                    break;
+                case 'stroke':
+                    attr = true;
+                    break;
+            }
+            return attr;
+        },
+        setOffsetTop: function setOffsetTop(topVal) {
+            if (this.set.num > 0) {
+
+                if (!isArray(topVal) && topVal > 0 && topVal < 1) {
+                    topVal *= this.ch;
+                }
+
+                this.set.offsetTop.forEach(function (v, i, array) {
+
+                    // topVal[i] || v: 当传入的topVal数组少于自身数组的长度，
+                    // 超出部分保持它的原有值，以保证不出现undefined
+                    array[i] = isArray(topVal) ? topVal[i] || v : topVal;
+                });
+            }
+        },
+        createDots: function createDots() {
+            var dots = this.dots = [];
+            var rippleLength = this.rippleLength;
+            var cw = this.cw;
+            var num = this.set.num;
+
+            while (num--) {
+                var line = [];
+
+                // 点的y轴步进
+                var step = pi2 / rippleLength[num];
+
+                // 创建一条线段所需的点
+                for (var j = 0; j < cw; j++) {
+                    line.push({
+                        x: j,
+                        y: j * step
+                    });
+                }
+
+                dots[num] = line;
+            }
+        },
+        draw: function draw() {
+            var set = this.set;
+            if (set.num <= 0) {
+                return;
+            }
+
+            var cxt = this.cxt,
+                cw = this.cw,
+                ch = this.ch,
+                paused = this.paused;
+
+            cxt.clearRect(0, 0, cw, ch);
+            cxt.globalAlpha = set.opacity;
+
+            this.dots.forEach(function (lineDots, i) {
+                var crestHeight = set.crestHeight[i];
+                var offsetLeft = set.offsetLeft[i];
+                var offsetTop = set.offsetTop[i];
+                var speed = set.speed[i];
+
+                cxt.save();
+                cxt.beginPath();
+                lineDots.forEach(function (v, j) {
+                    cxt[j ? 'lineTo' : 'moveTo'](v.x,
+
+                    // y = A sin ( ωx + φ ) + h
+                    crestHeight * sin(v.y + offsetLeft) + offsetTop);
+                    !paused && (v.y -= speed);
+                });
+                if (set.fill[i]) {
+                    cxt.lineTo(cw, ch);
+                    cxt.lineTo(0, ch);
+                    cxt.closePath();
+                    cxt.fillStyle = set.fillColor[i];
+                    cxt.fill();
+                }
+                if (set.stroke[i]) {
+                    cxt.lineWidth = set.lineWidth[i];
+                    cxt.strokeStyle = set.lineColor[i];
+                    cxt.stroke();
+                }
+                cxt.restore();
+            });
+            this.requestAnimationFrame();
+        }
+    };
+
+    // 继承公共方法，如pause，open
+    JParticles.extend(fn);
+
+    utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
+        if (this.set.num > 0) {
+            this.dots.forEach(function (lineDots) {
+                lineDots.forEach(function (v) {
+                    v.x *= scaleX;
+                    v.y *= scaleY;
+                });
+            });
+        }
+    });
+
+    // 添加实例
+    JParticles.wave = fn.constructor = Wave;
+}(JParticles);
+//# sourceMappingURL=maps/wave.js.map

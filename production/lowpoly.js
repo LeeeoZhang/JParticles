@@ -1,1 +1,122 @@
-+function(t){"use strict";function e(t,o){a.createCanvas(this,e,t,o)}var a=t.utils,o=Math.random,i=Math.abs,s=2*Math.PI;e.defaultConfig={color:"#fff",maxSpeed:.6,minSpeed:0};var r=e.prototype={version:"1.0.0",init:function(){this.dots=[],this.createDots(),this.draw(),this.resize()},snowShape:function(){var t=this.set,e=a.calcSpeed,s=t.maxSpeed,r=t.minSpeed,n=a.limitRandom(t.maxR,t.minR);return{x:o()*this.cw,y:-n,r:n,vx:e(s,r),vy:i(n*e(s,r)),color:this.color()}},createDots:function(){for(var t=a.pInt(6*o()),e=this.dots;t--;)e.push(this.snowShape())},draw:function(){var t=this,e=t.set,a=t.cxt,i=t.cw,r=t.ch,n=t.paused;a.clearRect(0,0,i,r),a.globalAlpha=e.opacity,t.dots.forEach(function(e,c,h){var l=e.x,p=e.y,f=e.r;a.save(),a.beginPath(),a.arc(l,p,f,0,s),a.fillStyle=e.color,a.fill(),a.restore(),n||(e.x+=e.vx,e.y+=e.vy,o()>.99&&o()>.5&&(e.vx*=-1),l<0||l-f>i?h.splice(c,1,t.snowShape()):p-f>=r&&h.splice(c,1))}),!n&&o()>.9&&t.createDots(),t.requestAnimationFrame()}};t.extend(r),t.lowpoly=r.constructor=e}(JParticles);
+'use strict';
+
+// lowpoly.js
++function (JParticles) {
+    'use strict';
+
+    var utils = JParticles.utils,
+        event = JParticles.event,
+        random = Math.random,
+        abs = Math.abs,
+        pi2 = Math.PI * 2;
+
+    function Lowpoly(selector, options) {
+        utils.createCanvas(this, Lowpoly, selector, options);
+    }
+
+    Lowpoly.defaultConfig = {
+        // 粒子个数，默认为容器宽度的0.12倍
+        // 传入(0, 1)显示容器宽度相应倍数的个数，传入[1, +∞)显示具体个数
+        num: .12,
+        // 粒子最大半径(0, +∞)
+        maxR: 2.4,
+        // 粒子最小半径(0, +∞)
+        minR: .6,
+        // 粒子最大运动速度(0, +∞)
+        maxSpeed: 1,
+        // 粒子最小运动速度(0, +∞)
+        minSpeed: 0,
+        // 线段的宽度
+        lineWidth: .2
+    };
+
+    var fn = Lowpoly.prototype = {
+        version: '1.0.0',
+        init: function init() {
+            this.dots = [];
+            this.createDots();
+            this.draw();
+            this.resize();
+        },
+        createDots: function createDots() {
+            var cw = this.cw,
+                ch = this.ch,
+                set = this.set,
+                color = this.color,
+                limitRandom = utils.limitRandom,
+                calcSpeed = utils.calcSpeed,
+                maxSpeed = set.maxSpeed,
+                minSpeed = set.minSpeed,
+                maxR = set.maxR,
+                minR = set.minR,
+                num = 40 || utils.pInt(utils.scaleValue(set.num, cw)),
+                dots = [],
+                r;
+
+            while (num--) {
+                r = limitRandom(maxR, minR);
+                dots.push({
+                    x: limitRandom(cw - r, r),
+                    y: limitRandom(ch - r, r),
+                    r: r,
+                    vx: calcSpeed(maxSpeed, minSpeed),
+                    vy: calcSpeed(maxSpeed, minSpeed),
+                    color: color()
+                });
+            }
+
+            dots.sort(function (a, b) {
+                return a.x - b.x;
+            });
+
+            this.dots = dots;
+        },
+        draw: function draw() {
+            var self = this,
+                set = self.set,
+                cxt = self.cxt,
+                cw = self.cw,
+                ch = self.ch;
+
+            cxt.clearRect(0, 0, cw, ch);
+
+            // 当canvas宽高改变的时候，全局属性需要重新设置
+            cxt.lineWidth = set.lineWidth;
+            cxt.globalAlpha = set.opacity;
+
+            self.dots.forEach(function (v) {
+                var r = v.r;
+                cxt.save();
+                cxt.beginPath();
+                cxt.arc(v.x, v.y, r, 0, pi2);
+                cxt.fillStyle = v.color;
+                cxt.fill();
+                cxt.restore();
+            });
+
+            this.connectDots();
+            // self.requestAnimationFrame();
+        },
+        connectDots: function connectDots() {
+            var cxt = this.cxt,
+                dots = this.dots;
+
+            cxt.save();
+            cxt.beginPath();
+            cxt.moveTo(0, 0);
+
+            dots.forEach(function (v) {
+                cxt.lineTo(v.x, v.y);
+            });
+
+            cxt.strokeStyle = dots[0].color;
+            cxt.stroke();
+            cxt.restore();
+        }
+    };
+
+    JParticles.extend(fn);
+
+    JParticles.lowpoly = fn.constructor = Lowpoly;
+}(JParticles);
+//# sourceMappingURL=maps/lowpoly.js.map

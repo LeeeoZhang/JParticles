@@ -1,1 +1,116 @@
-+function(t){"use strict";function e(t,i){a.createCanvas(this,e,t,i)}var a=t.utils,i=Math.random,o=Math.abs,s=2*Math.PI;e.defaultConfig={color:"#fff",maxR:6.5,minR:.4,maxSpeed:.6,minSpeed:0};var r=e.prototype={version:"1.1.0",init:function(){this.dots=[],this.createDots(),this.draw(),this.resize()},snowShape:function(){var t=this.set,e=a.calcSpeed,s=t.maxSpeed,r=t.minSpeed,n=a.limitRandom(t.maxR,t.minR);return{x:i()*this.cw,y:-n,r:n,vx:e(s,r),vy:o(n*e(s,r)),color:this.color()}},createDots:function(){for(var t=a.pInt(6*i()),e=this.dots;t--;)e.push(this.snowShape())},draw:function(){var t=this,e=t.set,a=t.cxt,o=t.cw,r=t.ch,n=t.paused;a.clearRect(0,0,o,r),a.globalAlpha=e.opacity,t.dots.forEach(function(e,c,h){var l=e.x,p=e.y,f=e.r;a.save(),a.beginPath(),a.arc(l,p,f,0,s),a.fillStyle=e.color,a.fill(),a.restore(),n||(e.x+=e.vx,e.y+=e.vy,i()>.99&&i()>.5&&(e.vx*=-1),l<0||l-f>o?h.splice(c,1,t.snowShape()):p-f>=r&&h.splice(c,1))}),!n&&i()>.9&&t.createDots(),t.requestAnimationFrame()}};t.extend(r),t.snow=r.constructor=e}(JParticles);
+'use strict';
+
+// snow.js
++function (JParticles) {
+    'use strict';
+
+    var utils = JParticles.utils,
+        random = Math.random,
+        abs = Math.abs,
+        pi2 = Math.PI * 2;
+
+    function Snow(selector, options) {
+        utils.createCanvas(this, Snow, selector, options);
+    }
+
+    Snow.defaultConfig = {
+        // 雪花颜色
+        color: '#fff',
+        maxR: 6.5,
+        minR: .4,
+        maxSpeed: .6,
+        minSpeed: 0
+    };
+
+    var fn = Snow.prototype = {
+        version: '1.1.0',
+        init: function init() {
+            this.dots = [];
+            this.createDots();
+            this.draw();
+            this.resize();
+        },
+        snowShape: function snowShape() {
+            var set = this.set,
+                calcSpeed = utils.calcSpeed,
+                maxSpeed = set.maxSpeed,
+                minSpeed = set.minSpeed,
+                r = utils.limitRandom(set.maxR, set.minR);
+            return {
+                x: random() * this.cw,
+                y: -r,
+                r: r,
+                vx: calcSpeed(maxSpeed, minSpeed),
+
+                // r 越大，设置垂直速度越快，这样比较有近快远慢的层次效果
+                vy: abs(r * calcSpeed(maxSpeed, minSpeed)),
+                color: this.color()
+            };
+        },
+        createDots: function createDots() {
+            // 随机创建0-6个雪花
+            var count = utils.pInt(random() * 6);
+            var dots = this.dots;
+            while (count--) {
+                dots.push(this.snowShape());
+            }
+        },
+        draw: function draw() {
+            var self = this,
+                set = self.set,
+                cxt = self.cxt,
+                cw = self.cw,
+                ch = self.ch,
+                paused = self.paused;
+
+            cxt.clearRect(0, 0, cw, ch);
+            cxt.globalAlpha = set.opacity;
+
+            self.dots.forEach(function (v, i, array) {
+                var x = v.x;
+                var y = v.y;
+                var r = v.r;
+
+                cxt.save();
+                cxt.beginPath();
+                cxt.arc(x, y, r, 0, pi2);
+                cxt.fillStyle = v.color;
+                cxt.fill();
+                cxt.restore();
+
+                if (!paused) {
+                    v.x += v.vx;
+                    v.y += v.vy;
+
+                    // 雪花反方向飘落
+                    if (random() > .99 && random() > .5) {
+                        v.vx *= -1;
+                    }
+
+                    // 雪花从侧边出去，删除
+                    if (x < 0 || x - r > cw) {
+                        array.splice(i, 1, self.snowShape());
+
+                        // 雪花从底部出去，删除
+                    } else if (y - r >= ch) {
+                        array.splice(i, 1);
+                    }
+                }
+            });
+
+            // 添加雪花
+            if (!paused && random() > .9) {
+                self.createDots();
+            }
+
+            self.requestAnimationFrame();
+        }
+    };
+
+    // 继承公共方法，如pause，open
+    JParticles.extend(fn);
+
+    // 添加实例
+    JParticles.snow = fn.constructor = Snow;
+}(JParticles);
+//# sourceMappingURL=maps/snow.js.map
