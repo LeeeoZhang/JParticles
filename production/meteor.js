@@ -1,4 +1,4 @@
-'use strict';
++function () { 'use strict';
 
 // meteor.js
 +function (JParticles) {
@@ -33,5 +33,5 @@
     JParticles.extend(fn);
 
     JParticles.meteor = fn.constructor = Meteor;
-}(JParticles);
+}(JParticles); }();
 //# sourceMappingURL=maps/meteor.js.map

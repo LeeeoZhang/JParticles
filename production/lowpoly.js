@@ -1,4 +1,4 @@
-'use strict';
++function () { 'use strict';
 
 // lowpoly.js
 +function (JParticles) {
@@ -118,5 +118,5 @@
     JParticles.extend(fn);
 
     JParticles.lowpoly = fn.constructor = Lowpoly;
-}(JParticles);
+}(JParticles); }();
 //# sourceMappingURL=maps/lowpoly.js.map

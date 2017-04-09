@@ -1,5 +1,10 @@
-'use strict';
-
+(function (factory) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        factory();
+    }
+}(function () {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -35,6 +40,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *  open: 开启粒子运动
  *  resize: 自适应窗口
  */
+// 编译构建时通过 package.json 的 version 生成版本
 var version = '2.0.0';
 var win = window;
 var doc = document;
@@ -385,6 +391,9 @@ var utils = {
     calcSpeed: calcSpeed,
     on: on,
     off: off,
+    pause: _pause,
+    open: _open,
+    resize: _resize,
     modifyPrototype: modifyPrototype
 };
 
@@ -395,4 +404,15 @@ var JParticles = {
 };
 
 win.JParticles = JParticles;
+// AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
+    // 导致后面的插件找不到 JParticles 对象而报错
+    if (typeof define === 'function' && define.amd) {
+        define(() => {
+            return JParticles;
+        });
+    } else {
+        return JParticles;
+    }
+}));
+
 //# sourceMappingURL=maps/jparticles.js.map

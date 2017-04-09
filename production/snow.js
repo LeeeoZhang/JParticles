@@ -1,4 +1,4 @@
-'use strict';
++function () { 'use strict';
 
 // snow.js
 +function (JParticles) {
@@ -112,5 +112,5 @@
 
     // 添加实例
     JParticles.snow = fn.constructor = Snow;
-}(JParticles);
+}(JParticles); }();
 //# sourceMappingURL=maps/snow.js.map

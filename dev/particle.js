@@ -231,13 +231,14 @@
         }
     };
 
-    Particle.prototype.version = '2.0.0';
+    let fn = JParticles.particle.prototype;
+    fn.version = '2.0.0';
 
     // 修改原型 pause, open 方法
-    modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
+    modifyPrototype(fn, 'pause, open', eventHandler);
 
     // 修改原型 resize 方法
-    modifyPrototype(Particle.prototype, 'resize', function (scaleX, scaleY) {
+    modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
         const {num, range} = this.set;
         if (num > 0 && range > 0) {
             this.posX *= scaleX;

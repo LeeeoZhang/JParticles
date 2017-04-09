@@ -29,7 +29,8 @@
  *  open: 开启粒子运动
  *  resize: 自适应窗口
  */
-const version = '2.0.0';
+// 编译构建时通过 package.json 的 version 生成版本
+const version = null;
 const win = window;
 const doc = document;
 const {random, floor} = Math;
@@ -366,6 +367,9 @@ const utils = {
     calcSpeed,
     on,
     off,
+    pause,
+    open,
+    resize,
     modifyPrototype
 };
 
