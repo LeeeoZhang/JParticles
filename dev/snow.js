@@ -1,17 +1,12 @@
-// snow.js
-+function (JParticles) {
-    'use strict';
+const {utils, Base} = JParticles;
+const {pInt, limitRandom, calcSpeed} = utils;
+const {random, abs, PI} = Math;
+const twicePI = PI * 2;
 
-    var utils = JParticles.utils,
-        random = Math.random,
-        abs = Math.abs,
-        pi2 = Math.PI * 2;
+JParticles.snow = class Snow extends Base {
 
-    function Snow(selector, options) {
-        utils.createCanvas(this, Snow, selector, options);
-    }
+    static defaultConfig = {
 
-    Snow.defaultConfig = {
         // 雪花颜色
         color: '#fff',
         maxR: 6.5,
@@ -20,95 +15,86 @@
         minSpeed: 0
     };
 
-    var fn = Snow.prototype = {
-        version: '1.1.0',
-        init: function () {
-            this.dots = [];
-            this.createDots();
-            this.draw();
-            this.resize();
-        },
-        snowShape: function () {
-            var set = this.set,
-                calcSpeed = utils.calcSpeed,
-                maxSpeed = set.maxSpeed,
-                minSpeed = set.minSpeed,
-                r = utils.limitRandom(set.maxR, set.minR);
-            return {
-                x: random() * this.cw,
-                y: -r,
-                r: r,
-                vx: calcSpeed(maxSpeed, minSpeed),
+    constructor(selector, options) {
+        super(Snow, selector, options);
+    }
 
-                // r 越大，设置垂直速度越快，这样比较有近快远慢的层次效果
-                vy: abs(r * calcSpeed(maxSpeed, minSpeed)),
-                color: this.color()
-            };
-        },
-        createDots: function () {
-            // 随机创建0-6个雪花
-            var count = utils.pInt(random() * 6);
-            var dots = this.dots;
-            while (count--) {
-                dots.push(this.snowShape());
-            }
-        },
-        draw: function () {
-            var self = this,
-                set = self.set,
-                cxt = self.cxt,
-                cw = self.cw,
-                ch = self.ch,
-                paused = self.paused;
+    init() {
+        this.createDots();
+        this.draw();
+        this.resize();
+    }
 
-            cxt.clearRect(0, 0, cw, ch);
-            cxt.globalAlpha = set.opacity;
+    snowShape() {
+        const {maxR, minR, maxSpeed, minSpeed} = this.set;
+        const r = limitRandom(maxR, minR);
 
-            self.dots.forEach(function (v, i, array) {
-                var x = v.x;
-                var y = v.y;
-                var r = v.r;
+        return {
+            r,
+            x: random() * this.cw,
+            y: -r,
+            vx: calcSpeed(maxSpeed, minSpeed),
 
-                cxt.save();
-                cxt.beginPath();
-                cxt.arc(x, y, r, 0, pi2);
-                cxt.fillStyle = v.color;
-                cxt.fill();
-                cxt.restore();
+            // r 越大，设置垂直速度越快，这样比较有近快远慢的层次效果
+            vy: abs(r * calcSpeed(maxSpeed, minSpeed)),
+            color: this.color()
+        };
+    }
 
-                if (!paused) {
-                    v.x += v.vx;
-                    v.y += v.vy;
+    createDots() {
 
-                    // 雪花反方向飘落
-                    if (random() > .99 && random() > .5) {
-                        v.vx *= -1;
-                    }
-
-                    // 雪花从侧边出去，删除
-                    if (x < 0 || x - r > cw) {
-                        array.splice(i, 1, self.snowShape());
-
-                        // 雪花从底部出去，删除
-                    } else if (y - r >= ch) {
-                        array.splice(i, 1);
-                    }
-                }
-            });
-
-            // 添加雪花
-            if (!paused && random() > .9) {
-                self.createDots();
-            }
-
-            self.requestAnimationFrame();
+        // 随机创建 0-6 个雪花
+        let count = pInt(random() * 6);
+        let dots = this.dots = [];
+        while (count--) {
+            dots.push(this.snowShape());
         }
-    };
+    }
 
-    // 继承公共方法，如pause，open
-    JParticles.extend(fn);
+    draw() {
+        const {cxt, cw, ch, paused} = this;
+        const {opacity} = this.set;
 
-    // 添加实例
-    JParticles.snow = fn.constructor = Snow;
+        cxt.clearRect(0, 0, cw, ch);
+        cxt.globalAlpha = opacity;
 
-}(JParticles);
+        this.dots.forEach((dot, i, array) => {
+            const {x, y, r} = dot;
+
+            cxt.save();
+            cxt.beginPath();
+            cxt.arc(x, y, r, 0, twicePI);
+            cxt.fillStyle = dot.color;
+            cxt.fill();
+            cxt.restore();
+
+            if (!paused) {
+                dot.x += dot.vx;
+                dot.y += dot.vy;
+
+                // 雪花反方向飘落
+                if (random() > .99 && random() > .5) {
+                    dot.vx *= -1;
+                }
+
+                // 雪花从侧边出去，删除再添加
+                if (x < 0 || x - r > cw) {
+                    array.splice(i, 1, this.snowShape());
+
+                    // 雪花从底部出去，删除
+                } else if (y - r >= ch) {
+                    array.splice(i, 1);
+                }
+            }
+        });
+
+        // 添加雪花
+        if (!paused && random() > .9) {
+            this.createDots();
+        }
+
+        this.requestAnimationFrame();
+    }
+};
+
+JParticles.snow.prototype.version = '2.0.0';

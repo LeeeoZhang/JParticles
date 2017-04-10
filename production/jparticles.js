@@ -1,10 +1,13 @@
-(function (factory) {
+
+;(function (factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
         factory();
     }
 }(function () {
+'use strict';
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -376,21 +379,27 @@ var utils = {
     regExp: regExp,
     pInt: pInt,
     trimAll: trimAll,
+
     randomColor: randomColor,
     limitRandom: limitRandom,
+
     extend: extend,
     typeChecking: typeChecking,
-    isFunction: isFunction,
     isPlainObject: isPlainObject,
-    isElement: isElement,
+    isFunction: isFunction,
+    isArray: isArray,
     isString: isString,
     isBoolean: isBoolean,
+    isElement: isElement,
+
     getCss: getCss,
     offset: offset,
-    scaleValue: scaleValue,
-    calcSpeed: calcSpeed,
     on: on,
     off: off,
+
+    scaleValue: scaleValue,
+    calcSpeed: calcSpeed,
+
     pause: _pause,
     open: _open,
     resize: _resize,
@@ -404,7 +413,7 @@ var JParticles = {
 };
 
 win.JParticles = JParticles;
-// AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
+    // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
     // 导致后面的插件找不到 JParticles 对象而报错
     if (typeof define === 'function' && define.amd) {
         define(() => {

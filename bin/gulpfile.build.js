@@ -17,12 +17,12 @@ const COPYRIGHT =
 `;
 
 const path = '../production/';
-const regExp = /jparticles(\.all)?\.js\s/;
+const regExp = /jparticles(\.all)?\.js/;
 
 // Build JParticles.
 gulp.task('build', () => {
     //gulp.src(`${path}*.js`)
-    gulp.src(`${path}jparticles.js`)
+    gulp.src(`${path}particle.js`)
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())

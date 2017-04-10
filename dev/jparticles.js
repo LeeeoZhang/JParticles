@@ -352,21 +352,27 @@ const utils = {
     regExp,
     pInt,
     trimAll,
+
     randomColor,
     limitRandom,
+
     extend,
     typeChecking,
-    isFunction,
     isPlainObject,
-    isElement,
+    isFunction,
+    isArray,
     isString,
     isBoolean,
+    isElement,
+
     getCss,
     offset,
-    scaleValue,
-    calcSpeed,
     on,
     off,
+
+    scaleValue,
+    calcSpeed,
+
     pause,
     open,
     resize,

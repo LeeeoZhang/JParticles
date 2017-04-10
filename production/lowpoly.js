@@ -1,122 +1,58 @@
 +function () { 'use strict';
 
-// lowpoly.js
-+function (JParticles) {
-    'use strict';
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    var utils = JParticles.utils,
-        event = JParticles.event,
-        random = Math.random,
-        abs = Math.abs,
-        pi2 = Math.PI * 2;
+var _class, _temp;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI;
+
+var twicePI = PI * 2;
+
+JParticles.lowpoly = (_temp = _class = function (_Base) {
+    _inherits(Lowpoly, _Base);
 
     function Lowpoly(selector, options) {
-        utils.createCanvas(this, Lowpoly, selector, options);
+        _classCallCheck(this, Lowpoly);
+
+        return _possibleConstructorReturn(this, (Lowpoly.__proto__ || Object.getPrototypeOf(Lowpoly)).call(this, Lowpoly, selector, options));
     }
 
-    Lowpoly.defaultConfig = {
-        // 粒子个数，默认为容器宽度的0.12倍
-        // 传入(0, 1)显示容器宽度相应倍数的个数，传入[1, +∞)显示具体个数
-        num: .12,
-        // 粒子最大半径(0, +∞)
-        maxR: 2.4,
-        // 粒子最小半径(0, +∞)
-        minR: .6,
-        // 粒子最大运动速度(0, +∞)
-        maxSpeed: 1,
-        // 粒子最小运动速度(0, +∞)
-        minSpeed: 0,
-        // 线段的宽度
-        lineWidth: .2
-    };
+    _createClass(Lowpoly, [{
+        key: 'init',
+        value: function init() {}
+    }, {
+        key: 'createDots',
+        value: function createDots() {}
+    }, {
+        key: 'draw',
+        value: function draw() {
 
-    var fn = Lowpoly.prototype = {
-        version: '1.0.0',
-        init: function init() {
-            this.dots = [];
-            this.createDots();
-            this.draw();
-            this.resize();
-        },
-        createDots: function createDots() {
-            var cw = this.cw,
-                ch = this.ch,
-                set = this.set,
-                color = this.color,
-                limitRandom = utils.limitRandom,
-                calcSpeed = utils.calcSpeed,
-                maxSpeed = set.maxSpeed,
-                minSpeed = set.minSpeed,
-                maxR = set.maxR,
-                minR = set.minR,
-                num = 40 || utils.pInt(utils.scaleValue(set.num, cw)),
-                dots = [],
-                r;
-
-            while (num--) {
-                r = limitRandom(maxR, minR);
-                dots.push({
-                    x: limitRandom(cw - r, r),
-                    y: limitRandom(ch - r, r),
-                    r: r,
-                    vx: calcSpeed(maxSpeed, minSpeed),
-                    vy: calcSpeed(maxSpeed, minSpeed),
-                    color: color()
-                });
-            }
-
-            dots.sort(function (a, b) {
-                return a.x - b.x;
-            });
-
-            this.dots = dots;
-        },
-        draw: function draw() {
-            var self = this,
-                set = self.set,
-                cxt = self.cxt,
-                cw = self.cw,
-                ch = self.ch;
-
-            cxt.clearRect(0, 0, cw, ch);
-
-            // 当canvas宽高改变的时候，全局属性需要重新设置
-            cxt.lineWidth = set.lineWidth;
-            cxt.globalAlpha = set.opacity;
-
-            self.dots.forEach(function (v) {
-                var r = v.r;
-                cxt.save();
-                cxt.beginPath();
-                cxt.arc(v.x, v.y, r, 0, pi2);
-                cxt.fillStyle = v.color;
-                cxt.fill();
-                cxt.restore();
-            });
-
-            this.connectDots();
-            // self.requestAnimationFrame();
-        },
-        connectDots: function connectDots() {
-            var cxt = this.cxt,
-                dots = this.dots;
-
-            cxt.save();
-            cxt.beginPath();
-            cxt.moveTo(0, 0);
-
-            dots.forEach(function (v) {
-                cxt.lineTo(v.x, v.y);
-            });
-
-            cxt.strokeStyle = dots[0].color;
-            cxt.stroke();
-            cxt.restore();
+            this.requestAnimationFrame();
         }
-    };
+    }]);
 
-    JParticles.extend(fn);
+    return Lowpoly;
+}(Base), _class.defaultConfig = {
+    color: '#fff',
+    maxR: 6.5,
+    minR: .4,
+    maxSpeed: .6,
+    minSpeed: 0
+}, _temp);
 
-    JParticles.lowpoly = fn.constructor = Lowpoly;
-}(JParticles); }();
+JParticles.lowpoly.prototype.version = '2.0.0'; }();
 //# sourceMappingURL=maps/lowpoly.js.map

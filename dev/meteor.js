@@ -1,39 +1,34 @@
-// meteor.js
-+function (JParticles) {
-    'use strict';
+const {utils, Base} = JParticles;
+const {pInt, limitRandom, calcSpeed} = utils;
+const {random, abs, PI} = Math;
+const twicePI = PI * 2;
 
-    var utils = JParticles.utils,
-        random = Math.random,
-        abs = Math.abs,
-        pi2 = Math.PI * 2;
+JParticles.meteor = class Meteor extends Base {
 
-    function Meteor(selector, options) {
-        utils.createCanvas(this, Meteor, selector, options);
-    }
-
-    Meteor.defaultConfig = {
+    static defaultConfig = {
+        color: '#fff',
         maxR: 6.5,
         minR: .4,
         maxSpeed: .6,
         minSpeed: 0
     };
 
-    var fn = Meteor.prototype = {
-        version: '1.0.0',
-        init: function () {
+    constructor(selector, options) {
+        super(Meteor, selector, options);
+    }
 
-        },
-        createDots: function () {
+    init() {
 
-        },
-        draw: function () {
+    }
 
-            this.requestAnimationFrame();
-        }
-    };
+    createDots() {
 
-    JParticles.extend(fn);
+    }
 
-    JParticles.meteor = fn.constructor = Meteor;
+    draw() {
 
-}(JParticles);
+        this.requestAnimationFrame();
+    }
+};
+
+JParticles.meteor.prototype.version = '2.0.0';
