@@ -241,6 +241,22 @@ JParticles.wave = (_temp = _class = function (_Base) {
 
             this.requestAnimationFrame();
         }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this3 = this;
+
+            utils.resize(this, function (scaleX, scaleY) {
+                if (_this3.set.num > 0) {
+                    _this3.dots.forEach(function (line) {
+                        line.forEach(function (dot) {
+                            dot.x *= scaleX;
+                            dot.y *= scaleY;
+                        });
+                    });
+                }
+            });
+        }
     }]);
 
     return Wave;
@@ -281,17 +297,5 @@ JParticles.wave = (_temp = _class = function (_Base) {
     stroke: true
 }, _temp);
 
-var fn = JParticles.wave.prototype;
-fn.version = '2.0.0';
-
-utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
-    if (this.set.num > 0) {
-        this.dots.forEach(function (line) {
-            line.forEach(function (dot) {
-                dot.x *= scaleX;
-                dot.y *= scaleY;
-            });
-        });
-    }
-}); }();
+JParticles.wave.prototype.version = '2.0.0'; }();
 //# sourceMappingURL=maps/wave.js.map

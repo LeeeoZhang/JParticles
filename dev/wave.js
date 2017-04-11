@@ -223,18 +223,19 @@ JParticles.wave = class Wave extends Base {
 
         this.requestAnimationFrame();
     }
+
+    resize() {
+        utils.resize(this, (scaleX, scaleY) => {
+            if (this.set.num > 0) {
+                this.dots.forEach(line => {
+                    line.forEach(dot => {
+                        dot.x *= scaleX;
+                        dot.y *= scaleY;
+                    });
+                });
+            }
+        })
+    }
 };
 
-let fn = JParticles.wave.prototype;
-fn.version = '2.0.0';
-
-utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
-    if (this.set.num > 0) {
-        this.dots.forEach(line => {
-            line.forEach(dot => {
-                dot.x *= scaleX;
-                dot.y *= scaleY;
-            });
-        });
-    }
-});
+JParticles.wave.prototype.version = '2.0.0';

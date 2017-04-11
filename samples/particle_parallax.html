@@ -42,10 +42,13 @@
     <script src="../production/particle.js"></script>
     <script src="js/event.js"></script>
     <script>
+        console.log(JParticles.particle.prototype);
         bind('#demo', function () {
-            return new JParticles.particle('#demo', {
+            effect = new JParticles.particle('#demo', {
                 parallax: true
             });
+            console.log(effect);
+            return effect;
         });
     </script>
 </body>

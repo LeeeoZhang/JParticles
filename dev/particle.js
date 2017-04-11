@@ -226,21 +226,20 @@ JParticles.particle = class Particle extends Base {
         // 添加 move 事件
         eventHandler.call(this);
     }
+
+    resize() {
+        utils.resize(this, (scaleX, scaleY) => {
+            const {num, range} = this.set;
+            if (num > 0 && range > 0) {
+                this.posX *= scaleX;
+                this.posY *= scaleY;
+                this.getElemOffset();
+            }
+        })
+    }
 };
 
-let fn = JParticles.particle.prototype;
-fn.version = '2.0.0';
+JParticles.particle.prototype.version = '2.0.0';
 
 // 修改原型 pause, open 方法
-modifyPrototype(fn, 'pause, open', eventHandler);
-
-// 修改原型 resize 方法
-modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
-    const {num, range} = this.set;
-    if (num > 0 && range > 0) {
-        this.posX *= scaleX;
-        this.posY *= scaleY;
-        this.getElemOffset();
-    }
-});
-
+modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler);

@@ -799,6 +799,23 @@ JParticles.particle = (_temp = _class = function (_Base) {
             // 添加 move 事件
             eventHandler.call(this);
         }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this2 = this;
+
+            utils.resize(this, function (scaleX, scaleY) {
+                var _set6 = _this2.set,
+                    num = _set6.num,
+                    range = _set6.range;
+
+                if (num > 0 && range > 0) {
+                    _this2.posX *= scaleX;
+                    _this2.posY *= scaleY;
+                    _this2.getElemOffset();
+                }
+            });
+        }
     }]);
 
     return Particle;
@@ -834,24 +851,10 @@ JParticles.particle = (_temp = _class = function (_Base) {
     eventElem: null
 }, _temp);
 
-var fn = JParticles.particle.prototype;
-fn.version = '2.0.0';
+JParticles.particle.prototype.version = '2.0.0';
 
 // 修改原型 pause, open 方法
-modifyPrototype(fn, 'pause, open', eventHandler);
-
-// 修改原型 resize 方法
-modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
-    var _set6 = this.set,
-        num = _set6.num,
-        range = _set6.range;
-
-    if (num > 0 && range > 0) {
-        this.posX *= scaleX;
-        this.posY *= scaleY;
-        this.getElemOffset();
-    }
-}); }();
+modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler); }();
 //# sourceMappingURL=maps/particle.js.map
 
 +function () { 'use strict';
@@ -1241,6 +1244,22 @@ JParticles.wave = (_temp = _class = function (_Base) {
 
             this.requestAnimationFrame();
         }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this3 = this;
+
+            utils.resize(this, function (scaleX, scaleY) {
+                if (_this3.set.num > 0) {
+                    _this3.dots.forEach(function (line) {
+                        line.forEach(function (dot) {
+                            dot.x *= scaleX;
+                            dot.y *= scaleY;
+                        });
+                    });
+                }
+            });
+        }
     }]);
 
     return Wave;
@@ -1281,17 +1300,5 @@ JParticles.wave = (_temp = _class = function (_Base) {
     stroke: true
 }, _temp);
 
-var fn = JParticles.wave.prototype;
-fn.version = '2.0.0';
-
-utils.modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
-    if (this.set.num > 0) {
-        this.dots.forEach(function (line) {
-            line.forEach(function (dot) {
-                dot.x *= scaleX;
-                dot.y *= scaleY;
-            });
-        });
-    }
-}); }();
+JParticles.wave.prototype.version = '2.0.0'; }();
 //# sourceMappingURL=maps/wave.js.map

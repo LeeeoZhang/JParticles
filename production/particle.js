@@ -253,6 +253,23 @@ JParticles.particle = (_temp = _class = function (_Base) {
             // 添加 move 事件
             eventHandler.call(this);
         }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this2 = this;
+
+            utils.resize(this, function (scaleX, scaleY) {
+                var _set6 = _this2.set,
+                    num = _set6.num,
+                    range = _set6.range;
+
+                if (num > 0 && range > 0) {
+                    _this2.posX *= scaleX;
+                    _this2.posY *= scaleY;
+                    _this2.getElemOffset();
+                }
+            });
+        }
     }]);
 
     return Particle;
@@ -288,22 +305,8 @@ JParticles.particle = (_temp = _class = function (_Base) {
     eventElem: null
 }, _temp);
 
-var fn = JParticles.particle.prototype;
-fn.version = '2.0.0';
+JParticles.particle.prototype.version = '2.0.0';
 
 // 修改原型 pause, open 方法
-modifyPrototype(fn, 'pause, open', eventHandler);
-
-// 修改原型 resize 方法
-modifyPrototype(fn, 'resize', function (scaleX, scaleY) {
-    var _set6 = this.set,
-        num = _set6.num,
-        range = _set6.range;
-
-    if (num > 0 && range > 0) {
-        this.posX *= scaleX;
-        this.posY *= scaleY;
-        this.getElemOffset();
-    }
-}); }();
+modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler); }();
 //# sourceMappingURL=maps/particle.js.map
