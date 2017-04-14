@@ -1,5 +1,10 @@
 
-;(function (factory) {
+(function (factory) {
+    // Compatible with old browsers, such as IE8.
+    // Prevent them from throwing an error.
+    if (!document.createElement('canvas').getContext) {
+        return;
+    }
     if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
@@ -8,9 +13,29 @@
 }(function () {
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
 
 /**
  * 规定：
@@ -18,6 +43,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * 对象的属性
  *  set: 参数配置
+ *  set.opacity 透明度
  *  set.color: 颜色
  *  set.resize: 自适应
  *
@@ -41,7 +67,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * 继承 Base 父类的方法
  *  pause: 暂停粒子运动
  *  open: 开启粒子运动
- *  resize: 自适应窗口
+ *  resize: 自适应窗口，需手动调用
  */
 // 编译构建时通过 package.json 的 version 生成版本
 var version = '2.0.0';
@@ -220,11 +246,11 @@ function calcSpeed(max, min) {
 }
 
 /**
- * 设置color函数
+ * 生成 color 函数，用于给粒子赋予颜色
  * @param color {string|array} 颜色数组
  * @returns {function}
  */
-function setColor(color) {
+function generateColor(color) {
     var colorLength = isArray(color) ? color.length : false;
     var recolor = function recolor() {
         return color[floor(random() * colorLength)];
@@ -236,8 +262,10 @@ function setColor(color) {
 
 // 暂停粒子运动
 function _pause(context, callback) {
+
     // 没有set表示实例创建失败，防止错误调用报错
     if (context.set && !context.paused) {
+
         // 传递 pause 关键字供特殊使用
         isFunction(callback) && callback.call(context, 'pause');
         context.paused = true;
@@ -256,7 +284,6 @@ function _open(context, callback) {
 // 自适应窗口，重新计算粒子坐标
 function _resize(context, callback) {
     if (context.set.resize) {
-        // 不采用函数节流，会出现卡顿延迟效果
         on(win, 'resize', function () {
             var oldCW = context.cw;
             var oldCH = context.ch;
@@ -319,8 +346,10 @@ var Base = function () {
             this.container.innerHTML = '';
             this.container.appendChild(this.c);
 
-            this.color = setColor(this.set.color);
+            this.color = generateColor(this.set.color);
+
             this.init();
+            this.resize();
         }
     }
 
@@ -412,11 +441,28 @@ var JParticles = {
     Base: Base
 };
 
+// 设置对外提供的对象的属性及方法
+// 为只读，可枚举，不允许修改及删除。
+(function defineProperties(object) {
+    for (var name in object) {
+        var value = object[name];
+        Object.defineProperty(object, name, {
+            value: value,
+            writable: false,
+            enumerable: true,
+            configurable: false
+        });
+        if (isPlainObject(value)) {
+            defineProperties(value);
+        }
+    }
+})(JParticles);
+
 win.JParticles = JParticles;
     // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
     // 导致后面的插件找不到 JParticles 对象而报错
     if (typeof define === 'function' && define.amd) {
-        define(() => {
+        define(function () {
             return JParticles;
         });
     } else {

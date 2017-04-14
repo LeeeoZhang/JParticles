@@ -15,6 +15,10 @@ JParticles.snow = class Snow extends Base {
         minSpeed: 0
     };
 
+    get version() {
+        return '2.0.0';
+    }
+
     constructor(selector, options) {
         super(Snow, selector, options);
     }
@@ -22,7 +26,6 @@ JParticles.snow = class Snow extends Base {
     init() {
         this.createDots();
         this.draw();
-        this.resize();
     }
 
     snowShape() {
@@ -96,5 +99,3 @@ JParticles.snow = class Snow extends Base {
         this.requestAnimationFrame();
     }
 };
-
-JParticles.snow.prototype.version = '2.0.0';

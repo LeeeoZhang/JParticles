@@ -13,6 +13,10 @@ JParticles.lowpoly = class Lowpoly extends Base {
         minSpeed: 0
     };
 
+    get version() {
+        return '2.0.0';
+    }
+
     constructor(selector, options) {
         super(Lowpoly, selector, options);
     }
@@ -30,5 +34,3 @@ JParticles.lowpoly = class Lowpoly extends Base {
         this.requestAnimationFrame();
     }
 };
-
-JParticles.lowpoly.prototype.version = '2.0.0';

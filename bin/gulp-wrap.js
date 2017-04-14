@@ -4,7 +4,12 @@ const pkg = require('../package.json');
 const VERSION = pkg.version;
 
 const UMDHeader = `
-;(function (factory) {
+(function (factory) {
+    // Compatible with old browsers, such as IE8.
+    // Prevent them from throwing an error.
+    if (!document.createElement('canvas').getContext) {
+        return;
+    }
     if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
@@ -17,7 +22,7 @@ const UMDFooter = `
     // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
     // 导致后面的插件找不到 JParticles 对象而报错
     if (typeof define === 'function' && define.amd) {
-        define(() => {
+        define(function () {
             return JParticles;
         });
     } else {
@@ -34,7 +39,16 @@ module.exports = () => {
             content = content.replace(/(version\s?=\s?)null/, `$1'${VERSION}'`);
             content = UMDHeader + content + UMDFooter;
         } else {
-            content = `+function () { ${content} }();`;
+            content = `
+                +function () {
+                    // Compatible with old browsers, such as IE8.
+                    // Prevent them from throwing an error.
+                    if (!document.createElement('canvas').getContext) {
+                        return;
+                    }
+                    ${content}
+                }();
+            `;
         }
 
         file.contents = new Buffer(content);

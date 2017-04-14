@@ -1,4 +1,11 @@
-+function () { 'use strict';
+
+                +function () {
+                    // Compatible with old browsers, such as IE8.
+                    // Prevent them from throwing an error.
+                    if (!document.createElement('canvas').getContext) {
+                        return;
+                    }
+                    'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -62,6 +69,13 @@ function eventHandler(eventType) {
 JParticles.particle = (_temp = _class = function (_Base) {
     _inherits(Particle, _Base);
 
+    _createClass(Particle, [{
+        key: 'version',
+        get: function get() {
+            return '2.0.0';
+        }
+    }]);
+
     function Particle(selector, options) {
         _classCallCheck(this, Particle);
 
@@ -92,7 +106,6 @@ JParticles.particle = (_temp = _class = function (_Base) {
                 }
                 this.createDots();
                 this.draw();
-                this.resize();
             }
         }
     }, {
@@ -305,8 +318,8 @@ JParticles.particle = (_temp = _class = function (_Base) {
     eventElem: null
 }, _temp);
 
-JParticles.particle.prototype.version = '2.0.0';
-
 // 修改原型 pause, open 方法
-modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler); }();
+modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler);
+                }();
+            
 //# sourceMappingURL=maps/particle.js.map

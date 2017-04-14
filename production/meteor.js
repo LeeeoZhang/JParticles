@@ -1,4 +1,11 @@
-+function () { 'use strict';
+
+                +function () {
+                    // Compatible with old browsers, such as IE8.
+                    // Prevent them from throwing an error.
+                    if (!document.createElement('canvas').getContext) {
+                        return;
+                    }
+                    'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,6 +31,13 @@ var twicePI = PI * 2;
 
 JParticles.meteor = (_temp = _class = function (_Base) {
     _inherits(Meteor, _Base);
+
+    _createClass(Meteor, [{
+        key: 'version',
+        get: function get() {
+            return '2.0.0';
+        }
+    }]);
 
     function Meteor(selector, options) {
         _classCallCheck(this, Meteor);
@@ -53,6 +67,6 @@ JParticles.meteor = (_temp = _class = function (_Base) {
     maxSpeed: .6,
     minSpeed: 0
 }, _temp);
-
-JParticles.meteor.prototype.version = '2.0.0'; }();
+                }();
+            
 //# sourceMappingURL=maps/meteor.js.map

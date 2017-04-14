@@ -66,6 +66,10 @@ JParticles.particle = class Particle extends Base {
         eventElem: null
     };
 
+    get version() {
+        return '2.0.0';
+    }
+
     constructor(selector, options) {
         super(Particle, selector, options);
     }
@@ -88,7 +92,6 @@ JParticles.particle = class Particle extends Base {
             }
             this.createDots();
             this.draw();
-            this.resize();
         }
     }
 
@@ -235,11 +238,9 @@ JParticles.particle = class Particle extends Base {
                 this.posY *= scaleY;
                 this.getElemOffset();
             }
-        })
+        });
     }
 };
-
-JParticles.particle.prototype.version = '2.0.0';
 
 // 修改原型 pause, open 方法
 modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler);

@@ -38,18 +38,49 @@
         </div>
     </div>
 
-    <script src="../production/jparticles.js"></script>
-    <script src="../production/particle.js"></script>
+    <script src="js/require.js"></script>
+    <!--<script src="../production/jparticles.js"></script>
+    <script src="../production/particle.js"></script>-->
     <script src="js/event.js"></script>
     <script>
-        console.log(JParticles.particle.prototype);
+        require(['../production/jparticles'], function (jps) {
+            console.log(jps)
+            require(['../production/particle', function () {
+                console.log('in')
+                bind('#demo', function () {
+                    let effect = new jps.particle('#demo', {
+                        parallax: true
+                    });
+                    return effect;
+                });
+            }]);
+        });
+
+        /*require(['../production/jparticles'], function (jps) {
+            require(['../production/particle'], function () {
+
+                var demo = new jps.particle('#demo');
+
+                document.addEventListener('click', function (event) {
+                    var target = event.target;
+                    if (target.getAttribute('data-open') !== null) {
+                        demo.open();
+                    } else if (target.getAttribute('data-pause') !== null) {
+                        demo.pause();
+                    }
+                });
+
+            });
+        });*/
+
+        /*console.log(JParticles.particle.prototype);
         bind('#demo', function () {
             effect = new JParticles.particle('#demo', {
                 parallax: true
             });
             console.log(effect);
             return effect;
-        });
+        });*/
     </script>
 </body>
 </html>

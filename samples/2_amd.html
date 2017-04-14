@@ -33,8 +33,8 @@
     <script src="js/require.js"></script>
     <script>
 
-        require(['../dev/jparticles'], function (jps) {
-            require(['../dev/particle'], function () {
+        require(['../production/jparticles'], function (jps) {
+            require(['../production/particle'], function () {
 
                 var demo = new jps.particle('#demo');
 
@@ -50,7 +50,7 @@
             });
         });
 
-        /*require(['../dev/jparticles.all'], function (jps) {
+        /*require(['../production/jparticles.all'], function (jps) {
 
             var demo = new jps.particle('#demo');
 
@@ -71,8 +71,8 @@
         需要将 JParticles 放在require加载之前，如下，或者使用amd的方式加载 JParticles，如上
     -->
     <!--
-    <script src="../dev/jparticles.js"></script>
-    <script src="../dev/particle.js"></script>
+    <script src="../production/jparticles.js"></script>
+    <script src="../production/particle.js"></script>
     <script src="js/require.js"></script>
     <script>
         var demo = new JParticles.particle( '#demo' );

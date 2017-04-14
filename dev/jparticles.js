@@ -4,6 +4,7 @@
  *
  * 对象的属性
  *  set: 参数配置
+ *  set.opacity 透明度
  *  set.color: 颜色
  *  set.resize: 自适应
  *
@@ -27,7 +28,7 @@
  * 继承 Base 父类的方法
  *  pause: 暂停粒子运动
  *  open: 开启粒子运动
- *  resize: 自适应窗口
+ *  resize: 自适应窗口，需手动调用
  */
 // 编译构建时通过 package.json 的 version 生成版本
 const version = null;
@@ -205,11 +206,11 @@ function calcSpeed(max, min) {
 }
 
 /**
- * 设置color函数
+ * 生成 color 函数，用于给粒子赋予颜色
  * @param color {string|array} 颜色数组
  * @returns {function}
  */
-function setColor(color) {
+function generateColor(color) {
     const colorLength = isArray(color) ? color.length : false;
     const recolor = () => color[floor(random() * colorLength)];
     return isString(color) ? () => color : colorLength ? recolor : randomColor;
@@ -217,8 +218,10 @@ function setColor(color) {
 
 // 暂停粒子运动
 function pause(context, callback) {
+
     // 没有set表示实例创建失败，防止错误调用报错
     if (context.set && !context.paused) {
+
         // 传递 pause 关键字供特殊使用
         isFunction(callback) && callback.call(context, 'pause');
         context.paused = true;
@@ -237,7 +240,6 @@ function open(context, callback) {
 // 自适应窗口，重新计算粒子坐标
 function resize(context, callback) {
     if (context.set.resize) {
-        // 不采用函数节流，会出现卡顿延迟效果
         on(win, 'resize', function () {
             const oldCW = context.cw;
             const oldCH = context.ch;
@@ -314,8 +316,10 @@ class Base {
             this.container.innerHTML = '';
             this.container.appendChild(this.c);
 
-            this.color = setColor(this.set.color);
+            this.color = generateColor(this.set.color);
+
             this.init();
+            this.resize();
         }
     }
 
@@ -384,5 +388,22 @@ const JParticles = {
     utils,
     Base
 };
+
+// 设置对外提供的对象的属性及方法
+// 为只读，可枚举，不允许修改及删除。
+(function defineProperties(object) {
+    for (const name in object) {
+        const value = object[name];
+        Object.defineProperty(object, name, {
+            value,
+            writable: false,
+            enumerable: true,
+            configurable: false
+        });
+        if (isPlainObject(value)) {
+            defineProperties(value);
+        }
+    }
+})(JParticles);
 
 win.JParticles = JParticles;

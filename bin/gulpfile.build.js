@@ -21,8 +21,7 @@ const regExp = /jparticles(\.all)?\.js/;
 
 // Build JParticles.
 gulp.task('build', () => {
-    //gulp.src(`${path}*.js`)
-    gulp.src(`${path}particle.js`)
+    gulp.src(`${path}*.js`)
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())

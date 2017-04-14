@@ -13,6 +13,10 @@ JParticles.meteor = class Meteor extends Base {
         minSpeed: 0
     };
 
+    get version() {
+        return '2.0.0';
+    }
+
     constructor(selector, options) {
         super(Meteor, selector, options);
     }
@@ -30,5 +34,3 @@ JParticles.meteor = class Meteor extends Base {
         this.requestAnimationFrame();
     }
 };
-
-JParticles.meteor.prototype.version = '2.0.0';

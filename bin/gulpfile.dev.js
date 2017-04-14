@@ -14,6 +14,15 @@ gulp.task('compile', () => {
         .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015', 'stage-0']
+            /*presets: [['es2015', 'stage-0', {
+                targets: {
+                    browsers: [
+                        'IE >= 8', 'Safari >= 4',
+                        'Opera >= 10', 'Chrome >= 4',
+                        'Firefox >= 3.6'
+                    ]
+                }
+            }]]*/
         }))
         .pipe(wrap())
         .pipe(sourcemaps.write('./maps/', {
@@ -26,7 +35,7 @@ gulp.task('compile', () => {
         .on('end', () => {
             fs.readdir(destPath, (err, files) => {
 
-                if (err) return console.log('读取文件目录失败');
+                if (err) return console.error('读取文件目录失败');
 
                 files = files.join(' ').replace(/jparticles(\.all)?\.js\s/g, '');
                 files = ('jparticles.js ' + files).split(' ');

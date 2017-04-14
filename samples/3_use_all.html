@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #demo{
+            width: 900px;
+            height: 600px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .btn-box{
+            text-align: center;
+        }
+        .btn{
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="demo"></div>
+    <div class="btn-box">
+        <button class="btn btn-primary" type="button" data-open>
+            open
+        </button>
+        <button class="btn btn-danger" type="button" data-pause>
+            pause
+        </button>
+    </div>
+
+    <script src="js/event.js"></script>
+    <script src="../production/jparticles.all.js"></script>
+    <script>
+        bind('#demo', function () {
+            let effect = new JParticles.particle('#demo', {
+                parallax: true
+            });
+            return effect;
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,11 @@
-+function () { 'use strict';
+
+                +function () {
+                    // Compatible with old browsers, such as IE8.
+                    // Prevent them from throwing an error.
+                    if (!document.createElement('canvas').getContext) {
+                        return;
+                    }
+                    'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -30,6 +37,13 @@ var UNDEFINED = 'undefined';
 JParticles.wave = (_temp = _class = function (_Base) {
     _inherits(Wave, _Base);
 
+    _createClass(Wave, [{
+        key: 'version',
+        get: function get() {
+            return '2.0.0';
+        }
+    }]);
+
     function Wave(selector, options) {
         _classCallCheck(this, Wave);
 
@@ -47,7 +61,6 @@ JParticles.wave = (_temp = _class = function (_Base) {
                 this.attrNormalize();
                 this.createDots();
                 this.draw();
-                this.resize();
             }
         }
     }, {
@@ -296,6 +309,6 @@ JParticles.wave = (_temp = _class = function (_Base) {
     // 是否绘制边框，设置为false相关值无效
     stroke: true
 }, _temp);
-
-JParticles.wave.prototype.version = '2.0.0'; }();
+                }();
+            
 //# sourceMappingURL=maps/wave.js.map

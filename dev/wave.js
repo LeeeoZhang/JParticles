@@ -43,6 +43,10 @@ JParticles.wave = class Wave extends Base {
         stroke: true
     };
 
+    get version() {
+        return '2.0.0';
+    }
+
     constructor(selector, options) {
         super(Wave, selector, options);
     }
@@ -56,7 +60,6 @@ JParticles.wave = class Wave extends Base {
             this.attrNormalize();
             this.createDots();
             this.draw();
-            this.resize();
         }
     }
 
@@ -237,5 +240,3 @@ JParticles.wave = class Wave extends Base {
         })
     }
 };
-
-JParticles.wave.prototype.version = '2.0.0';
