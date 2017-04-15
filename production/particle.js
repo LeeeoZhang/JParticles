@@ -3,6 +3,10 @@
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.particle = function(){};
+                        window.JParticles.particle.prototype.open = function(){};
+window.JParticles.particle.prototype.pause = function(){};
+window.JParticles.particle.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';

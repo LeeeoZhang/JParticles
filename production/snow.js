@@ -3,6 +3,10 @@
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.snow = function(){};
+                        window.JParticles.snow.prototype.open = function(){};
+window.JParticles.snow.prototype.pause = function(){};
+window.JParticles.snow.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';

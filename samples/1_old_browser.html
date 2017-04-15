@@ -20,31 +20,42 @@
     </style>
 </head>
 <body>
-    <div class="instance">
-        <div id="demo"></div>
-        <div class="btn-box">
-            <button id="open" class="btn btn-primary" type="button">
-                open
-            </button>
-            <button id="pause" class="btn btn-danger" type="button">
-                pause
-            </button>
-        </div>
-    </div>
-
     <script src="../production/jparticles.all.js"></script>
     <script>
-        var effect = new JParticles.particle('#demo', {
+        var html = [];
+        for (var i = 0; i < 3; i++) {
+            html.push(
+                '<div class="instance">' +
+                    '<div id="demo'+ i +'"></div>' +
+                    '<div class="btn-box">' +
+                        '<button id="open" class="btn btn-primary" type="button">' +
+                            'open' +
+                        '</button>' +
+                        '<button id="pause" class="btn btn-danger" type="button">' +
+                            'pause' +
+                        '</button>' +
+                    '</div>' +
+                '</div>'
+            )
+        }
+
+        document.getElementsByTagName('body')[0].innerHTML = html.join('');
+
+        var particle = new JParticles.particle('#demo0', {
             num: 100
         });
 
         document.getElementById('open').onclick = function () {
-            effect.open();
+            particle.open();
         };
 
         document.getElementById('pause').onclick = function () {
-            effect.pause();
+            particle.pause();
         };
+
+
+        new JParticles.wave('#demo1');
+        new JParticles.snow('#demo2');
     </script>
 </body>
 </html>

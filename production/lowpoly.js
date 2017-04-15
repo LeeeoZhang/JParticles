@@ -3,6 +3,10 @@
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.lowpoly = function(){};
+                        window.JParticles.lowpoly.prototype.open = function(){};
+window.JParticles.lowpoly.prototype.pause = function(){};
+window.JParticles.lowpoly.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';

@@ -3,6 +3,10 @@
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.meteor = function(){};
+                        window.JParticles.meteor.prototype.open = function(){};
+window.JParticles.meteor.prototype.pause = function(){};
+window.JParticles.meteor.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';

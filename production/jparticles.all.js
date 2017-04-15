@@ -1,16 +1,23 @@
 
 (function (factory) {
-    // Compatible with old browsers, such as IE8.
-    // Prevent them from throwing an error.
-    if (!document.createElement('canvas').getContext) {
-        return;
-    }
     if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
         factory();
     }
 }(function () {
+    // Compatible with old browsers, such as IE8.
+    // Prevent them from throwing an error.
+    // This is not a good way, will be removed in the future.
+    if (!document.createElement('canvas').getContext) {
+        window.JParticles = {};
+        if (typeof define === 'function' && define.amd) {
+            define(function () {
+                return window.JParticles;
+            });
+        }
+        return;
+    }
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -457,6 +464,10 @@ win.JParticles = JParticles;
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.lowpoly = function(){};
+                        window.JParticles.lowpoly.prototype.open = function(){};
+window.JParticles.lowpoly.prototype.pause = function(){};
+window.JParticles.lowpoly.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';
@@ -530,6 +541,10 @@ JParticles.lowpoly = (_temp = _class = function (_Base) {
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.meteor = function(){};
+                        window.JParticles.meteor.prototype.open = function(){};
+window.JParticles.meteor.prototype.pause = function(){};
+window.JParticles.meteor.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';
@@ -603,6 +618,10 @@ JParticles.meteor = (_temp = _class = function (_Base) {
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.particle = function(){};
+                        window.JParticles.particle.prototype.open = function(){};
+window.JParticles.particle.prototype.pause = function(){};
+window.JParticles.particle.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';
@@ -929,6 +948,10 @@ modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler);
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.snow = function(){};
+                        window.JParticles.snow.prototype.open = function(){};
+window.JParticles.snow.prototype.pause = function(){};
+window.JParticles.snow.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';
@@ -1086,6 +1109,32 @@ JParticles.snow = (_temp = _class = function (_Base) {
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.test = function(){};
+                        window.JParticles.test.prototype.open = function(){};
+window.JParticles.test.prototype.pause = function(){};
+window.JParticles.test.prototype.setOptions = function(){};
+                        return;
+                    }
+                    'use strict';
+
+/**
+ * Created by Barrior on 2017/4/15.
+ */
+process.env.NODE_ENV = 'production';
+console.log(process.env);
+                }();
+            
+//# sourceMappingURL=maps/test.js.map
+
+
+                +function () {
+                    // Compatible with old browsers, such as IE8.
+                    // Prevent them from throwing an error.
+                    if (!document.createElement('canvas').getContext) {
+                        window.JParticles.wave = function(){};
+                        window.JParticles.wave.prototype.open = function(){};
+window.JParticles.wave.prototype.pause = function(){};
+window.JParticles.wave.prototype.setOptions = function(){};
                         return;
                     }
                     'use strict';

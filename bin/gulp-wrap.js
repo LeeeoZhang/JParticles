@@ -1,21 +1,29 @@
 const through = require('through2');
 
+const methods = require('./methods');
 const pkg = require('../package.json');
 const VERSION = pkg.version;
 
 const UMDHeader = `
 (function (factory) {
-    // Compatible with old browsers, such as IE8.
-    // Prevent them from throwing an error.
-    if (!document.createElement('canvas').getContext) {
-        return;
-    }
     if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
         factory();
     }
 }(function () {
+    // Compatible with old browsers, such as IE8.
+    // Prevent them from throwing an error.
+    // This is not a good way, will be removed in the future.
+    if (!document.createElement('canvas').getContext) {
+        window.JParticles = {};
+        if (typeof define === 'function' && define.amd) {
+            define(function () {
+                return window.JParticles;
+            });
+        }
+        return;
+    }
 `;
 
 const UMDFooter = `
@@ -34,6 +42,14 @@ const UMDFooter = `
 module.exports = () => {
     return through.obj((file, encoding, callback) => {
         let content = file.contents.toString();
+        const filename = file.path.replace(/.+[\\|/](\w+)\.js$/,'$1');
+
+        const prototypes = [];
+        methods.forEach(item => {
+            prototypes.push(
+                `window.JParticles.${filename}.prototype.${item} = function(){};`
+            );
+        });
 
         if (file.path.indexOf('jparticles.js') !== -1) {
             content = content.replace(/(version\s?=\s?)null/, `$1'${VERSION}'`);
@@ -44,6 +60,8 @@ module.exports = () => {
                     // Compatible with old browsers, such as IE8.
                     // Prevent them from throwing an error.
                     if (!document.createElement('canvas').getContext) {
+                        window.JParticles.${filename} = function(){};
+                        ${prototypes.join('\n')}
                         return;
                     }
                     ${content}
