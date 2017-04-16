@@ -61,8 +61,6 @@ JParticles.snow = class Snow extends Base {
         cxt.clearRect(0, 0, cw, ch);
         cxt.globalAlpha = opacity;
 
-        console.log(cw, ch, this.dots)
-
         this.dots.forEach((dot, i, array) => {
             const {x, y, r} = dot;
 
@@ -84,10 +82,12 @@ JParticles.snow = class Snow extends Base {
 
                 // 雪花从侧边出去，删除再添加
                 if (x < 0 || x - r > cw) {
+                    console.log('left in--', 'x: ', x, 'r: ', r)
                     array.splice(i, 1, this.snowShape());
 
                     // 雪花从底部出去，删除
-                } else if (y - r >= ch) {
+                } else if (y - r > ch) {
+                    console.log('in--', 'y: ', y, 'r: ', r)
                     array.splice(i, 1);
                 }
             }

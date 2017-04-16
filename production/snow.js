@@ -103,8 +103,6 @@ JParticles.snow = (_temp = _class = function (_Base) {
             cxt.clearRect(0, 0, cw, ch);
             cxt.globalAlpha = opacity;
 
-            console.log(cw, ch, this.dots);
-
             this.dots.forEach(function (dot, i, array) {
                 var x = dot.x,
                     y = dot.y,
@@ -129,10 +127,12 @@ JParticles.snow = (_temp = _class = function (_Base) {
 
                     // 雪花从侧边出去，删除再添加
                     if (x < 0 || x - r > cw) {
+                        console.log('left in--', 'x: ', x, 'r: ', r);
                         array.splice(i, 1, _this2.snowShape());
 
                         // 雪花从底部出去，删除
-                    } else if (y - r >= ch) {
+                    } else if (y - r > ch) {
+                        console.log('in--', 'y: ', y, 'r: ', r);
                         array.splice(i, 1);
                     }
                 }

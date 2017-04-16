@@ -1,14 +1,15 @@
+const fs = require('fs');
 const gulp = require('gulp');
 const concat = require('gulp-concat');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 const changed = require('gulp-changed');
-const livereload = require('gulp-livereload');
+const browserSync = require('browser-sync').create();
 const wrap = require('./gulp-wrap');
 
-const fs = require('fs');
 const devPath = '../dev/';
 const destPath = '../production/';
+const reload = browserSync.reload;
 
 // Compile all scripts.
 gulp.task('compile', () => {
@@ -24,19 +25,16 @@ gulp.task('compile', () => {
             sourceRoot: `../${devPath}`
         }))
         .pipe(gulp.dest(destPath))
+        .pipe(reload({stream: true}))
 
         // Generate 'jparticles.all.js'.
         .on('end', () => {
             fs.readdir(destPath, (err, files) => {
-
-                if (err) return console.error('读取文件目录失败');
-
                 files = files.join(' ').replace(/jparticles(\.all)?\.js\s/g, '');
                 files = ('jparticles.js ' + files).split(' ');
                 files = files.map(filename => {
                     return destPath + filename;
                 });
-
                 gulp.src(files)
                     .pipe(concat('jparticles.all.js'))
                     .pipe(gulp.dest(destPath));
@@ -44,8 +42,15 @@ gulp.task('compile', () => {
         });
 });
 
-gulp.task('default', () => {
-    gulp.watch(`${devPath}*.js`, ['compile'], () => {
-        // do something else if the task is successful...
+// Static service.
+gulp.task('service', ['compile'], () => {
+
+    browserSync.init({
+        server: '../'
     });
+
+    gulp.watch(`${devPath}*.js`, ['compile']);
+    gulp.watch('samples/*.html').on('change', reload);
 });
+
+gulp.task('default', ['service']);
