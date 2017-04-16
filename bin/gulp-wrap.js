@@ -44,6 +44,8 @@ module.exports = () => {
         let content = file.contents.toString();
         const filename = file.path.replace(/.+[\\|/](\w+)\.js$/,'$1');
 
+        console.log(filename)
+
         const prototypes = [];
         methods.forEach(item => {
             prototypes.push(

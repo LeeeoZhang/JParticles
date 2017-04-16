@@ -103,6 +103,8 @@ JParticles.snow = (_temp = _class = function (_Base) {
             cxt.clearRect(0, 0, cw, ch);
             cxt.globalAlpha = opacity;
 
+            console.log(cw, ch, this.dots);
+
             this.dots.forEach(function (dot, i, array) {
                 var x = dot.x,
                     y = dot.y,

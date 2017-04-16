@@ -2,6 +2,8 @@ const gulp = require('gulp');
 const concat = require('gulp-concat');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
+const changed = require('gulp-changed');
+const livereload = require('gulp-livereload');
 const wrap = require('./gulp-wrap');
 
 const fs = require('fs');
@@ -11,6 +13,7 @@ const destPath = '../production/';
 // Compile all scripts.
 gulp.task('compile', () => {
     return gulp.src(`${devPath}*.js`)
+        .pipe(changed(destPath))
         .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015', 'stage-0']

@@ -61,6 +61,8 @@ JParticles.snow = class Snow extends Base {
         cxt.clearRect(0, 0, cw, ch);
         cxt.globalAlpha = opacity;
 
+        console.log(cw, ch, this.dots)
+
         this.dots.forEach((dot, i, array) => {
             const {x, y, r} = dot;
 

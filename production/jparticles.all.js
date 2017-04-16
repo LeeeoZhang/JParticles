@@ -1048,6 +1048,8 @@ JParticles.snow = (_temp = _class = function (_Base) {
             cxt.clearRect(0, 0, cw, ch);
             cxt.globalAlpha = opacity;
 
+            console.log(cw, ch, this.dots);
+
             this.dots.forEach(function (dot, i, array) {
                 var x = dot.x,
                     y = dot.y,
@@ -1103,28 +1105,6 @@ JParticles.snow = (_temp = _class = function (_Base) {
                 }();
             
 //# sourceMappingURL=maps/snow.js.map
-
-
-                +function () {
-                    // Compatible with old browsers, such as IE8.
-                    // Prevent them from throwing an error.
-                    if (!document.createElement('canvas').getContext) {
-                        window.JParticles.test = function(){};
-                        window.JParticles.test.prototype.open = function(){};
-window.JParticles.test.prototype.pause = function(){};
-window.JParticles.test.prototype.setOptions = function(){};
-                        return;
-                    }
-                    'use strict';
-
-/**
- * Created by Barrior on 2017/4/15.
- */
-process.env.NODE_ENV = 'production';
-console.log(process.env);
-                }();
-            
-//# sourceMappingURL=maps/test.js.map
 
 
                 +function () {
