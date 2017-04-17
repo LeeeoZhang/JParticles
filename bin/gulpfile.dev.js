@@ -46,11 +46,15 @@ gulp.task('compile', () => {
 gulp.task('service', ['compile'], () => {
 
     browserSync.init({
-        server: '../'
+        server: {
+            baseDir: ['../', '../samples/']
+        },
+        startPath: '/particle.html',
+        injectChanges: false
     });
 
     gulp.watch(`${devPath}*.js`, ['compile']);
-    gulp.watch('samples/*.html').on('change', reload);
+    gulp.watch('../samples/**/*.@(html|css|js)').on('change', reload);
 });
 
 gulp.task('default', ['service']);
