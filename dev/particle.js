@@ -1,8 +1,12 @@
 const {utils, Base} = JParticles;
-const {pInt, limitRandom, calcSpeed, scaleValue} = utils;
-const {getCss, offset, isElement, modifyPrototype} = utils;
 const {random, abs, PI} = Math;
 const twicePI = PI * 2;
+const {
+    pInt, limitRandom, calcSpeed,
+    scaleValue, getCss, offset,
+    isElement, modifyPrototype,
+    appendProperty
+} = utils;
 
 /**
  * 检查元素或其祖先节点的属性是否等于预给值
@@ -28,11 +32,10 @@ function eventHandler(eventType) {
         // 使用传递过来的关键字判断绑定事件还是移除事件
         eventType = eventType === 'pause' ? 'off' : 'on';
         utils[eventType](eventElem, 'mousemove', this.moveHandler);
-        utils[eventType](eventElem, 'touchmove', this.moveHandler);
     }
 }
 
-JParticles.particle = class Particle extends Base {
+class Particle extends Base {
 
     static defaultConfig = {
 
@@ -240,7 +243,11 @@ JParticles.particle = class Particle extends Base {
             }
         });
     }
-};
+}
 
 // 修改原型 pause, open 方法
-modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler);
+modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
+
+// 使用防止属性被更改的 appendProperty 方法，
+// 挂载插件到 JParticles 对象上。
+appendProperty('particle', Particle);

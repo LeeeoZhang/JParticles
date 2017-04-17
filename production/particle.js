@@ -13,8 +13,6 @@ window.JParticles.particle.prototype.setOptions = function(){};
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class, _temp;
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -24,19 +22,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _JParticles = JParticles,
     utils = _JParticles.utils,
     Base = _JParticles.Base;
-var pInt = utils.pInt,
-    limitRandom = utils.limitRandom,
-    calcSpeed = utils.calcSpeed,
-    scaleValue = utils.scaleValue;
-var getCss = utils.getCss,
-    offset = utils.offset,
-    isElement = utils.isElement,
-    modifyPrototype = utils.modifyPrototype;
 var random = Math.random,
     abs = Math.abs,
     PI = Math.PI;
 
 var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    scaleValue = utils.scaleValue,
+    getCss = utils.getCss,
+    offset = utils.offset,
+    isElement = utils.isElement,
+    modifyPrototype = utils.modifyPrototype,
+    appendProperty = utils.appendProperty;
 
 /**
  * 检查元素或其祖先节点的属性是否等于预给值
@@ -45,6 +44,7 @@ var twicePI = PI * 2;
  * @param value {string} css属性值
  * @returns {boolean}
  */
+
 function checkParentsProperty(elem, property, value) {
     while (elem = elem.offsetParent) {
         if (getCss(elem, property) === value) {
@@ -66,11 +66,10 @@ function eventHandler(eventType) {
         // 使用传递过来的关键字判断绑定事件还是移除事件
         eventType = eventType === 'pause' ? 'off' : 'on';
         utils[eventType](eventElem, 'mousemove', this.moveHandler);
-        utils[eventType](eventElem, 'touchmove', this.moveHandler);
     }
 }
 
-JParticles.particle = (_temp = _class = function (_Base) {
+var Particle = function (_Base) {
     _inherits(Particle, _Base);
 
     _createClass(Particle, [{
@@ -290,7 +289,12 @@ JParticles.particle = (_temp = _class = function (_Base) {
     }]);
 
     return Particle;
-}(Base), _class.defaultConfig = {
+}(Base);
+
+// 修改原型 pause, open 方法
+
+
+Particle.defaultConfig = {
 
     // 粒子个数，默认为容器宽度的 0.12 倍
     // 传入 (0, 1) 显示容器宽度相应倍数的个数，传入 [1, +∞) 显示具体个数
@@ -320,10 +324,12 @@ JParticles.particle = (_temp = _class = function (_Base) {
 
     // 改变定位点坐标的事件元素，null 表示 canvas 画布，或传入原生元素对象，如 document 等
     eventElem: null
-}, _temp);
+};
+modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
 
-// 修改原型 pause, open 方法
-modifyPrototype(JParticles.particle.prototype, 'pause, open', eventHandler);
+// 使用防止属性被更改的 appendProperty 方法，
+// 挂载插件到 JParticles 对象上。
+appendProperty('particle', Particle);
                 }();
             
 //# sourceMappingURL=maps/particle.js.map

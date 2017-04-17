@@ -65,7 +65,6 @@ var random = Math.random,
 var isArray = Array.isArray;
 
 
-var canvasSupport = !!doc.createElement('canvas').getContext;
 var defaultCanvasWidth = 485;
 var defaultCanvasHeight = 300;
 var regExp = {
@@ -292,7 +291,9 @@ function _resize(context, callback) {
                 });
             }
 
-            isFunction(callback) && callback.call(context, scaleX, scaleY);
+            if (isFunction(callback)) {
+                callback.call(context, scaleX, scaleY);
+            }
 
             context.paused && context.draw();
         });
@@ -300,29 +301,40 @@ function _resize(context, callback) {
 }
 
 /**
- * 修改原型上的方法
- * 使用：utils.modifyPrototype(fn, 'pause', function(){})
+ * 修改插件原型上的方法
+ * 使用：modifyPrototype(Particle.prototype, 'pause', function(){})
  * @param prototype {Object} 原型对象
  * @param names {string} 方法名，多个方法名用逗号隔开
  * @param callback {function} 回调函数
  */
 function modifyPrototype(prototype, names, callback) {
-    // 将方法名转成数组格式，如：'pause, open'
-    if (canvasSupport) {
-        trimAll(names).split(',').forEach(function (name) {
-            prototype[name] = function () {
-                utils[name](this, callback);
-            };
-        });
-    }
+    trimAll(names).split(',').forEach(function (name) {
+        prototype[name] = function () {
+            utils[name](this, callback);
+        };
+    });
+}
+
+/**
+ * 使用此方法挂载插件到 JParticles 对象上，防止被修改
+ * @param name  {string} 插件名
+ * @param value {Object Class} 插件类
+ * @param _object {object} 内部使用
+ */
+function appendProperty(name, value, _object) {
+    Object.defineProperty(_object || JParticles, name, {
+        value: value,
+        writable: false,
+        enumerable: true,
+        configurable: false
+    });
 }
 
 var Base = function () {
     function Base(constructor, selector, options) {
         _classCallCheck(this, Base);
 
-        if (canvasSupport && (this.container = isElement(selector) ? selector : doc.querySelector(selector))) {
-
+        if (this.container = isElement(selector) ? selector : doc.querySelector(selector)) {
             this.set = extend(true, {}, Base.commonConfig, constructor.defaultConfig, options);
             this.c = doc.createElement('canvas');
             this.cxt = this.c.getContext('2d');
@@ -335,6 +347,10 @@ var Base = function () {
 
             this.color = generateColor(this.set.color);
 
+            /*observeCanvasRemoved(this.container, () => {
+                this.canvasRemoved = true;
+            });*/
+
             this.init();
             this.resize();
         }
@@ -343,7 +359,16 @@ var Base = function () {
     _createClass(Base, [{
         key: 'requestAnimationFrame',
         value: function requestAnimationFrame() {
-            !this.paused && win.requestAnimationFrame(this.draw.bind(this));
+            if (this.canvasRemoved) {
+                this.onDestroy();
+            } else {
+                !this.paused && win.requestAnimationFrame(this.draw.bind(this));
+            }
+        }
+    }, {
+        key: 'onDestroy',
+        value: function onDestroy(destroy) {
+            isFunction(destroy) && destroy();
         }
     }, {
         key: 'pause',
@@ -391,7 +416,6 @@ win.requestAnimationFrame = function (win) {
 
 // 工具箱
 var utils = {
-    canvasSupport: canvasSupport,
     regExp: regExp,
     pInt: pInt,
     trimAll: trimAll,
@@ -419,7 +443,8 @@ var utils = {
     pause: _pause,
     open: _open,
     resize: _resize,
-    modifyPrototype: modifyPrototype
+    modifyPrototype: modifyPrototype,
+    appendProperty: appendProperty
 };
 
 var JParticles = {
@@ -433,12 +458,7 @@ var JParticles = {
 (function defineProperties(object) {
     for (var name in object) {
         var value = object[name];
-        Object.defineProperty(object, name, {
-            value: value,
-            writable: false,
-            enumerable: true,
-            configurable: false
-        });
+        appendProperty(name, value, object);
         if (isPlainObject(value)) {
             defineProperties(value);
         }

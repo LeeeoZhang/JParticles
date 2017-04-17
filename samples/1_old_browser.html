@@ -11,10 +11,14 @@
             margin: 50px auto;
             border: 1px solid #ccc;
         }
+        #demo-snow {
+            background-color: #333;
+        }
         .btn-box{
             text-align: center;
         }
         .btn{
+            margin: 0 10px;
             font-size: 20px;
         }
     </style>
@@ -22,16 +26,19 @@
 <body>
     <script src="../production/jparticles.all.js"></script>
     <script>
+        var names = ['particle', 'wave', 'snow'];
+        var options = [{num: 100}];
+
         var html = [];
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < names.length; i++) {
             html.push(
                 '<div class="instance">' +
-                    '<div id="demo'+ i +'"></div>' +
+                    '<div id="demo-'+ names[i] +'"></div>' +
                     '<div class="btn-box">' +
-                        '<button id="open" class="btn btn-primary" type="button">' +
+                        '<button id="open'+ i +'" class="btn btn-primary" type="button">' +
                             'open' +
                         '</button>' +
-                        '<button id="pause" class="btn btn-danger" type="button">' +
+                        '<button id="pause'+ i +'" class="btn btn-danger" type="button">' +
                             'pause' +
                         '</button>' +
                     '</div>' +
@@ -41,21 +48,21 @@
 
         document.getElementsByTagName('body')[0].innerHTML = html.join('');
 
-        var particle = new JParticles.particle('#demo0', {
-            num: 100
-        });
+        for (var i = 0; i < names.length; i++) {
+            window['demo'+names[i]] = new JParticles[names[i]]('#demo-' + names[i], options[i]);
 
-        document.getElementById('open').onclick = function () {
-            particle.open();
-        };
+            document.getElementById('open'+i).onclick = function (i) {
+                return function () {
+                    window['demo'+names[i]].open();
+                };
+            }(i);
 
-        document.getElementById('pause').onclick = function () {
-            particle.pause();
-        };
-
-
-        new JParticles.wave('#demo1');
-        new JParticles.snow('#demo2');
+            document.getElementById('pause'+i).onclick = function (i) {
+                return function () {
+                    window['demo'+names[i]].pause();
+                };
+            }(i);
+        }
     </script>
 </body>
 </html>

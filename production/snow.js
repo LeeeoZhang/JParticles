@@ -52,6 +52,7 @@ JParticles.snow = (_temp = _class = function (_Base) {
     _createClass(Snow, [{
         key: 'init',
         value: function init() {
+            this.dots = [];
             this.createDots();
             this.draw();
         }
@@ -83,9 +84,8 @@ JParticles.snow = (_temp = _class = function (_Base) {
 
             // 随机创建 0-6 个雪花
             var count = pInt(random() * 6);
-            var dots = this.dots = [];
             while (count--) {
-                dots.push(this.snowShape());
+                this.dots.push(this.snowShape());
             }
         }
     }, {
@@ -127,12 +127,10 @@ JParticles.snow = (_temp = _class = function (_Base) {
 
                     // 雪花从侧边出去，删除再添加
                     if (x < 0 || x - r > cw) {
-                        console.log('left in--', 'x: ', x, 'r: ', r);
                         array.splice(i, 1, _this2.snowShape());
 
                         // 雪花从底部出去，删除
                     } else if (y - r > ch) {
-                        console.log('in--', 'y: ', y, 'r: ', r);
                         array.splice(i, 1);
                     }
                 }

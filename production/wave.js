@@ -30,6 +30,7 @@ var pInt = utils.pInt,
     limitRandom = utils.limitRandom,
     calcSpeed = utils.calcSpeed,
     isArray = utils.isArray;
+var randomColor = utils.randomColor;
 var random = Math.random,
     abs = Math.abs,
     PI = Math.PI,
@@ -96,7 +97,7 @@ JParticles.wave = (_temp = _class = function (_Base) {
             while (num--) {
                 var val = isArray(attrVal) ? attrVal[num] : attrVal;
 
-                std[num] = (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === UNDEFINED ? this.generateAttrVal(attr) : this.scaleValue(attr, val, scale);
+                std[num] = (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === UNDEFINED ? this.generateDefaultValue(attr) : this.scaleValue(attr, val, scale);
 
                 if (attr === 'rippleNum') {
                     this.rippleLength[num] = this.cw / std[num];
@@ -125,8 +126,8 @@ JParticles.wave = (_temp = _class = function (_Base) {
         // 以下为缺省情况，属性对应的默认值
 
     }, {
-        key: 'generateAttrVal',
-        value: function generateAttrVal(attr) {
+        key: 'generateDefaultValue',
+        value: function generateDefaultValue(attr) {
             var cw = this.cw,
                 ch = this.ch;
 

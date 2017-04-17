@@ -1,5 +1,6 @@
 const {utils, Base} = JParticles;
 const {pInt, limitRandom, calcSpeed, isArray} = utils;
+const {randomColor} = utils;
 const {random, abs, PI, sin} = Math;
 const twicePI = PI * 2;
 const UNDEFINED = 'undefined';
@@ -91,7 +92,7 @@ JParticles.wave = class Wave extends Base {
             const val = isArray(attrVal) ? attrVal[num] : attrVal;
 
             std[num] = typeof val === UNDEFINED
-                ? this.generateAttrVal(attr)
+                ? this.generateDefaultValue(attr)
                 : this.scaleValue(attr, val, scale);
 
             if (attr === 'rippleNum') {
@@ -108,7 +109,7 @@ JParticles.wave = class Wave extends Base {
     }
 
     // 以下为缺省情况，属性对应的默认值
-    generateAttrVal(attr) {
+    generateDefaultValue(attr) {
         const {cw, ch} = this;
 
         switch (attr) {

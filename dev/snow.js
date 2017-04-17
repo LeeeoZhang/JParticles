@@ -24,6 +24,7 @@ JParticles.snow = class Snow extends Base {
     }
 
     init() {
+        this.dots = [];
         this.createDots();
         this.draw();
     }
@@ -48,9 +49,8 @@ JParticles.snow = class Snow extends Base {
 
         // 随机创建 0-6 个雪花
         let count = pInt(random() * 6);
-        let dots = this.dots = [];
         while (count--) {
-            dots.push(this.snowShape());
+            this.dots.push(this.snowShape());
         }
     }
 
@@ -82,12 +82,10 @@ JParticles.snow = class Snow extends Base {
 
                 // 雪花从侧边出去，删除再添加
                 if (x < 0 || x - r > cw) {
-                    console.log('left in--', 'x: ', x, 'r: ', r)
                     array.splice(i, 1, this.snowShape());
 
                     // 雪花从底部出去，删除
                 } else if (y - r > ch) {
-                    console.log('in--', 'y: ', y, 'r: ', r)
                     array.splice(i, 1);
                 }
             }
