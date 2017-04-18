@@ -17,6 +17,7 @@
  *  [dot].x: 通过arc绘制的粒子的x值
  *  [dot].y: 通过arc绘制的粒子的y值
  *  paused: {boolean} 是否暂停
+ *  canvasRemoved: {boolean} canvas从DOM中被移除
  *
  * 对象的方法
  *  color：返回随机或设定好的粒子颜色
@@ -29,6 +30,9 @@
  *  pause: 暂停粒子运动
  *  open: 开启粒子运动
  *  resize: 自适应窗口，需手动调用
+ *
+ * 继承 Base 父类的事件
+ *  onDestroy: 动画被销毁后执行的事件
  */
 // 编译构建时通过 package.json 的 version 生成版本
 const version = null;
@@ -140,6 +144,18 @@ function isBoolean(val) {
     return typeof val === 'boolean';
 }
 
+// 检查元素是否在某个元素里，与 jQuery.contains 等同
+function contains(container, target) {
+    if (target) {
+        while (target = target.parentNode) {
+            if (container === target) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 /**
  * 获取对象的css属性值
  * @param elem {element}
@@ -219,7 +235,7 @@ function generateColor(color) {
 function pause(context, callback) {
 
     // 没有set表示实例创建失败，防止错误调用报错
-    if (context.set && !context.paused) {
+    if (!context.canvasRemoved && context.set && !context.paused) {
 
         // 传递 pause 关键字供特殊使用
         isFunction(callback) && callback.call(context, 'pause');
@@ -229,7 +245,7 @@ function pause(context, callback) {
 
 // 开启粒子运动
 function open(context, callback) {
-    if (context.set && context.paused) {
+    if (!context.canvasRemoved && context.set && context.paused) {
         isFunction(callback) && callback.call(context, 'open');
         context.paused = false;
         context.draw();
@@ -238,7 +254,7 @@ function open(context, callback) {
 
 // 自适应窗口，重新计算粒子坐标
 function resize(context, callback) {
-    if (context.set.resize) {
+    if (!context.canvasRemoved && context.set.resize) {
         on(win, 'resize', function () {
             const oldCW = context.cw;
             const oldCH = context.ch;
@@ -285,13 +301,21 @@ function modifyPrototype(prototype, names, callback) {
 }
 
 /**
- * 使用此方法挂载插件到 JParticles 对象上，防止被修改
- * @param name  {string} 插件名
- * @param value {Object Class} 插件类
- * @param _object {object} 内部使用
+ * 使用此方法挂载插件到 JParticles 对象上，防止被修改。
+ * IE9不支持函数的 name 属性，所以插件都需传递 name 值，如下
+ * 内部使用 eg:
+ * defineReadOnlyProperty(Particle, 'particle')
+ * defineReadOnlyProperty(regExp, 'regExp', utils)
+ * @param value {Class|*} 插件类或其他值
+ * @param name  {string} 属性名称
+ * @param target {object} 要在其上定义属性的对象
  */
-function appendProperty(name, value, _object) {
-    Object.defineProperty(_object || JParticles, name, {
+function defineReadOnlyProperty(
+    value,
+    name = value.name.toLowerCase(),
+    target = JParticles
+) {
+    Object.defineProperty(target, name, {
         value,
         writable: false,
         enumerable: true,
@@ -330,20 +354,19 @@ class Base {
 
             this.color = generateColor(this.set.color);
 
-            /*observeCanvasRemoved(this.container, () => {
-                this.canvasRemoved = true;
-            });*/
-
             this.init();
             this.resize();
         }
     }
 
     requestAnimationFrame() {
-        if (this.canvasRemoved) {
-            this.onDestroy();
-        } else {
+        if (contains(doc, this.c)) {
             !this.paused && win.requestAnimationFrame(this.draw.bind(this));
+        } else {
+
+            // canvas 从DOM中移除，停止 requestAnimationFrame，避免性能损耗
+            this.canvasRemoved = true;
+            this.onDestroy();
         }
     }
 
@@ -392,6 +415,7 @@ const utils = {
     isBoolean,
     isElement,
 
+    contains,
     getCss,
     offset,
     on,
@@ -404,7 +428,7 @@ const utils = {
     open,
     resize,
     modifyPrototype,
-    appendProperty
+    defineReadOnlyProperty
 };
 
 const JParticles = {
@@ -418,7 +442,7 @@ const JParticles = {
 (function defineProperties(object) {
     for (const name in object) {
         const value = object[name];
-        appendProperty(name, value, object);
+        defineReadOnlyProperty(value, name, object);
         if (isPlainObject(value)) {
             defineProperties(value);
         }

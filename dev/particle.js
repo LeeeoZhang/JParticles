@@ -5,7 +5,7 @@ const {
     pInt, limitRandom, calcSpeed,
     scaleValue, getCss, offset,
     isElement, modifyPrototype,
-    appendProperty
+    defineReadOnlyProperty
 } = utils;
 
 /**
@@ -248,6 +248,8 @@ class Particle extends Base {
 // 修改原型 pause, open 方法
 modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
 
+//JParticles.particle = Particle;
+
 // 使用防止属性被更改的 appendProperty 方法，
 // 挂载插件到 JParticles 对象上。
-appendProperty('particle', Particle);
+defineReadOnlyProperty(Particle, 'particle');

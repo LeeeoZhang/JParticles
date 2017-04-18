@@ -35,7 +35,7 @@ var pInt = utils.pInt,
     offset = utils.offset,
     isElement = utils.isElement,
     modifyPrototype = utils.modifyPrototype,
-    appendProperty = utils.appendProperty;
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
 
 /**
  * 检查元素或其祖先节点的属性是否等于预给值
@@ -327,9 +327,11 @@ Particle.defaultConfig = {
 };
 modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
 
+//JParticles.particle = Particle;
+
 // 使用防止属性被更改的 appendProperty 方法，
 // 挂载插件到 JParticles 对象上。
-appendProperty('particle', Particle);
+defineReadOnlyProperty(Particle, 'particle');
                 }();
             
 //# sourceMappingURL=maps/particle.js.map
