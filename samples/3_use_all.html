@@ -20,24 +20,23 @@
     </style>
 </head>
 <body>
-    <div id="demo"></div>
-    <div class="btn-box">
-        <button class="btn btn-primary" type="button" data-open>
-            open
-        </button>
-        <button class="btn btn-danger" type="button" data-pause>
-            pause
-        </button>
+    <div id="instance">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
     </div>
 
     <script src="js/event.js"></script>
     <script src="../production/jparticles.all.js"></script>
     <script>
-        bind('#demo', function () {
-            let effect = new JParticles.particle('#demo', {
-                parallax: true
-            });
-            return effect;
+        bind('#instance', function () {
+            return new JParticles.particle('#instance .demo');
         });
     </script>
 </body>

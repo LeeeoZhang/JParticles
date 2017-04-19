@@ -285,8 +285,8 @@ function _open(context, callback) {
 
 // 自适应窗口，重新计算粒子坐标
 function _resize(context, callback) {
-    if (!context.canvasRemoved && context.set.resize) {
-        on(win, 'resize', function () {
+    if (context.set.resize) {
+        context._resizeHandler = function () {
             var oldCW = context.cw;
             var oldCH = context.ch;
 
@@ -312,7 +312,8 @@ function _resize(context, callback) {
             }
 
             context.paused && context.draw();
-        });
+        };
+        on(win, 'resize', context._resizeHandler);
     }
 }
 
@@ -333,16 +334,18 @@ function modifyPrototype(prototype, names, callback) {
 
 /**
  * 使用此方法挂载插件到 JParticles 对象上，防止被修改。
- * IE9不支持函数的 name 属性，所以插件都需传递 name 值，如下
- * 内部使用 eg:
+ * function.name 的兼容性并不高，所以插件需手动传递 name 值。
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name
+ *
+ * eg:
  * defineReadOnlyProperty(Particle, 'particle')
  * defineReadOnlyProperty(regExp, 'regExp', utils)
+ *
  * @param value {Class|*} 插件类或其他值
  * @param name  {string} 属性名称
  * @param target {object} 要在其上定义属性的对象
  */
-function defineReadOnlyProperty(value) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : value.name.toLowerCase();
+function defineReadOnlyProperty(value, name) {
     var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : JParticles;
 
     Object.defineProperty(target, name, {
@@ -382,15 +385,22 @@ var Base = function () {
                 !this.paused && win.requestAnimationFrame(this.draw.bind(this));
             } else {
 
-                // canvas 从DOM中移除，停止 requestAnimationFrame，避免性能损耗
+                // canvas 从DOM中被移除，
+                // 1、停止 requestAnimationFrame，避免性能损耗。
                 this.canvasRemoved = true;
+
+                // 2、移除外在事件。
+                if (this._resizeHandler) {
+                    off(win, 'resize', this._resizeHandler);
+                }
+
                 this.onDestroy();
             }
         }
     }, {
         key: 'onDestroy',
-        value: function onDestroy(destroy) {
-            isFunction(destroy) && destroy();
+        value: function onDestroy(callback) {
+            isFunction(callback) && callback();
         }
     }, {
         key: 'pause',

@@ -1,30 +1,40 @@
 const {utils, Base} = JParticles;
-const {pInt, limitRandom, calcSpeed, isArray} = utils;
-const {randomColor} = utils;
 const {random, abs, PI, sin} = Math;
 const twicePI = PI * 2;
 const UNDEFINED = 'undefined';
+const {
+    pInt, limitRandom, calcSpeed,
+    scaleValue, randomColor, isArray,
+    isPlainObject, defineReadOnlyProperty
+} = utils;
 
-JParticles.wave = class Wave extends Base {
+class Wave extends Base {
 
     static defaultConfig = {
 
-        // 波纹个数
+        // 线条个数
         num: 3,
 
-        // 波纹背景颜色，当fill设置为true时生效
+        // 是否填充背景色，设置为false相关值无效
+        fill: false,
+
+        // 填充的背景色，当fill设置为true时生效
         fillColor: [],
 
-        // 波纹线条(边框)颜色，当stroke设置为true时生效
+        // 是否绘制边框，设置为false相关值无效
+        line: true,
+
+        // 边框颜色，当stroke设置为true时生效，下同
         lineColor: [],
 
-        // 线条宽度
+        // 边框宽度
         lineWidth: [],
 
-        // 线条的横向偏移值，(0, 1)表示容器宽度的倍数，[1, +∞)表示具体数值
+        // 线条横向偏移值，距离canvas画布左边的偏移值
+        // (0, 1)表示容器宽度的倍数，[1, +∞)表示具体数值
         offsetLeft: [],
 
-        // 线条的纵向偏移值，线条中点到元素顶部的距离
+        // 线条纵向偏移值，线条中点到canvas画布顶部的距离
         // (0, 1)表示容器高度的倍数，[1, +∞)表示具体数值
         offsetTop: [],
 
@@ -35,17 +45,11 @@ JParticles.wave = class Wave extends Base {
         rippleNum: [],
 
         // 运动速度
-        speed: [],
-
-        // 是否填充背景色，设置为false相关值无效
-        fill: false,
-
-        // 是否绘制边框，设置为false相关值无效
-        stroke: true
+        speed: []
     };
 
     get version() {
-        return '2.0.0';
+        return '3.0.0';
     }
 
     constructor(selector, options) {
@@ -58,6 +62,13 @@ JParticles.wave = class Wave extends Base {
             // 线条波长，每个周期(2π)在canvas上的实际长度
             this.rippleLength = [];
 
+            // 仅允许以下选项动态设置
+            this.dynamicOptions = [
+                'fill', 'fillColor', 'line', 'lineColor',
+                'lineWidth', 'offsetLeft', 'offsetTop',
+                'crestHeight', 'speed', 'opacity'
+            ];
+
             this.attrNormalize();
             this.createDots();
             this.draw();
@@ -66,9 +77,9 @@ JParticles.wave = class Wave extends Base {
 
     attrNormalize() {
         [
-            'fillColor', 'lineColor', 'lineWidth',
-            'offsetLeft', 'offsetTop', 'crestHeight',
-            'rippleNum', 'speed', 'fill', 'stroke'
+            'fill', 'fillColor', 'line', 'lineColor',
+            'lineWidth', 'offsetLeft', 'offsetTop',
+            'crestHeight', 'rippleNum', 'speed'
 
         ].forEach(attr => this.attrProcessor(attr));
     }
@@ -136,7 +147,7 @@ JParticles.wave = class Wave extends Base {
             case 'fill':
                 attr = false;
                 break;
-            case 'stroke':
+            case 'line':
                 attr = true;
                 break;
         }
@@ -156,6 +167,16 @@ JParticles.wave = class Wave extends Base {
                 // 超出部分保持它的原有值，以保证不出现 undefined
                 array[i] = isArray(topVal) ? ( topVal[i] || v ) : topVal;
             });
+        }
+    }
+
+    setOptions(newOptions) {
+        if (isPlainObject(newOptions)) {
+            for (const name in newOptions) {
+                if (this.dynamicOptions.indexOf(name) !== -1) {
+                    this.set[name] = this.optionsProcessor(name, newOptions[name]);
+                }
+            }
         }
     }
 
@@ -216,7 +237,7 @@ JParticles.wave = class Wave extends Base {
                 cxt.fill();
             }
 
-            if (set.stroke[i]) {
+            if (set.line[i]) {
                 cxt.lineWidth = set.lineWidth[i];
                 cxt.strokeStyle = set.lineColor[i];
                 cxt.stroke();
@@ -238,6 +259,8 @@ JParticles.wave = class Wave extends Base {
                     });
                 });
             }
-        })
+        });
     }
-};
+}
+
+defineReadOnlyProperty(Wave, 'wave');

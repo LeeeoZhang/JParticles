@@ -1,9 +1,12 @@
 const {utils, Base} = JParticles;
-const {pInt, limitRandom, calcSpeed} = utils;
 const {random, abs, PI} = Math;
 const twicePI = PI * 2;
+const {
+    pInt, limitRandom,
+    calcSpeed, defineReadOnlyProperty
+} = utils;
 
-JParticles.snow = class Snow extends Base {
+class Snow extends Base {
 
     static defaultConfig = {
 
@@ -16,7 +19,7 @@ JParticles.snow = class Snow extends Base {
     };
 
     get version() {
-        return '2.0.0';
+        return '3.0.0';
     }
 
     constructor(selector, options) {
@@ -98,4 +101,6 @@ JParticles.snow = class Snow extends Base {
 
         this.requestAnimationFrame();
     }
-};
+}
+
+defineReadOnlyProperty(Snow, 'snow');

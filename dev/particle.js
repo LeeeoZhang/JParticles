@@ -70,7 +70,7 @@ class Particle extends Base {
     };
 
     get version() {
-        return '2.0.0';
+        return '3.0.0';
     }
 
     constructor(selector, options) {
@@ -247,8 +247,6 @@ class Particle extends Base {
 
 // 修改原型 pause, open 方法
 modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
-
-//JParticles.particle = Particle;
 
 // 使用防止属性被更改的 appendProperty 方法，
 // 挂载插件到 JParticles 对象上。

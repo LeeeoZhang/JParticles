@@ -75,7 +75,7 @@ var Particle = function (_Base) {
     _createClass(Particle, [{
         key: 'version',
         get: function get() {
-            return '2.0.0';
+            return '3.0.0';
         }
     }]);
 
@@ -326,8 +326,6 @@ Particle.defaultConfig = {
     eventElem: null
 };
 modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
-
-//JParticles.particle = Particle;
 
 // 使用防止属性被更改的 appendProperty 方法，
 // 挂载插件到 JParticles 对象上。

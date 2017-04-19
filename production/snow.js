@@ -13,8 +13,6 @@ window.JParticles.snow.prototype.setOptions = function(){};
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class, _temp;
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -24,22 +22,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _JParticles = JParticles,
     utils = _JParticles.utils,
     Base = _JParticles.Base;
-var pInt = utils.pInt,
-    limitRandom = utils.limitRandom,
-    calcSpeed = utils.calcSpeed;
 var random = Math.random,
     abs = Math.abs,
     PI = Math.PI;
 
 var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
 
-JParticles.snow = (_temp = _class = function (_Base) {
+var Snow = function (_Base) {
     _inherits(Snow, _Base);
 
     _createClass(Snow, [{
         key: 'version',
         get: function get() {
-            return '2.0.0';
+            return '3.0.0';
         }
     }]);
 
@@ -146,7 +145,9 @@ JParticles.snow = (_temp = _class = function (_Base) {
     }]);
 
     return Snow;
-}(Base), _class.defaultConfig = {
+}(Base);
+
+Snow.defaultConfig = {
 
     // 雪花颜色
     color: '#fff',
@@ -154,7 +155,10 @@ JParticles.snow = (_temp = _class = function (_Base) {
     minR: .4,
     maxSpeed: .6,
     minSpeed: 0
-}, _temp);
+};
+
+
+defineReadOnlyProperty(Snow, 'snow');
                 }();
             
 //# sourceMappingURL=maps/snow.js.map

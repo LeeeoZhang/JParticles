@@ -4,30 +4,18 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        #demo{
-            width: 900px;
-            height: 600px;
-            margin: 50px auto;
-            border: 1px solid #ccc;
-        }
-        .btn-box{
-            text-align: center;
-        }
-        .btn{
-            font-size: 20px;
-        }
-    </style>
 </head>
 <body>
-    <div id="demo"></div>
-    <div class="btn-box">
-        <button class="btn btn-primary" type="button" data-open>
-            open
-        </button>
-        <button class="btn btn-danger" type="button" data-pause>
-            pause
-        </button>
+    <div id="instance">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
     </div>
 
     <script src="js/require.js"></script>
@@ -36,7 +24,7 @@
         require(['../production/jparticles'], function (jps) {
             require(['../production/particle'], function () {
 
-                var demo = new jps.particle('#demo');
+                var demo = new jps.particle('#instance .demo');
 
                 document.addEventListener('click', function (event) {
                     var target = event.target;
@@ -52,7 +40,7 @@
 
         /*require(['../production/jparticles.all'], function (jps) {
 
-            var demo = new jps.particle('#demo');
+            var demo = new jps.particle('#instance .demo');
 
             document.addEventListener('click', function (event) {
                 var target = event.target;
@@ -75,7 +63,7 @@
     <script src="../production/particle.js"></script>
     <script src="js/require.js"></script>
     <script>
-        var demo = new JParticles.particle( '#demo' );
+        var demo = new JParticles.particle( '#instance .demo' );
 
         document.addEventListener( 'click', function( event ){
             var target = event.target;

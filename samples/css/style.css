@@ -173,3 +173,18 @@ body, html {
     border-bottom-left-radius: .16667rem;
     border-bottom-right-radius: .16667rem
 }
+
+/* 实例样式 */
+[id^="instance"] {
+    text-align: center;
+}
+.demo {
+    width: 70%;
+    height: 600px;
+    margin: 50px auto;
+    border: 1px solid #ccc;
+}
+.btn{
+    margin: 0 5px;
+    font-size: 20px;
+}

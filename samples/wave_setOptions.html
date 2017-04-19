@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        [id^="instance"] {
+            position: relative;
+        }
+
+        [id^="process"] {
+            width: 100%;
+            height: 600px;
+            line-height: 600px;
+            text-align: center;
+            font-size: 50px;
+            color: #333;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="instance4">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                start/open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+        <div id="process4">0%</div>
+    </div>
+
+    <div id="instance5">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                start/open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+        <div id="process5">0%</div>
+    </div>
+
+    <div id="instance6">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                start/open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+        <div id="process6">0%</div>
+    </div>
+
+    <script src="../production/jparticles.all.js"></script>
+    <script src="js/event.js"></script>
+    <script>
+        (function () {
+            var instance = document.querySelector('#instance4');
+            var demo = instance.querySelector('.demo');
+            var btnOpen = instance.querySelector('.btn[data-open]');
+            var btnPause = instance.querySelector('.btn[data-pause]');
+            var processElem = document.querySelector('#process4');
+            var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
+            var process = elemHeight;
+            var timer = null;
+
+            function setProcess() {
+                var percent = ( (elemHeight - process) / elemHeight * 100 ).toFixed();
+                processElem.innerHTML = percent + '%';
+                if (percent > 55) {
+                    processElem.style.color = '#fff';
+                } else {
+                    processElem.removeAttribute('style');
+                }
+            }
+
+            // 一条
+            function run() {
+                if (process <= 0) {
+                    process = 0;
+                    clearInterval(timer);
+                } else {
+                    process -= 4;
+                }
+                effect.setOptions({
+                    offsetTop: process
+                });
+                setProcess();
+            }
+
+            var effect = new JParticles.wave(demo, {
+                num: 1,
+                line: false,
+                fill: true,
+                fillColor: '#27C9E5',
+                crestHeight: 8,
+                offsetTop: process,
+                rippleNum: 3,
+                speed: .4
+            });
+
+            btnOpen.addEventListener('click', function () {
+                if (process === 0) {
+                    process = elemHeight;
+                }
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    run();
+                }, 30);
+            });
+            btnPause.addEventListener('click', function () {
+                clearInterval(timer);
+            });
+        })();
+
+        (function () {
+            var instance = document.querySelector('#instance5');
+            var demo = instance.querySelector('.demo');
+            var btnOpen = instance.querySelector('.btn[data-open]');
+            var btnPause = instance.querySelector('.btn[data-pause]');
+            var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
+            var originOffsetTop = [elemHeight, elemHeight + 8, elemHeight + 16];
+            var process = originOffsetTop;
+            var timer = null;
+
+            // 多条
+            function run() {
+                if (process[1] <= 0) {
+                    process.forEach(function(item, i, array) {
+                        array[i] = 0;
+                    });
+                    clearInterval(timer);
+                } else {
+                    process.forEach(function(item, i, array) {
+                        array[i] = item - 4;
+                    });
+                }
+                effect.setOptions({
+                    offsetTop: process
+                });
+            }
+
+            var effect = new JParticles.wave(demo, {
+                num: 3,
+                lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
+                lineWidth: [.5, .7, .9],
+                offsetLeft: [2, 1, 0],
+                offsetTop: process,
+                crestHeight: [8, 12, 16],
+                rippleNum: 2,
+                speed: .07
+            });
+
+            btnOpen.addEventListener('click', function () {
+                if (process[1] === 0) {
+                    process = originOffsetTop;
+                }
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    run();
+                }, 30);
+            });
+            btnPause.addEventListener('click', function () {
+                clearInterval(timer);
+            });
+        })();
+
+        /*bind('#instance6', function () {
+            var processElem = document.querySelector('#process6');
+            var process = 0.9;
+            var timer = null;
+            var effect = null;
+
+            function setProcess() {
+                processElem.innerHTML = ( (1 - process) * 100 ).toFixed() + '%';
+            }
+
+            setProcess();
+
+            effect = new JParticles.wave('#instance6 .demo', {
+                num: 3,
+                fillColor: 'rgba(0,0,0,.25)',
+                crestHeight: [8, 12, 16],
+                offsetTop: process,
+                rippleNum: [2, 3, 4],
+                fill: true,
+                line: false,
+                speed: .3
+            });
+
+            timer = setInterval(function () {
+
+                if (process <= 0.01) {
+                    process = 0;
+                    setProcess();
+                    effect.setOffsetTop(-8);
+                    effect.pause();
+                    return clearInterval(timer);
+                }
+
+                process -= 0.01;
+                effect.setOffsetTop(process);
+                setProcess();
+
+            }, 30);
+
+            return effect;
+        });*/
+    </script>
+</body>
+</html>

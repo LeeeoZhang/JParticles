@@ -15,8 +15,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class, _temp;
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -26,11 +24,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _JParticles = JParticles,
     utils = _JParticles.utils,
     Base = _JParticles.Base;
-var pInt = utils.pInt,
-    limitRandom = utils.limitRandom,
-    calcSpeed = utils.calcSpeed,
-    isArray = utils.isArray;
-var randomColor = utils.randomColor;
 var random = Math.random,
     abs = Math.abs,
     PI = Math.PI,
@@ -38,14 +31,22 @@ var random = Math.random,
 
 var twicePI = PI * 2;
 var UNDEFINED = 'undefined';
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    _scaleValue = utils.scaleValue,
+    randomColor = utils.randomColor,
+    isArray = utils.isArray,
+    isPlainObject = utils.isPlainObject,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
 
-JParticles.wave = (_temp = _class = function (_Base) {
+var Wave = function (_Base) {
     _inherits(Wave, _Base);
 
     _createClass(Wave, [{
         key: 'version',
         get: function get() {
-            return '2.0.0';
+            return '3.0.0';
         }
     }]);
 
@@ -63,6 +64,9 @@ JParticles.wave = (_temp = _class = function (_Base) {
                 // 线条波长，每个周期(2π)在canvas上的实际长度
                 this.rippleLength = [];
 
+                // 仅允许以下选项动态设置
+                this.dynamicOptions = ['fill', 'fillColor', 'line', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'speed', 'opacity'];
+
                 this.attrNormalize();
                 this.createDots();
                 this.draw();
@@ -73,7 +77,7 @@ JParticles.wave = (_temp = _class = function (_Base) {
         value: function attrNormalize() {
             var _this2 = this;
 
-            ['fillColor', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'rippleNum', 'speed', 'fill', 'stroke'].forEach(function (attr) {
+            ['fill', 'fillColor', 'line', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'rippleNum', 'speed'].forEach(function (attr) {
                 return _this2.attrProcessor(attr);
             });
         }
@@ -106,22 +110,12 @@ JParticles.wave = (_temp = _class = function (_Base) {
         }
     }, {
         key: 'scaleValue',
-        value: function (_scaleValue) {
-            function scaleValue(_x, _x2, _x3) {
-                return _scaleValue.apply(this, arguments);
-            }
-
-            scaleValue.toString = function () {
-                return _scaleValue.toString();
-            };
-
-            return scaleValue;
-        }(function (attr, val, scale) {
+        value: function scaleValue(attr, val, scale) {
             if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
-                return scaleValue(val, scale);
+                return _scaleValue(val, scale);
             }
             return val;
-        })
+        }
 
         // 以下为缺省情况，属性对应的默认值
 
@@ -156,7 +150,7 @@ JParticles.wave = (_temp = _class = function (_Base) {
                 case 'fill':
                     attr = false;
                     break;
-                case 'stroke':
+                case 'line':
                     attr = true;
                     break;
             }
@@ -180,6 +174,17 @@ JParticles.wave = (_temp = _class = function (_Base) {
                     // 超出部分保持它的原有值，以保证不出现 undefined
                     array[i] = isArray(topVal) ? topVal[i] || v : topVal;
                 });
+            }
+        }
+    }, {
+        key: 'setOptions',
+        value: function setOptions(newOptions) {
+            if (isPlainObject(newOptions)) {
+                for (var name in newOptions) {
+                    if (this.dynamicOptions.indexOf(name) !== -1) {
+                        this.set[name] = this.optionsProcessor(name, newOptions[name]);
+                    }
+                }
             }
         }
     }, {
@@ -248,7 +253,7 @@ JParticles.wave = (_temp = _class = function (_Base) {
                     cxt.fill();
                 }
 
-                if (set.stroke[i]) {
+                if (set.line[i]) {
                     cxt.lineWidth = set.lineWidth[i];
                     cxt.strokeStyle = set.lineColor[i];
                     cxt.stroke();
@@ -278,24 +283,33 @@ JParticles.wave = (_temp = _class = function (_Base) {
     }]);
 
     return Wave;
-}(Base), _class.defaultConfig = {
+}(Base);
 
-    // 波纹个数
+Wave.defaultConfig = {
+
+    // 线条个数
     num: 3,
 
-    // 波纹背景颜色，当fill设置为true时生效
+    // 是否填充背景色，设置为false相关值无效
+    fill: false,
+
+    // 填充的背景色，当fill设置为true时生效
     fillColor: [],
 
-    // 波纹线条(边框)颜色，当stroke设置为true时生效
+    // 是否绘制边框，设置为false相关值无效
+    line: true,
+
+    // 边框颜色，当stroke设置为true时生效，下同
     lineColor: [],
 
-    // 线条宽度
+    // 边框宽度
     lineWidth: [],
 
-    // 线条的横向偏移值，(0, 1)表示容器宽度的倍数，[1, +∞)表示具体数值
+    // 线条横向偏移值，距离canvas画布左边的偏移值
+    // (0, 1)表示容器宽度的倍数，[1, +∞)表示具体数值
     offsetLeft: [],
 
-    // 线条的纵向偏移值，线条中点到元素顶部的距离
+    // 线条纵向偏移值，线条中点到canvas画布顶部的距离
     // (0, 1)表示容器高度的倍数，[1, +∞)表示具体数值
     offsetTop: [],
 
@@ -306,14 +320,11 @@ JParticles.wave = (_temp = _class = function (_Base) {
     rippleNum: [],
 
     // 运动速度
-    speed: [],
+    speed: []
+};
 
-    // 是否填充背景色，设置为false相关值无效
-    fill: false,
 
-    // 是否绘制边框，设置为false相关值无效
-    stroke: true
-}, _temp);
+defineReadOnlyProperty(Wave, 'wave');
                 }();
             
 //# sourceMappingURL=maps/wave.js.map
