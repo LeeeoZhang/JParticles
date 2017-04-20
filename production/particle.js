@@ -126,10 +126,9 @@ var Particle = function (_Base) {
 
             var realNumber = pInt(scaleValue(num, cw));
             var dots = this.dots = [];
-            var r = void 0;
 
             while (realNumber--) {
-                r = limitRandom(maxR, minR);
+                var r = limitRandom(maxR, minR);
                 dots.push({
                     r: r,
                     x: limitRandom(cw - r, r),
@@ -297,7 +296,7 @@ var Particle = function (_Base) {
 Particle.defaultConfig = {
 
     // 粒子个数，默认为容器宽度的 0.12 倍
-    // 传入 (0, 1) 显示容器宽度相应倍数的个数，传入 [1, +∞) 显示具体个数
+    // (0, 1) 显示为容器宽度相应倍数的个数，[1, +∞) 显示具体个数
     num: .12,
 
     // 粒子最大半径(0, +∞)
@@ -319,10 +318,12 @@ Particle.defaultConfig = {
     // 线段的宽度
     lineWidth: .2,
 
-    // 定位点的范围，范围越大连线越多，当 range 等于 0 时，不连线，相关值无效
+    // 定位点的范围，范围越大连线越多
+    // 当 range 等于 0 时，不连线，相关值无效
     range: 160,
 
-    // 改变定位点坐标的事件元素，null 表示 canvas 画布，或传入原生元素对象，如 document 等
+    // 改变定位点坐标的事件元素
+    // null 表示 canvas 画布，或传入原生元素对象，如 document 等
     eventElem: null
 };
 modifyPrototype(Particle.prototype, 'pause, open', eventHandler);

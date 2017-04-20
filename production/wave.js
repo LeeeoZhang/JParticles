@@ -64,9 +64,6 @@ var Wave = function (_Base) {
                 // 线条波长，每个周期(2π)在canvas上的实际长度
                 this.rippleLength = [];
 
-                // 仅允许以下选项动态设置
-                this.dynamicOptions = ['fill', 'fillColor', 'line', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'speed', 'opacity'];
-
                 this.attrNormalize();
                 this.createDots();
                 this.draw();
@@ -85,12 +82,12 @@ var Wave = function (_Base) {
         key: 'attrProcessor',
         value: function attrProcessor(attr) {
             var num = this.set.num;
-            var attrVal = this.set[attr];
-            var std = attrVal;
+            var attrValue = this.set[attr];
+            var stdValue = attrValue;
             var scale = attr === 'offsetLeft' ? this.cw : this.ch;
 
-            if (!isArray(attrVal)) {
-                std = this.set[attr] = [];
+            if (!isArray(attrValue)) {
+                stdValue = this.set[attr] = [];
             }
 
             // 将数组、字符串、数字、布尔类型属性标准化，例如 num = 3：
@@ -99,22 +96,14 @@ var Wave = function (_Base) {
             // 注意：(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值，其他属性同理
             // scaleValue 用于处理属性值为 (0, 1) 或 [1, +∞) 这样的情况，返回计算好的数值。
             while (num--) {
-                var val = isArray(attrVal) ? attrVal[num] : attrVal;
+                var val = isArray(attrValue) ? attrValue[num] : attrValue;
 
-                std[num] = (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === UNDEFINED ? this.generateDefaultValue(attr) : this.scaleValue(attr, val, scale);
+                stdValue[num] = (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === UNDEFINED ? this.generateDefaultValue(attr) : this.scaleValue(attr, val, scale);
 
                 if (attr === 'rippleNum') {
-                    this.rippleLength[num] = this.cw / std[num];
+                    this.rippleLength[num] = this.cw / stdValue[num];
                 }
             }
-        }
-    }, {
-        key: 'scaleValue',
-        value: function scaleValue(attr, val, scale) {
-            if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
-                return _scaleValue(val, scale);
-            }
-            return val;
         }
 
         // 以下为缺省情况，属性对应的默认值
@@ -157,32 +146,45 @@ var Wave = function (_Base) {
             return attr;
         }
     }, {
-        key: 'setOffsetTop',
-        value: function setOffsetTop(topVal) {
-            var _set = this.set,
-                num = _set.num,
-                offsetTop = _set.offsetTop;
-
-
-            if (num > 0) {
-                if (!isArray(topVal) && topVal > 0 && topVal < 1) {
-                    topVal *= this.ch;
-                }
-                offsetTop.forEach(function (v, i, array) {
-
-                    // topVal[i] || v: 当传入的topVal数组少于自身数组的长度，
-                    // 超出部分保持它的原有值，以保证不出现 undefined
-                    array[i] = isArray(topVal) ? topVal[i] || v : topVal;
-                });
+        key: 'scaleValue',
+        value: function scaleValue(attr, value, scale) {
+            if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
+                return _scaleValue(value, scale);
             }
+            return value;
+        }
+    }, {
+        key: 'dynamicProcessor',
+        value: function dynamicProcessor(name, newValue) {
+            var _this3 = this;
+
+            var scale = name === 'offsetLeft' ? this.cw : this.ch;
+            var isArrayType = isArray(newValue);
+
+            this.set[name].forEach(function (curValue, i, array) {
+
+                var value = isArrayType ? newValue[i] : newValue;
+                value = _this3.scaleValue(name, value, scale);
+
+                // 未定义部分保持原有值
+                if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === UNDEFINED) {
+                    value = curValue;
+                }
+
+                array[i] = value;
+            });
         }
     }, {
         key: 'setOptions',
         value: function setOptions(newOptions) {
-            if (isPlainObject(newOptions)) {
+            if (this.set.num > 0 && isPlainObject(newOptions)) {
                 for (var name in newOptions) {
-                    if (this.dynamicOptions.indexOf(name) !== -1) {
-                        this.set[name] = this.optionsProcessor(name, newOptions[name]);
+
+                    // 不允许 opacity 为 0
+                    if (name === 'opacity' && newOptions[name]) {
+                        this.set.opacity = newOptions[name];
+                    } else if (this.dynamicOptions.indexOf(name) !== -1) {
+                        this.dynamicProcessor(name, newOptions[name]);
                     }
                 }
             }
@@ -267,11 +269,11 @@ var Wave = function (_Base) {
     }, {
         key: 'resize',
         value: function resize() {
-            var _this3 = this;
+            var _this4 = this;
 
             utils.resize(this, function (scaleX, scaleY) {
-                if (_this3.set.num > 0) {
-                    _this3.dots.forEach(function (line) {
+                if (_this4.set.num > 0) {
+                    _this4.dots.forEach(function (line) {
                         line.forEach(function (dot) {
                             dot.x *= scaleX;
                             dot.y *= scaleY;
@@ -284,6 +286,9 @@ var Wave = function (_Base) {
 
     return Wave;
 }(Base);
+
+// 仅允许 opacity 和以下选项动态设置
+
 
 Wave.defaultConfig = {
 
@@ -322,7 +327,7 @@ Wave.defaultConfig = {
     // 运动速度
     speed: []
 };
-
+Wave.prototype.dynamicOptions = ['fill', 'fillColor', 'line', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'speed'];
 
 defineReadOnlyProperty(Wave, 'wave');
                 }();
