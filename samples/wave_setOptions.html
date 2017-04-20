@@ -20,6 +20,10 @@
             top: 0;
             left: 0;
         }
+
+        #instance5 {
+            margin-bottom: 100px;
+        }
     </style>
 </head>
 <body>
@@ -46,20 +50,6 @@
                 pause
             </button>
         </div>
-        <div id="process5">0%</div>
-    </div>
-
-    <div id="instance6">
-        <div class="demo"></div>
-        <div class="btn-box">
-            <button class="btn btn-primary" type="button" data-open>
-                start/open
-            </button>
-            <button class="btn btn-danger" type="button" data-pause>
-                pause
-            </button>
-        </div>
-        <div id="process6">0%</div>
     </div>
 
     <script src="../production/jparticles.all.js"></script>
@@ -89,9 +79,11 @@
             function run() {
                 if (process <= 0) {
                     process = 0;
+                    effect.pause();
                     clearInterval(timer);
                 } else {
                     process -= 4;
+                    effect.open();
                 }
                 effect.setOptions({
                     offsetTop: process
@@ -107,7 +99,7 @@
                 crestHeight: 8,
                 offsetTop: process,
                 rippleNum: 3,
-                speed: .4
+                speed: .3
             });
 
             btnOpen.addEventListener('click', function () {
@@ -131,23 +123,34 @@
             var btnPause = instance.querySelector('.btn[data-pause]');
             var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
             var originOffsetTop = [elemHeight, elemHeight + 8, elemHeight + 16];
-            var process = originOffsetTop;
+            var process = Object.assign([], originOffsetTop);
+            var originOffsetLeft = [2, 1, 0];
+            var offsetLeft = Object.assign([], originOffsetLeft);
             var timer = null;
 
-            // 多条
+            // 多条和多参数设置
             function run() {
                 if (process[1] <= 0) {
                     process.forEach(function(item, i, array) {
                         array[i] = 0;
                     });
+                    effect.pause();
                     clearInterval(timer);
                 } else {
                     process.forEach(function(item, i, array) {
                         array[i] = item - 4;
                     });
+                    offsetLeft.forEach(function(item, i, array) {
+                        array[i] = item - 0.5;
+                    });
+                    effect.open();
                 }
+
                 effect.setOptions({
-                    offsetTop: process
+                    offsetTop: process,
+                    offsetLeft: offsetLeft,
+                    opacity: 0.5,
+                    speed: undefined
                 });
             }
 
@@ -155,7 +158,7 @@
                 num: 3,
                 lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 lineWidth: [.5, .7, .9],
-                offsetLeft: [2, 1, 0],
+                offsetLeft: offsetLeft,
                 offsetTop: process,
                 crestHeight: [8, 12, 16],
                 rippleNum: 2,
@@ -163,8 +166,9 @@
             });
 
             btnOpen.addEventListener('click', function () {
-                if (process[1] === 0) {
-                    process = originOffsetTop;
+                if (process[1] <= 0) {
+                    process = Object.assign([], originOffsetTop);
+                    offsetLeft = Object.assign([], originOffsetLeft);
                 }
                 clearInterval(timer);
                 timer = setInterval(function () {
@@ -175,48 +179,6 @@
                 clearInterval(timer);
             });
         })();
-
-        /*bind('#instance6', function () {
-            var processElem = document.querySelector('#process6');
-            var process = 0.9;
-            var timer = null;
-            var effect = null;
-
-            function setProcess() {
-                processElem.innerHTML = ( (1 - process) * 100 ).toFixed() + '%';
-            }
-
-            setProcess();
-
-            effect = new JParticles.wave('#instance6 .demo', {
-                num: 3,
-                fillColor: 'rgba(0,0,0,.25)',
-                crestHeight: [8, 12, 16],
-                offsetTop: process,
-                rippleNum: [2, 3, 4],
-                fill: true,
-                line: false,
-                speed: .3
-            });
-
-            timer = setInterval(function () {
-
-                if (process <= 0.01) {
-                    process = 0;
-                    setProcess();
-                    effect.setOffsetTop(-8);
-                    effect.pause();
-                    return clearInterval(timer);
-                }
-
-                process -= 0.01;
-                effect.setOffsetTop(process);
-                setProcess();
-
-            }, 30);
-
-            return effect;
-        });*/
     </script>
 </body>
 </html>

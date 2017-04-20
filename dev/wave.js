@@ -62,13 +62,6 @@ class Wave extends Base {
             // 线条波长，每个周期(2π)在canvas上的实际长度
             this.rippleLength = [];
 
-            // 仅允许以下选项动态设置
-            this.dynamicOptions = [
-                'fill', 'fillColor', 'line', 'lineColor',
-                'lineWidth', 'offsetLeft', 'offsetTop',
-                'crestHeight', 'speed', 'opacity'
-            ];
-
             this.attrNormalize();
             this.createDots();
             this.draw();
@@ -86,12 +79,12 @@ class Wave extends Base {
 
     attrProcessor(attr) {
         let num = this.set.num;
-        let attrVal = this.set[attr];
-        let std = attrVal;
+        let attrValue = this.set[attr];
+        let stdValue = attrValue;
         let scale = attr === 'offsetLeft' ? this.cw : this.ch;
 
-        if (!isArray(attrVal)) {
-            std = this.set[attr] = [];
+        if (!isArray(attrValue)) {
+            stdValue = this.set[attr] = [];
         }
 
         // 将数组、字符串、数字、布尔类型属性标准化，例如 num = 3：
@@ -100,23 +93,16 @@ class Wave extends Base {
         // 注意：(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值，其他属性同理
         // scaleValue 用于处理属性值为 (0, 1) 或 [1, +∞) 这样的情况，返回计算好的数值。
         while (num--) {
-            const val = isArray(attrVal) ? attrVal[num] : attrVal;
+            const val = isArray(attrValue) ? attrValue[num] : attrValue;
 
-            std[num] = typeof val === UNDEFINED
+            stdValue[num] = typeof val === UNDEFINED
                 ? this.generateDefaultValue(attr)
                 : this.scaleValue(attr, val, scale);
 
             if (attr === 'rippleNum') {
-                this.rippleLength[num] = this.cw / std[num];
+                this.rippleLength[num] = this.cw / stdValue[num];
             }
         }
-    }
-
-    scaleValue(attr, val, scale) {
-        if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
-            return scaleValue(val, scale);
-        }
-        return val;
     }
 
     // 以下为缺省情况，属性对应的默认值
@@ -154,27 +140,41 @@ class Wave extends Base {
         return attr;
     }
 
-    setOffsetTop(topVal) {
-        const {num, offsetTop} = this.set;
-
-        if (num > 0) {
-            if (!isArray(topVal) && topVal > 0 && topVal < 1) {
-                topVal *= this.ch;
-            }
-            offsetTop.forEach((v, i, array) => {
-
-                // topVal[i] || v: 当传入的topVal数组少于自身数组的长度，
-                // 超出部分保持它的原有值，以保证不出现 undefined
-                array[i] = isArray(topVal) ? ( topVal[i] || v ) : topVal;
-            });
+    scaleValue(attr, value, scale) {
+        if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
+            return scaleValue(value, scale);
         }
+        return value;
+    }
+
+    dynamicProcessor(name, newValue) {
+        const scale = name === 'offsetLeft' ? this.cw : this.ch;
+        const isArrayType = isArray(newValue);
+
+        this.set[name].forEach((curValue, i, array) => {
+
+            let value = isArrayType ? newValue[i] : newValue;
+            value = this.scaleValue(name, value, scale);
+
+            // 未定义部分保持原有值
+            if (typeof value === UNDEFINED) {
+                value = curValue;
+            }
+
+            array[i] = value;
+        });
     }
 
     setOptions(newOptions) {
-        if (isPlainObject(newOptions)) {
+        if (this.set.num > 0 && isPlainObject(newOptions)) {
             for (const name in newOptions) {
-                if (this.dynamicOptions.indexOf(name) !== -1) {
-                    this.set[name] = this.optionsProcessor(name, newOptions[name]);
+
+                // 不允许 opacity 为 0
+                if (name === 'opacity' && newOptions[name]) {
+                    this.set.opacity = newOptions[name];
+
+                } else if (this.dynamicOptions.indexOf(name) !== -1) {
+                    this.dynamicProcessor(name, newOptions[name]);
                 }
             }
         }
@@ -262,5 +262,12 @@ class Wave extends Base {
         });
     }
 }
+
+// 仅允许 opacity 和以下选项动态设置
+Wave.prototype.dynamicOptions = [
+    'fill', 'fillColor', 'line', 'lineColor',
+    'lineWidth', 'offsetLeft', 'offsetTop',
+    'crestHeight', 'speed'
+];
 
 defineReadOnlyProperty(Wave, 'wave');
