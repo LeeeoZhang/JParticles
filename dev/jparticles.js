@@ -413,7 +413,7 @@ const observeElementRemoved = (() => {
     const checkElementRemoved = (node, element) => {
         if (node === element) {
             return true;
-        } else {
+        } else if (isElement(node)) {
             const children = node.children;
             let length = children.length;
             while (length--) {
@@ -422,6 +422,7 @@ const observeElementRemoved = (() => {
                 }
             }
         }
+        return false;
     };
     const useMutation = (element, callback) => {
         const observer = new MutationObserver((mutations, observer) => {

@@ -458,7 +458,7 @@ var observeElementRemoved = function () {
     var checkElementRemoved = function checkElementRemoved(node, element) {
         if (node === element) {
             return true;
-        } else {
+        } else if (isElement(node)) {
             var children = node.children;
             var length = children.length;
             while (length--) {
@@ -467,6 +467,7 @@ var observeElementRemoved = function () {
                 }
             }
         }
+        return false;
     };
     var useMutation = function useMutation(element, callback) {
         var observer = new MutationObserver(function (mutations, observer) {
@@ -1561,5 +1562,5 @@ Wave.prototype.dynamicOptions = ['fill', 'fillColor', 'line', 'lineColor', 'line
 
 defineReadOnlyProperty(Wave, 'wave');
                 }();
-            
+
 //# sourceMappingURL=maps/wave.js.map
