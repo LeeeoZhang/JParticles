@@ -46,6 +46,7 @@
     <script src="../production/particle.js"></script>
     <script src="js/event.js"></script>
     <script>
+        // 暂停的时候被摧毁不触发 onDestroy 事件
         var i = 0;
         function build() {
             console.log(++i);
@@ -53,9 +54,11 @@
                 var effect = new JParticles.particle('#instance .demo');
                 effect.onDestroy(function () {
                     console.log('1 - Canvas has been removed!!!');
+                }, function () {
+                    console.log('2 - Canvas has been removed!!!');
                 });
                 effect.onDestroy(function () {
-                    console.log('2 - Canvas has been removed!!!');
+                    console.log('3 - Canvas has been removed!!!');
                 });
                 return effect;
             });

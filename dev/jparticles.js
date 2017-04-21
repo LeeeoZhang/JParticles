@@ -380,9 +380,11 @@ class Base {
         }
     }
 
-    onDestroy(callback) {
-        if (isFunction(callback)) {
-            this.destructionListeners.push(callback);
+    onDestroy() {
+        for (let i = 0; i < arguments.length; i++) {
+            if (isFunction(arguments[i])) {
+                this.destructionListeners.push(arguments[i]);
+            }
         }
     }
 
