@@ -205,7 +205,7 @@ var Wave = function (_Base) {
                 var step = twicePI / rippleLength[num];
 
                 // 创建一条线段所需的点
-                for (var i = 0; i < cw; i++) {
+                for (var i = 0; i <= cw; i++) {
                     line.push({
                         x: i,
                         y: i * step
@@ -311,14 +311,14 @@ Wave.defaultConfig = {
     lineWidth: [],
 
     // 线条横向偏移值，距离canvas画布左边的偏移值
-    // (0, 1)表示容器宽度的倍数，[1, +∞)表示具体数值
+    // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
     offsetLeft: [],
 
     // 线条纵向偏移值，线条中点到canvas画布顶部的距离
-    // (0, 1)表示容器高度的倍数，[1, +∞)表示具体数值
+    // (0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
     offsetTop: [],
 
-    // 波峰高度，(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值
+    // 波峰高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
     crestHeight: [],
 
     // 波纹个数，即正弦周期个数

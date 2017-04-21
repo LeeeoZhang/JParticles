@@ -9,7 +9,7 @@
             position: relative;
         }
 
-        [id^="process"] {
+        [id^="progress"] {
             width: 100%;
             height: 600px;
             line-height: 600px;
@@ -19,10 +19,6 @@
             position: absolute;
             top: 0;
             left: 0;
-        }
-
-        #instance5 {
-            margin-bottom: 100px;
         }
     </style>
 </head>
@@ -37,7 +33,7 @@
                 pause
             </button>
         </div>
-        <div id="process4">0%</div>
+        <div id="progress4">0%</div>
     </div>
 
     <div id="instance5">
@@ -60,35 +56,35 @@
             var demo = instance.querySelector('.demo');
             var btnOpen = instance.querySelector('.btn[data-open]');
             var btnPause = instance.querySelector('.btn[data-pause]');
-            var processElem = document.querySelector('#process4');
+            var progressElem = document.querySelector('#progress4');
             var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
-            var process = elemHeight;
+            var progress = elemHeight;
             var timer = null;
 
-            function setProcess() {
-                var percent = ( (elemHeight - process) / elemHeight * 100 ).toFixed();
-                processElem.innerHTML = percent + '%';
+            function setProgress() {
+                var percent = ( (elemHeight - progress) / elemHeight * 100 ).toFixed();
+                progressElem.innerHTML = percent + '%';
                 if (percent > 55) {
-                    processElem.style.color = '#fff';
+                    progressElem.style.color = '#fff';
                 } else {
-                    processElem.removeAttribute('style');
+                    progressElem.removeAttribute('style');
                 }
             }
 
             // 一条
             function run() {
-                if (process <= 0) {
-                    process = 0;
+                if (progress <= 0) {
+                    progress = 0;
                     effect.pause();
                     clearInterval(timer);
                 } else {
-                    process -= 4;
+                    progress -= 4;
                     effect.open();
                 }
                 effect.setOptions({
-                    offsetTop: process
+                    offsetTop: progress
                 });
-                setProcess();
+                setProgress();
             }
 
             var effect = new JParticles.wave(demo, {
@@ -97,14 +93,14 @@
                 fill: true,
                 fillColor: '#27C9E5',
                 crestHeight: 8,
-                offsetTop: process,
+                offsetTop: progress,
                 rippleNum: 3,
                 speed: .3
             });
 
             btnOpen.addEventListener('click', function () {
-                if (process === 0) {
-                    process = elemHeight;
+                if (progress === 0) {
+                    progress = elemHeight;
                 }
                 clearInterval(timer);
                 timer = setInterval(function () {
@@ -123,21 +119,21 @@
             var btnPause = instance.querySelector('.btn[data-pause]');
             var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
             var originOffsetTop = [elemHeight, elemHeight + 8, elemHeight + 16];
-            var process = Object.assign([], originOffsetTop);
+            var progress = Object.assign([], originOffsetTop);
             var originOffsetLeft = [2, 1, 0];
             var offsetLeft = Object.assign([], originOffsetLeft);
             var timer = null;
 
             // 多条和多参数设置
             function run() {
-                if (process[1] <= 0) {
-                    process.forEach(function(item, i, array) {
+                if (progress[1] <= 0) {
+                    progress.forEach(function(item, i, array) {
                         array[i] = 0;
                     });
                     effect.pause();
                     clearInterval(timer);
                 } else {
-                    process.forEach(function(item, i, array) {
+                    progress.forEach(function(item, i, array) {
                         array[i] = item - 4;
                     });
                     offsetLeft.forEach(function(item, i, array) {
@@ -147,7 +143,7 @@
                 }
 
                 effect.setOptions({
-                    offsetTop: process,
+                    offsetTop: progress,
                     offsetLeft: offsetLeft,
                     opacity: 0.5,
                     speed: undefined
@@ -159,15 +155,15 @@
                 lineColor: ['rgba(0, 190, 112, .5)', 'rgba(0, 190, 112, .7)', 'rgba(0, 190, 112, .9)'],
                 lineWidth: [.5, .7, .9],
                 offsetLeft: offsetLeft,
-                offsetTop: process,
+                offsetTop: progress,
                 crestHeight: [8, 12, 16],
                 rippleNum: 2,
                 speed: .07
             });
 
             btnOpen.addEventListener('click', function () {
-                if (process[1] <= 0) {
-                    process = Object.assign([], originOffsetTop);
+                if (progress[1] <= 0) {
+                    progress = Object.assign([], originOffsetTop);
                     offsetLeft = Object.assign([], originOffsetLeft);
                 }
                 clearInterval(timer);

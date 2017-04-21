@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        [id^="instance"] .demo {
+            width: 100%;
+            height: 100%;
+        }
+        #instance {
+            width: 60%;
+            height: 400px;
+            margin: 0 auto 200px;
+        }
+        #instance canvas {
+            border-radius: 0 !important;
+        }
+        #instance2 {
+            width: 120px;
+            height: 120px;
+            margin: 50px auto;
+        }
+        #instance2 .demo {
+            border-color: #ececec;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="instance">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                done
+            </button>
+        </div>
+    </div>
+
+    <div id="instance2">
+        <div class="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                done
+            </button>
+        </div>
+    </div>
+
+    <script src="../production/jparticles.js"></script>
+    <script src="../production/wave_loading.js"></script>
+    <script src="js/event.js"></script>
+    <script>
+        (function () {
+            var instance = document.getElementById('instance');
+            var btn = instance.querySelector('.btn');
+            var demo = instance.querySelector('.demo');
+            var loading = new JParticles.waveLoading(demo, {
+
+                // [font style][font weight][font size][font family]
+                // 同css一样，但必须包含 [font size] 和 [font family]
+                // 进度文本颜色
+                font: 'normal 400 20px Arial',
+
+                // 文本颜色
+                color: '#333',
+
+                // 填充的背景色
+                fillColor: '#27C9E5',
+
+                // 线条横向偏移值，距离canvas画布左边的偏移值
+                // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
+                offsetLeft: 0,
+
+                // 波峰高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+                crestHeight: 8,
+
+                // 波纹个数，即正弦周期个数
+                rippleNum: 2,
+
+                // 运动速度
+                speed: .3
+            });
+
+            loading.onProgress(function (progress) {
+
+                // 如果进度大于 60，设置文本颜色为白色
+                if (progress >= 60) {
+                    loading.setOptions({
+                        color: '#fff'
+                    });
+                }
+            });
+
+            btn.addEventListener('click', function () {
+
+                // 主动完成
+                loading.done();
+            });
+        })();
+
+        // 默认值测试，使用于正常的页面加载(page loading)
+        (function () {
+            var instance = document.getElementById('instance2');
+            var btn = instance.querySelector('.btn');
+            var demo = instance.querySelector('.demo');
+            var loading = new JParticles.waveLoading(demo);
+
+            loading.onProgress(function (progress) {
+
+                // 如果进度大于 60，设置文本颜色为白色
+                if (progress >= 60) {
+                    loading.setOptions({
+                        color: '#fff'
+                    });
+                }
+            });
+
+            btn.addEventListener('click', function () {
+
+                // 主动完成
+                loading.done();
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -206,7 +206,7 @@ var Particle = function (_Base) {
                 posX = this.posX,
                 posY = this.posY;
             var _set5 = this.set,
-                distance = _set5.distance,
+                proximity = _set5.proximity,
                 range = _set5.range;
 
             var length = dots.length;
@@ -221,7 +221,7 @@ var Particle = function (_Base) {
                     var sx = sibDot.x;
                     var sy = sibDot.y;
 
-                    if (abs(x - sx) <= distance && abs(y - sy) <= distance && (abs(x - posX) <= range && abs(y - posY) <= range || abs(sx - posX) <= range && abs(sy - posY) <= range)) {
+                    if (abs(x - sx) <= proximity && abs(y - sy) <= proximity && (abs(x - posX) <= range && abs(y - posY) <= range || abs(sx - posX) <= range && abs(sy - posY) <= range)) {
                         cxt.save();
                         cxt.beginPath();
                         cxt.moveTo(x, y);
@@ -303,7 +303,8 @@ var Particle = function (_Base) {
 Particle.defaultConfig = {
 
     // 粒子个数，默认为容器宽度的 0.12 倍
-    // (0, 1) 显示为容器宽度相应倍数的个数，[1, +∞) 显示具体个数
+    // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
+    // 0 是没有意义的，下同
     num: .12,
 
     // 粒子最大半径(0, +∞)
@@ -319,15 +320,15 @@ Particle.defaultConfig = {
     minSpeed: 0,
 
     // 两点连线的最大值
-    // 在 range 范围内的两点距离小于 distance，则两点之间连线
-    distance: 130,
-
-    // 线段的宽度
-    lineWidth: .2,
+    // 在 range 范围内的两点距离小于 proximity，则两点之间连线
+    proximity: 130,
 
     // 定位点的范围，范围越大连线越多
     // 当 range 等于 0 时，不连线，相关值无效
     range: 160,
+
+    // 线段的宽度
+    lineWidth: .2,
 
     // 改变定位点坐标的事件元素
     // null 表示 canvas 画布，或传入原生元素对象，如 document 等
