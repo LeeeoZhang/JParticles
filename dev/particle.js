@@ -231,6 +231,10 @@ class Particle extends Base {
 
         // 添加 move 事件
         eventHandler.call(this);
+
+        this.onDestroy(() => {
+            utils.off(eventElem, 'mousemove', this.moveHandler);
+        });
     }
 
     resize() {
@@ -242,11 +246,6 @@ class Particle extends Base {
                 this.getElemOffset();
             }
         });
-    }
-
-    onDestroy(callback) {
-        utils.off(this.set.eventElem, 'mousemove', this.moveHandler);
-        isFunction(callback) && callback();
     }
 }
 

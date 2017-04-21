@@ -353,6 +353,7 @@ class Base {
             this.container.appendChild(this.c);
 
             this.color = generateColor(this.set.color);
+            this.destructionListeners = [];
 
             this.init();
             this.resize();
@@ -373,12 +374,16 @@ class Base {
                 off(win, 'resize', this._resizeHandler);
             }
 
-            this.onDestroy();
+            this.destructionListeners.forEach(callback => {
+                callback();
+            });
         }
     }
 
     onDestroy(callback) {
-        isFunction(callback) && callback();
+        if (isFunction(callback)) {
+            this.destructionListeners.push(callback);
+        }
     }
 
     pause() {
