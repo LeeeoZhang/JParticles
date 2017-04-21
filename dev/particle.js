@@ -2,10 +2,9 @@ const {utils, Base} = JParticles;
 const {random, abs, PI} = Math;
 const twicePI = PI * 2;
 const {
-    pInt, limitRandom, calcSpeed,
-    scaleValue, getCss, offset,
-    isElement, modifyPrototype,
-    defineReadOnlyProperty
+    pInt, limitRandom, calcSpeed, scaleValue,
+    getCss, offset, isElement, isFunction,
+    modifyPrototype, defineReadOnlyProperty
 } = utils;
 
 /**
@@ -243,6 +242,11 @@ class Particle extends Base {
                 this.getElemOffset();
             }
         });
+    }
+
+    onDestroy(callback) {
+        utils.off(this.set.eventElem, 'mousemove', this.moveHandler);
+        isFunction(callback) && callback();
     }
 }
 
