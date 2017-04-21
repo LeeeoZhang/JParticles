@@ -171,18 +171,6 @@ function isBoolean(val) {
     return typeof val === 'boolean';
 }
 
-// 检查元素是否在某个元素里，与 jQuery.contains 等同
-function contains(container, target) {
-    if (target) {
-        while (target = target.parentNode) {
-            if (container === target) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 /**
  * 获取对象的css属性值
  * @param elem {element}
@@ -373,6 +361,7 @@ var Base = function () {
 
             this.color = generateColor(this.set.color);
 
+            this.observeCanvasRemoved();
             this.init();
             this.resize();
         }
@@ -381,26 +370,41 @@ var Base = function () {
     _createClass(Base, [{
         key: 'requestAnimationFrame',
         value: function requestAnimationFrame() {
-            if (contains(doc, this.c)) {
-                !this.paused && win.requestAnimationFrame(this.draw.bind(this));
-            } else {
-
-                // canvas 从DOM中被移除，
-                // 1、停止 requestAnimationFrame，避免性能损耗。
-                this.canvasRemoved = true;
-
-                // 2、移除外在事件。
-                if (this._resizeHandler) {
-                    off(win, 'resize', this._resizeHandler);
-                }
-
-                this.onDestroy();
+            if (!this.canvasRemoved && !this.paused) {
+                win.requestAnimationFrame(this.draw.bind(this));
             }
         }
     }, {
+        key: 'observeCanvasRemoved',
+        value: function observeCanvasRemoved() {
+            var _this = this;
+
+            this.destructionListeners = [];
+            observeElementRemoved(this.c, function () {
+
+                // canvas 从DOM中被移除
+                // 1、停止 requestAnimationFrame，避免性能损耗
+                _this.canvasRemoved = true;
+
+                // 2、移除外在事件
+                if (_this._resizeHandler) {
+                    off(win, 'resize', _this._resizeHandler);
+                }
+
+                // 3、触发销毁回调事件
+                _this.destructionListeners.forEach(function (callback) {
+                    callback();
+                });
+            });
+        }
+    }, {
         key: 'onDestroy',
-        value: function onDestroy(callback) {
-            isFunction(callback) && callback();
+        value: function onDestroy() {
+            for (var i = 0; i < arguments.length; i++) {
+                if (isFunction(arguments[i])) {
+                    this.destructionListeners.push(arguments[i]);
+                }
+            }
         }
     }, {
         key: 'pause',
@@ -446,6 +450,55 @@ win.requestAnimationFrame = function (win) {
     };
 }(win);
 
+// 不管是 MutationObserver 还是 DOMNodeRemoved，
+// 当监听某个具体的元素时，如果父祖级被删除了，并不会触发该元素被移除的事件，
+// 所以要监听整个文档，每次移除事件都得递归遍历要监听的元素是否被删除。
+var observeElementRemoved = function () {
+    var MutationObserver = win.MutationObserver || win.WebKitMutationObserver;
+    var checkElementRemoved = function checkElementRemoved(node, element) {
+        if (node === element) {
+            return true;
+        } else {
+            var children = node.children;
+            var length = children.length;
+            while (length--) {
+                if (checkElementRemoved(children[length], element)) {
+                    return true;
+                }
+            }
+        }
+    };
+    var useMutation = function useMutation(element, callback) {
+        var observer = new MutationObserver(function (mutations, observer) {
+            var i = mutations.length;
+            while (i--) {
+                var removeNodes = mutations[i].removedNodes;
+                var j = removeNodes.length;
+                while (j--) {
+                    if (checkElementRemoved(removeNodes[j], element)) {
+                        observer.disconnect();
+                        return callback();
+                    }
+                }
+            }
+        });
+        observer.observe(document, {
+            childList: true,
+            subtree: true
+        });
+    };
+    var useDOMNodeRemoved = function useDOMNodeRemoved(element, callback) {
+        var DOMNodeRemoved = function DOMNodeRemoved(e) {
+            if (checkElementRemoved(e.target, element)) {
+                document.removeEventListener('DOMNodeRemoved', DOMNodeRemoved);
+                callback();
+            }
+        };
+        document.addEventListener('DOMNodeRemoved', DOMNodeRemoved);
+    };
+    return MutationObserver ? useMutation : useDOMNodeRemoved;
+}();
+
 // 工具箱
 var utils = {
     regExp: regExp,
@@ -464,7 +517,7 @@ var utils = {
     isBoolean: isBoolean,
     isElement: isElement,
 
-    contains: contains,
+    observeElementRemoved: observeElementRemoved,
     getCss: getCss,
     offset: offset,
     on: on,
@@ -702,6 +755,7 @@ var pInt = utils.pInt,
     getCss = utils.getCss,
     offset = utils.offset,
     isElement = utils.isElement,
+    isFunction = utils.isFunction,
     modifyPrototype = utils.modifyPrototype,
     defineReadOnlyProperty = utils.defineReadOnlyProperty;
 
@@ -908,6 +962,8 @@ var Particle = function (_Base) {
     }, {
         key: 'event',
         value: function event() {
+            var _this2 = this;
+
             var eventElem = this.set.eventElem;
 
 
@@ -935,21 +991,25 @@ var Particle = function (_Base) {
 
             // 添加 move 事件
             eventHandler.call(this);
+
+            this.onDestroy(function () {
+                utils.off(eventElem, 'mousemove', _this2.moveHandler);
+            });
         }
     }, {
         key: 'resize',
         value: function resize() {
-            var _this2 = this;
+            var _this3 = this;
 
             utils.resize(this, function (scaleX, scaleY) {
-                var _set6 = _this2.set,
+                var _set6 = _this3.set,
                     num = _set6.num,
                     range = _set6.range;
 
                 if (num > 0 && range > 0) {
-                    _this2.posX *= scaleX;
-                    _this2.posY *= scaleY;
-                    _this2.getElemOffset();
+                    _this3.posX *= scaleX;
+                    _this3.posY *= scaleY;
+                    _this3.getElemOffset();
                 }
             });
         }

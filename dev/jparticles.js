@@ -144,18 +144,6 @@ function isBoolean(val) {
     return typeof val === 'boolean';
 }
 
-// 检查元素是否在某个元素里，与 jQuery.contains 等同
-function contains(container, target) {
-    if (target) {
-        while (target = target.parentNode) {
-            if (container === target) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 /**
  * 获取对象的css属性值
  * @param elem {element}
@@ -353,31 +341,37 @@ class Base {
             this.container.appendChild(this.c);
 
             this.color = generateColor(this.set.color);
-            this.destructionListeners = [];
 
+            this.observeCanvasRemoved();
             this.init();
             this.resize();
         }
     }
 
     requestAnimationFrame() {
-        if (contains(doc, this.c)) {
-            !this.paused && win.requestAnimationFrame(this.draw.bind(this));
-        } else {
+        if (!this.canvasRemoved && !this.paused) {
+            win.requestAnimationFrame(this.draw.bind(this));
+        }
+    }
 
-            // canvas 从DOM中被移除，
-            // 1、停止 requestAnimationFrame，避免性能损耗。
+    observeCanvasRemoved() {
+        this.destructionListeners = [];
+        observeElementRemoved(this.c, () => {
+
+            // canvas 从DOM中被移除
+            // 1、停止 requestAnimationFrame，避免性能损耗
             this.canvasRemoved = true;
 
-            // 2、移除外在事件。
+            // 2、移除外在事件
             if (this._resizeHandler) {
                 off(win, 'resize', this._resizeHandler);
             }
 
+            // 3、触发销毁回调事件
             this.destructionListeners.forEach(callback => {
                 callback();
             });
-        }
+        });
     }
 
     onDestroy() {
@@ -411,6 +405,55 @@ win.requestAnimationFrame = (win => {
         };
 })(win);
 
+// 不管是 MutationObserver 还是 DOMNodeRemoved，
+// 当监听某个具体的元素时，如果父祖级被删除了，并不会触发该元素被移除的事件，
+// 所以要监听整个文档，每次移除事件都得递归遍历要监听的元素是否被删除。
+const observeElementRemoved = (() => {
+    const MutationObserver = win.MutationObserver || win.WebKitMutationObserver;
+    const checkElementRemoved = (node, element) => {
+        if (node === element) {
+            return true;
+        } else {
+            const children = node.children;
+            let length = children.length;
+            while (length--) {
+                if (checkElementRemoved(children[length], element)) {
+                    return true;
+                }
+            }
+        }
+    };
+    const useMutation = (element, callback) => {
+        const observer = new MutationObserver((mutations, observer) => {
+            let i = mutations.length;
+            while (i--) {
+                const removeNodes = mutations[i].removedNodes;
+                let j = removeNodes.length;
+                while (j--) {
+                    if (checkElementRemoved(removeNodes[j], element)) {
+                        observer.disconnect();
+                        return callback();
+                    }
+                }
+            }
+        });
+        observer.observe(document, {
+            childList: true,
+            subtree: true
+        });
+    };
+    const useDOMNodeRemoved = (element, callback) => {
+        const DOMNodeRemoved = e => {
+            if (checkElementRemoved(e.target, element)) {
+                document.removeEventListener('DOMNodeRemoved', DOMNodeRemoved);
+                callback();
+            }
+        };
+        document.addEventListener('DOMNodeRemoved', DOMNodeRemoved);
+    };
+    return MutationObserver ? useMutation : useDOMNodeRemoved;
+})();
+
 // 工具箱
 const utils = {
     regExp,
@@ -429,7 +472,7 @@ const utils = {
     isBoolean,
     isElement,
 
-    contains,
+    observeElementRemoved,
     getCss,
     offset,
     on,

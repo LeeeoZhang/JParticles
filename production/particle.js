@@ -34,6 +34,7 @@ var pInt = utils.pInt,
     getCss = utils.getCss,
     offset = utils.offset,
     isElement = utils.isElement,
+    isFunction = utils.isFunction,
     modifyPrototype = utils.modifyPrototype,
     defineReadOnlyProperty = utils.defineReadOnlyProperty;
 
@@ -240,6 +241,8 @@ var Particle = function (_Base) {
     }, {
         key: 'event',
         value: function event() {
+            var _this2 = this;
+
             var eventElem = this.set.eventElem;
 
 
@@ -267,21 +270,25 @@ var Particle = function (_Base) {
 
             // 添加 move 事件
             eventHandler.call(this);
+
+            this.onDestroy(function () {
+                utils.off(eventElem, 'mousemove', _this2.moveHandler);
+            });
         }
     }, {
         key: 'resize',
         value: function resize() {
-            var _this2 = this;
+            var _this3 = this;
 
             utils.resize(this, function (scaleX, scaleY) {
-                var _set6 = _this2.set,
+                var _set6 = _this3.set,
                     num = _set6.num,
                     range = _set6.range;
 
                 if (num > 0 && range > 0) {
-                    _this2.posX *= scaleX;
-                    _this2.posY *= scaleY;
-                    _this2.getElemOffset();
+                    _this3.posX *= scaleX;
+                    _this3.posY *= scaleY;
+                    _this3.getElemOffset();
                 }
             });
         }
