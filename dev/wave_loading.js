@@ -5,7 +5,7 @@ const UNDEFINED = 'undefined';
 const {
     pInt, limitRandom, calcSpeed,
     scaleValue, randomColor, isArray,
-    isFunction, isPlainObject,
+    isFunction, isPlainObject, resize,
     defineReadOnlyProperty
 } = utils;
 
@@ -14,7 +14,7 @@ class WaveLoading extends Base {
     static defaultConfig = {
 
         // [font style][font weight][font size][font family]
-        // 同css一样，但必须包含 [font size] 和 [font family]
+        // 同css一样，必须包含 [font size] 和 [font family]
         // 进度文本颜色
         font: 'normal 900 20px Arial',
 
@@ -52,13 +52,23 @@ class WaveLoading extends Base {
         this.set.offsetTop = this.ch;
         this.halfCW = this.cw / 2;
         this.halfCH = this.ch / 2;
-        this.dots = [];
+        this.attrNormalize();
         this.createDots();
         this.draw();
     }
 
+    attrNormalize() {
+        ['offsetLeft', 'crestHeight'].forEach(attr => {
+            this.set[attr] = scaleValue(
+                this.set[attr],
+                'offsetLeft' ? this.cw : this.ch
+            );
+        });
+    }
+
     createDots() {
-        const {cw, dots} = this;
+        const {cw} = this;
+        const dots = this.dots = [];
 
         // 线条波长，每个周期(2π)在canvas上的实际长度
         const rippleLength = cw / this.set.rippleNum;
@@ -76,6 +86,8 @@ class WaveLoading extends Base {
     }
 
     draw() {
+        this._setOffsetTop();
+
         const {cxt, cw, ch, halfCW, halfCH, paused} = this;
         const {
             font, color, opacity, crestHeight,
@@ -85,7 +97,6 @@ class WaveLoading extends Base {
 
         cxt.clearRect(0, 0, cw, ch);
         cxt.globalAlpha = opacity;
-
         cxt.save();
         cxt.beginPath();
 
@@ -106,7 +117,7 @@ class WaveLoading extends Base {
         cxt.fill();
         cxt.restore();
 
-        let progressText = ceil(this.progress) + '%';
+        let progressText = ceil(this.progress);
         if (this.progressListeners) {
             const response = this.progressListeners(this.progress);
             if (typeof response !== UNDEFINED) {
@@ -114,11 +125,30 @@ class WaveLoading extends Base {
             }
         }
 
+        progressText = '9';
+        const smallFont = 'normal 900 14px Arial';
+
+        cxt.save();
         cxt.font = font;
-        cxt.textAlign = 'center';
+        const progressWidth = cxt.measureText(progressText).width;
+        cxt.restore();
+
+        cxt.save();
+        cxt.font = smallFont;
+        const percentWidth = cxt.measureText('%').width;
+        cxt.restore();
+        console.log(progressWidth, percentWidth);
+
+        const x = (cw - progressWidth - percentWidth) / 2;
+
+        /*cxt.textAlign = 'center';*/
+        cxt.font = font;
         cxt.textBaseline = 'middle';
         cxt.fillStyle = color;
-        cxt.fillText(progressText, halfCW, halfCH, cw);
+        cxt.fillText(progressText, x, halfCH, cw);
+
+        cxt.font = smallFont;
+        cxt.fillText('%', x + progressWidth, halfCH + 1, cw);
 
         this.progress += 0.5;
 
@@ -126,12 +156,21 @@ class WaveLoading extends Base {
             this.progress = 99;
         }
 
-        this._setOffsetTop();
         this.requestAnimationFrame();
     }
 
     _setOffsetTop() {
-        this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch);
+        const {crestHeight} = this.set;
+        this.set.offsetTop = ceil(
+            (100 - this.progress) / 100 * this.ch + crestHeight
+        );
+    }
+
+    resize() {
+        resize(this, () => {
+            this.halfCW = this.cw / 2;
+            this.halfCH = this.ch / 2;
+        });
     }
 
     setOptions(newOptions) {
@@ -145,7 +184,7 @@ class WaveLoading extends Base {
     }
 
     done() {
-
+        this.paused ? this.open() : this.pause();
     }
 
     onProgress(callback) {

@@ -1608,6 +1608,7 @@ var pInt = utils.pInt,
     isArray = utils.isArray,
     isFunction = utils.isFunction,
     isPlainObject = utils.isPlainObject,
+    _resize = utils.resize,
     defineReadOnlyProperty = utils.defineReadOnlyProperty;
 
 var WaveLoading = function (_Base) {
@@ -1634,18 +1635,27 @@ var WaveLoading = function (_Base) {
             this.set.offsetTop = this.ch;
             this.halfCW = this.cw / 2;
             this.halfCH = this.ch / 2;
-            this.dots = [];
+            this.attrNormalize();
             this.createDots();
             this.draw();
         }
     }, {
+        key: 'attrNormalize',
+        value: function attrNormalize() {
+            var _this2 = this;
+
+            ['offsetLeft', 'crestHeight'].forEach(function (attr) {
+                _this2.set[attr] = scaleValue(_this2.set[attr], 'offsetLeft' ? _this2.cw : _this2.ch);
+            });
+        }
+    }, {
         key: 'createDots',
         value: function createDots() {
-            var cw = this.cw,
-                dots = this.dots;
+            var cw = this.cw;
+
+            var dots = this.dots = [];
 
             // 线条波长，每个周期(2π)在canvas上的实际长度
-
             var rippleLength = cw / this.set.rippleNum;
 
             // 点的y轴步进
@@ -1662,6 +1672,8 @@ var WaveLoading = function (_Base) {
     }, {
         key: 'draw',
         value: function draw() {
+            this._setOffsetTop();
+
             var cxt = this.cxt,
                 cw = this.cw,
                 ch = this.ch,
@@ -1681,7 +1693,6 @@ var WaveLoading = function (_Base) {
 
             cxt.clearRect(0, 0, cw, ch);
             cxt.globalAlpha = opacity;
-
             cxt.save();
             cxt.beginPath();
 
@@ -1700,7 +1711,7 @@ var WaveLoading = function (_Base) {
             cxt.fill();
             cxt.restore();
 
-            var progressText = ceil(this.progress) + '%';
+            var progressText = ceil(this.progress);
             if (this.progressListeners) {
                 var response = this.progressListeners(this.progress);
                 if ((typeof response === 'undefined' ? 'undefined' : _typeof(response)) !== UNDEFINED) {
@@ -1708,11 +1719,30 @@ var WaveLoading = function (_Base) {
                 }
             }
 
+            progressText = '9';
+            var smallFont = 'normal 900 14px Arial';
+
+            cxt.save();
             cxt.font = font;
-            cxt.textAlign = 'center';
+            var progressWidth = cxt.measureText(progressText).width;
+            cxt.restore();
+
+            cxt.save();
+            cxt.font = smallFont;
+            var percentWidth = cxt.measureText('%').width;
+            cxt.restore();
+            console.log(progressWidth, percentWidth);
+
+            var x = (cw - progressWidth - percentWidth) / 2;
+
+            /*cxt.textAlign = 'center';*/
+            cxt.font = font;
             cxt.textBaseline = 'middle';
             cxt.fillStyle = color;
-            cxt.fillText(progressText, halfCW, halfCH, cw);
+            cxt.fillText(progressText, x, halfCH, cw);
+
+            cxt.font = smallFont;
+            cxt.fillText('%', x + progressWidth, halfCH + 1, cw);
 
             this.progress += 0.5;
 
@@ -1720,13 +1750,24 @@ var WaveLoading = function (_Base) {
                 this.progress = 99;
             }
 
-            this._setOffsetTop();
             this.requestAnimationFrame();
         }
     }, {
         key: '_setOffsetTop',
         value: function _setOffsetTop() {
-            this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch);
+            var crestHeight = this.set.crestHeight;
+
+            this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch + crestHeight);
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this3 = this;
+
+            _resize(this, function () {
+                _this3.halfCW = _this3.cw / 2;
+                _this3.halfCH = _this3.ch / 2;
+            });
         }
     }, {
         key: 'setOptions',
@@ -1741,7 +1782,9 @@ var WaveLoading = function (_Base) {
         }
     }, {
         key: 'done',
-        value: function done() {}
+        value: function done() {
+            this.paused ? this.open() : this.pause();
+        }
     }, {
         key: 'onProgress',
         value: function onProgress(callback) {
@@ -1757,7 +1800,7 @@ var WaveLoading = function (_Base) {
 WaveLoading.defaultConfig = {
 
     // [font style][font weight][font size][font family]
-    // 同css一样，但必须包含 [font size] 和 [font family]
+    // 同css一样，必须包含 [font size] 和 [font family]
     // 进度文本颜色
     font: 'normal 900 20px Arial',
 

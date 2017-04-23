@@ -59,7 +59,7 @@
             var loading = new JParticles.waveLoading(demo, {
 
                 // [font style][font weight][font size][font family]
-                // 同css一样，但必须包含 [font size] 和 [font family]
+                // 同css一样，必须包含 [font size] 和 [font family]
                 // 进度文本颜色
                 font: 'normal 400 20px Arial',
 
@@ -91,6 +91,8 @@
                         color: '#fff'
                     });
                 }
+
+                return '正在加载...' + Math.ceil(progress) + '%';
             });
 
             btn.addEventListener('click', function () {
