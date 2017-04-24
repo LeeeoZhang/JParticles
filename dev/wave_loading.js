@@ -20,7 +20,8 @@ class WaveLoading extends Base {
         // 小字体样式，如：“%”
         smallFont: 'normal 900 14px Arial',
 
-        // 小字体相对于中点向下的偏移值，为了让显示更层次分明，好看。
+        // 小字体相对于中点向下的偏移值，
+        // 细节的处理，为了让显示更好看。
         smallFontOffsetTop: 1,
 
         // 文本颜色
