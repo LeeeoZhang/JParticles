@@ -14,9 +14,14 @@ class WaveLoading extends Base {
     static defaultConfig = {
 
         // [font style][font weight][font size][font family]
-        // 同css一样，必须包含 [font size] 和 [font family]
-        // 进度文本颜色
+        // 文本样式，同css一样，必须包含 [font size] 和 [font family]
         font: 'normal 900 20px Arial',
+
+        // 小字体样式，如：“%”
+        smallFont: 'normal 900 14px Arial',
+
+        // 小字体相对于中点向下的偏移值，为了让显示更层次分明，好看。
+        smallFontOffsetTop: 1,
 
         // 文本颜色
         color: '#333',
@@ -34,8 +39,16 @@ class WaveLoading extends Base {
         // 波纹个数，即正弦周期个数
         rippleNum: 1,
 
-        // 运动速度
-        speed: .3
+        // 波浪的运动速度
+        speed: .3,
+
+        // 加载到 99% 的时长，单位毫秒(ms)
+        // 用时越久，越慢加载到 99%。
+        duration: 2000,
+
+        // 加载过程的运动效果，
+        // 目前支持匀速(linear)，先加速再减速(swing)，两种
+        easing: 'swing'
     };
 
     get version() {
@@ -50,7 +63,6 @@ class WaveLoading extends Base {
         this.c.style.borderRadius = '50%';
         this.progress = 0;
         this.set.offsetTop = this.ch;
-        this.halfCW = this.cw / 2;
         this.halfCH = this.ch / 2;
         this.attrNormalize();
         this.createDots();
@@ -88,11 +100,10 @@ class WaveLoading extends Base {
     draw() {
         this._setOffsetTop();
 
-        const {cxt, cw, ch, halfCW, halfCH, paused} = this;
+        const {cxt, cw, ch, paused} = this;
         const {
-            font, color, opacity, crestHeight,
-            offsetLeft, offsetTop, fillColor,
-            speed
+            opacity, crestHeight, offsetLeft,
+            offsetTop, fillColor, speed
         } = this.set;
 
         cxt.clearRect(0, 0, cw, ch);
@@ -117,40 +128,11 @@ class WaveLoading extends Base {
         cxt.fill();
         cxt.restore();
 
-        let progressText = ceil(this.progress);
-        if (this.progressListeners) {
-            const response = this.progressListeners(this.progress);
-            if (typeof response !== UNDEFINED) {
-                progressText = response;
-            }
+        this.drawText();
+
+        if (!this.paused) {
+            this.progress += 0.5;
         }
-
-        progressText = '9';
-        const smallFont = 'normal 900 14px Arial';
-
-        cxt.save();
-        cxt.font = font;
-        const progressWidth = cxt.measureText(progressText).width;
-        cxt.restore();
-
-        cxt.save();
-        cxt.font = smallFont;
-        const percentWidth = cxt.measureText('%').width;
-        cxt.restore();
-        console.log(progressWidth, percentWidth);
-
-        const x = (cw - progressWidth - percentWidth) / 2;
-
-        /*cxt.textAlign = 'center';*/
-        cxt.font = font;
-        cxt.textBaseline = 'middle';
-        cxt.fillStyle = color;
-        cxt.fillText(progressText, x, halfCH, cw);
-
-        cxt.font = smallFont;
-        cxt.fillText('%', x + progressWidth, halfCH + 1, cw);
-
-        this.progress += 0.5;
 
         if (this.progress >= 99) {
             this.progress = 99;
@@ -159,16 +141,59 @@ class WaveLoading extends Base {
         this.requestAnimationFrame();
     }
 
-    _setOffsetTop() {
-        const {crestHeight} = this.set;
-        this.set.offsetTop = ceil(
-            (100 - this.progress) / 100 * this.ch + crestHeight
+    drawText() {
+        const {cxt, cw, halfCH, progress} = this;
+        let {
+            font, smallFont, color,
+            smallFontOffsetTop
+        } = this.set;
+
+        let percentText = '%';
+        let progressText = ceil(progress);
+
+        if (this.progressListeners) {
+            const res = this.progressListeners(this.progress);
+            if (typeof res !== UNDEFINED) {
+                if (isPlainObject(res)) {
+                    progressText = res.text;
+                    percentText = res.smallText || '';
+                } else {
+                    progressText = res;
+                    percentText = '';
+                }
+            }
+        }
+
+        cxt.font = font;
+        const progressWidth = cxt.measureText(progressText).width;
+
+        cxt.font = smallFont;
+        const percentWidth = cxt.measureText(percentText).width;
+
+        const x = (cw - progressWidth - percentWidth) / 2;
+
+        cxt.textBaseline = 'middle';
+        cxt.fillStyle = color;
+        cxt.font = font;
+        cxt.fillText(progressText, x, halfCH);
+        cxt.font = smallFont;
+        cxt.fillText(
+            percentText,
+            x + progressWidth,
+            halfCH + smallFontOffsetTop
         );
+    }
+
+    _setOffsetTop() {
+        if (!this.paused) {
+            this.set.offsetTop = ceil(
+                (100 - this.progress) / 100 * this.ch + this.set.crestHeight
+            );
+        }
     }
 
     resize() {
         resize(this, () => {
-            this.halfCW = this.cw / 2;
             this.halfCH = this.ch / 2;
         });
     }

@@ -1633,7 +1633,6 @@ var WaveLoading = function (_Base) {
             this.c.style.borderRadius = '50%';
             this.progress = 0;
             this.set.offsetTop = this.ch;
-            this.halfCW = this.cw / 2;
             this.halfCH = this.ch / 2;
             this.attrNormalize();
             this.createDots();
@@ -1677,12 +1676,8 @@ var WaveLoading = function (_Base) {
             var cxt = this.cxt,
                 cw = this.cw,
                 ch = this.ch,
-                halfCW = this.halfCW,
-                halfCH = this.halfCH,
                 paused = this.paused;
             var _set = this.set,
-                font = _set.font,
-                color = _set.color,
                 opacity = _set.opacity,
                 crestHeight = _set.crestHeight,
                 offsetLeft = _set.offsetLeft,
@@ -1711,40 +1706,11 @@ var WaveLoading = function (_Base) {
             cxt.fill();
             cxt.restore();
 
-            var progressText = ceil(this.progress);
-            if (this.progressListeners) {
-                var response = this.progressListeners(this.progress);
-                if ((typeof response === 'undefined' ? 'undefined' : _typeof(response)) !== UNDEFINED) {
-                    progressText = response;
-                }
+            this.drawText();
+
+            if (!this.paused) {
+                this.progress += 0.5;
             }
-
-            progressText = '9';
-            var smallFont = 'normal 900 14px Arial';
-
-            cxt.save();
-            cxt.font = font;
-            var progressWidth = cxt.measureText(progressText).width;
-            cxt.restore();
-
-            cxt.save();
-            cxt.font = smallFont;
-            var percentWidth = cxt.measureText('%').width;
-            cxt.restore();
-            console.log(progressWidth, percentWidth);
-
-            var x = (cw - progressWidth - percentWidth) / 2;
-
-            /*cxt.textAlign = 'center';*/
-            cxt.font = font;
-            cxt.textBaseline = 'middle';
-            cxt.fillStyle = color;
-            cxt.fillText(progressText, x, halfCH, cw);
-
-            cxt.font = smallFont;
-            cxt.fillText('%', x + progressWidth, halfCH + 1, cw);
-
-            this.progress += 0.5;
 
             if (this.progress >= 99) {
                 this.progress = 99;
@@ -1753,11 +1719,56 @@ var WaveLoading = function (_Base) {
             this.requestAnimationFrame();
         }
     }, {
+        key: 'drawText',
+        value: function drawText() {
+            var cxt = this.cxt,
+                cw = this.cw,
+                halfCH = this.halfCH,
+                progress = this.progress;
+            var _set2 = this.set,
+                font = _set2.font,
+                smallFont = _set2.smallFont,
+                color = _set2.color,
+                smallFontOffsetTop = _set2.smallFontOffsetTop;
+
+
+            var percentText = '%';
+            var progressText = ceil(progress);
+
+            if (this.progressListeners) {
+                var res = this.progressListeners(this.progress);
+                if ((typeof res === 'undefined' ? 'undefined' : _typeof(res)) !== UNDEFINED) {
+                    if (isPlainObject(res)) {
+                        progressText = res.text;
+                        percentText = res.smallText || '';
+                    } else {
+                        progressText = res;
+                        percentText = '';
+                    }
+                }
+            }
+
+            cxt.font = font;
+            var progressWidth = cxt.measureText(progressText).width;
+
+            cxt.font = smallFont;
+            var percentWidth = cxt.measureText(percentText).width;
+
+            var x = (cw - progressWidth - percentWidth) / 2;
+
+            cxt.textBaseline = 'middle';
+            cxt.fillStyle = color;
+            cxt.font = font;
+            cxt.fillText(progressText, x, halfCH);
+            cxt.font = smallFont;
+            cxt.fillText(percentText, x + progressWidth, halfCH + smallFontOffsetTop);
+        }
+    }, {
         key: '_setOffsetTop',
         value: function _setOffsetTop() {
-            var crestHeight = this.set.crestHeight;
-
-            this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch + crestHeight);
+            if (!this.paused) {
+                this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch + this.set.crestHeight);
+            }
         }
     }, {
         key: 'resize',
@@ -1765,7 +1776,6 @@ var WaveLoading = function (_Base) {
             var _this3 = this;
 
             _resize(this, function () {
-                _this3.halfCW = _this3.cw / 2;
                 _this3.halfCH = _this3.ch / 2;
             });
         }
@@ -1800,9 +1810,14 @@ var WaveLoading = function (_Base) {
 WaveLoading.defaultConfig = {
 
     // [font style][font weight][font size][font family]
-    // 同css一样，必须包含 [font size] 和 [font family]
-    // 进度文本颜色
+    // 文本样式，同css一样，必须包含 [font size] 和 [font family]
     font: 'normal 900 20px Arial',
+
+    // 小字体样式，如：“%”
+    smallFont: 'normal 900 14px Arial',
+
+    // 小字体相对于中点向下的偏移值，为了让显示更层次分明，好看。
+    smallFontOffsetTop: 1,
 
     // 文本颜色
     color: '#333',
@@ -1820,8 +1835,16 @@ WaveLoading.defaultConfig = {
     // 波纹个数，即正弦周期个数
     rippleNum: 1,
 
-    // 运动速度
-    speed: .3
+    // 波浪的运动速度
+    speed: .3,
+
+    // 加载到 99% 的时长，单位毫秒(ms)
+    // 用时越久，越慢加载到 99%。
+    duration: 2000,
+
+    // 加载过程的运动效果，
+    // 目前支持匀速(linear)，先加速再减速(swing)，两种
+    easing: 'swing'
 };
 
 
