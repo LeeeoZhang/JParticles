@@ -6,7 +6,8 @@ const {
     pInt, limitRandom, calcSpeed,
     scaleValue, randomColor, isArray,
     isFunction, isPlainObject, resize,
-    defineReadOnlyProperty
+    defineReadOnlyProperty,
+    registerListener
 } = utils;
 
 class WaveLoading extends Base {
@@ -45,7 +46,7 @@ class WaveLoading extends Base {
 
         // 加载到 99% 的时长，单位毫秒(ms)
         // 用时越久，越慢加载到 99%。
-        duration: 2000,
+        duration: 5000,
 
         // 加载过程的运动效果，
         // 目前支持匀速(linear)，先加速再减速(swing)，两种
@@ -65,6 +66,8 @@ class WaveLoading extends Base {
         this.progress = 0;
         this.set.offsetTop = this.ch;
         this.halfCH = this.ch / 2;
+        this.progressListeners = [];
+        this.finishedListeners = [];
         this.attrNormalize();
         this.createDots();
         this.draw();
@@ -99,9 +102,24 @@ class WaveLoading extends Base {
     }
 
     draw() {
-        this._setOffsetTop();
+        this.calcOffsetTop();
+        this.drawWave();
+        this.drawText();
+        this.calcProgress();
 
-        const {cxt, cw, ch, paused} = this;
+        if (this.progress <= 100) {
+            this.requestAnimationFrame();
+        } else {
+            this.progress = 100;
+            this.calcOffsetTop();
+            this.drawWave();
+            this.drawText();
+            this.finishedListeners.forEach(cb => cb());
+        }
+    }
+
+    drawWave() {
+        const {cxt, cw, ch} = this;
         const {
             opacity, crestHeight, offsetLeft,
             offsetTop, fillColor, speed
@@ -119,7 +137,7 @@ class WaveLoading extends Base {
                 // y = A sin ( ωx + φ ) + h
                 crestHeight * sin(dot.y + offsetLeft) + offsetTop
             );
-            !paused && ( dot.y -= speed );
+            dot.y -= speed;
         });
 
         cxt.lineTo(cw, ch);
@@ -128,18 +146,6 @@ class WaveLoading extends Base {
         cxt.fillStyle = fillColor;
         cxt.fill();
         cxt.restore();
-
-        this.drawText();
-
-        if (!this.paused) {
-            this.progress += 0.5;
-        }
-
-        if (this.progress >= 99) {
-            this.progress = 99;
-        }
-
-        this.requestAnimationFrame();
     }
 
     drawText() {
@@ -152,8 +158,8 @@ class WaveLoading extends Base {
         let percentText = '%';
         let progressText = ceil(progress);
 
-        if (this.progressListeners) {
-            const res = this.progressListeners(this.progress);
+        this.progressListeners.forEach(callback => {
+            const res = callback(this.progress);
             if (typeof res !== UNDEFINED) {
                 if (isPlainObject(res)) {
                     progressText = res.text;
@@ -163,7 +169,7 @@ class WaveLoading extends Base {
                     percentText = '';
                 }
             }
-        }
+        });
 
         cxt.font = font;
         const progressWidth = cxt.measureText(progressText).width;
@@ -185,8 +191,50 @@ class WaveLoading extends Base {
         );
     }
 
-    _setOffsetTop() {
-        if (!this.paused) {
+    calcProgress() {
+        if (this.immediatelyComplete) {
+            this.progress += this.immediatelyComplete;
+            this.immediatelyComplete += 0.5;
+            return;
+        }
+
+        if (this.progress >= 99) return;
+
+        const {easing, duration} = this.set;
+
+        if (!this.startTime) {
+            this.startTime = Date.now();
+        }
+
+        // x: percent Complete      percent Complete: elapsedTime / duration
+        // t: current time          elapsed time: currentTime - startTime
+        // b: beginning value       start value
+        // c: change in value       finish value
+        // d: duration              duration
+        const time = Date.now() - this.startTime;
+        const percent = time / duration;
+
+        if (percent <= 1) {
+            this.progress = JParticles.easing[easing](
+
+                // x, t, b, c, d
+                percent, time, 0, 100, duration
+            );
+
+            if (this.progress >= 99) {
+                this.progress = 99;
+            }
+        }
+    }
+
+    calcOffsetTop() {
+
+        // enhance performance when the loading progress continue for 99%
+        if (!this.immediatelyComplete && this.progress === 99) return;
+
+        if (this.progress === 100) {
+            this.set.offsetTop = -this.set.crestHeight;
+        } else {
             this.set.offsetTop = ceil(
                 (100 - this.progress) / 100 * this.ch + this.set.crestHeight
             );
@@ -210,14 +258,23 @@ class WaveLoading extends Base {
     }
 
     done() {
-        this.paused ? this.open() : this.pause();
-    }
-
-    onProgress(callback) {
-        if (isFunction(callback)) {
-            this.progressListeners = callback;
+        if (!this.immediatelyComplete) {
+            this.immediatelyComplete = 1;
         }
     }
+
+    onProgress() {
+        registerListener(this.progressListeners, ...arguments);
+        return this;
+    }
+
+    onFinished() {
+        registerListener(this.finishedListeners, ...arguments);
+        return this;
+    }
 }
+
+delete WaveLoading.prototype.pause;
+delete WaveLoading.prototype.open;
 
 defineReadOnlyProperty(WaveLoading, 'waveLoading');

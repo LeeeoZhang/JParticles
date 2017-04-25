@@ -20,6 +20,10 @@
         #instance2 canvas {
             border-radius: 0 !important;
         }
+        #instance .btn {
+            border-color: #FFC107;
+            background-color: #FFC107;
+        }
         #instance3 {
             width: 120px;
             height: 120px;
@@ -84,10 +88,10 @@
                 smallFontOffsetTop: 2,
 
                 // 文本颜色
-                color: '#333',
+                color: '#ffc71f',
 
                 // 填充的背景色
-                fillColor: '#27C9E5',
+                fillColor: '#FFC107',
 
                 // 线条横向偏移值，距离canvas画布左边的偏移值
                 // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
@@ -113,6 +117,8 @@
 
             loading.onProgress(function (progress) {
 
+                console.log('test done: ' + progress);
+
                 // 如果进度大于 60，设置文本颜色为白色
                 if (progress >= 60) {
                     loading.setOptions({
@@ -120,16 +126,9 @@
                     });
                 }
 
-                // 返回字符串，样式为 font
+                // 返回字符串，样式为 font。
+                // #instance2 演示返回对象
                 return '正在加载...' + Math.ceil(progress) + '%';
-
-                // 返回对象，text 对应样式为：font，
-                // smallText 对应样式为：smallFont，smallFontOffsetTop
-                // #instance2 演示
-                /*return {
-                    text: '正在加载...' + Math.ceil(progress),
-                    smallText: '%'
-                }*/
             });
 
             btn.addEventListener('click', function () {
@@ -150,16 +149,10 @@
             });
 
             loading.onProgress(function (progress) {
-
-                // 如果进度大于 60，设置文本颜色为白色
-                if (progress >= 60) {
-                    loading.setOptions({
-                        color: '#fff'
-                    });
-                }
-
-                if (progress >= 99) {
+                if (progress >= 99 && progress < 100) {
                     progress = 999;
+                } else if (progress >= 100) {
+                    progress = 1000;
                 } else {
                     progress = Math.ceil(progress * 9);
                 }

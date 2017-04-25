@@ -41,7 +41,8 @@ var pInt = utils.pInt,
     isFunction = utils.isFunction,
     isPlainObject = utils.isPlainObject,
     _resize = utils.resize,
-    defineReadOnlyProperty = utils.defineReadOnlyProperty;
+    defineReadOnlyProperty = utils.defineReadOnlyProperty,
+    registerListener = utils.registerListener;
 
 var WaveLoading = function (_Base) {
     _inherits(WaveLoading, _Base);
@@ -66,6 +67,8 @@ var WaveLoading = function (_Base) {
             this.progress = 0;
             this.set.offsetTop = this.ch;
             this.halfCH = this.ch / 2;
+            this.progressListeners = [];
+            this.finishedListeners = [];
             this.attrNormalize();
             this.createDots();
             this.draw();
@@ -103,12 +106,29 @@ var WaveLoading = function (_Base) {
     }, {
         key: 'draw',
         value: function draw() {
-            this._setOffsetTop();
+            this.calcOffsetTop();
+            this.drawWave();
+            this.drawText();
+            this.calcProgress();
 
+            if (this.progress <= 100) {
+                this.requestAnimationFrame();
+            } else {
+                this.progress = 100;
+                this.calcOffsetTop();
+                this.drawWave();
+                this.drawText();
+                this.finishedListeners.forEach(function (cb) {
+                    return cb();
+                });
+            }
+        }
+    }, {
+        key: 'drawWave',
+        value: function drawWave() {
             var cxt = this.cxt,
                 cw = this.cw,
-                ch = this.ch,
-                paused = this.paused;
+                ch = this.ch;
             var _set = this.set,
                 opacity = _set.opacity,
                 crestHeight = _set.crestHeight,
@@ -128,7 +148,7 @@ var WaveLoading = function (_Base) {
 
                 // y = A sin ( ωx + φ ) + h
                 crestHeight * sin(dot.y + offsetLeft) + offsetTop);
-                !paused && (dot.y -= speed);
+                dot.y -= speed;
             });
 
             cxt.lineTo(cw, ch);
@@ -137,22 +157,12 @@ var WaveLoading = function (_Base) {
             cxt.fillStyle = fillColor;
             cxt.fill();
             cxt.restore();
-
-            this.drawText();
-
-            if (!this.paused) {
-                this.progress += 0.5;
-            }
-
-            if (this.progress >= 99) {
-                this.progress = 99;
-            }
-
-            this.requestAnimationFrame();
         }
     }, {
         key: 'drawText',
         value: function drawText() {
+            var _this3 = this;
+
             var cxt = this.cxt,
                 cw = this.cw,
                 halfCH = this.halfCH,
@@ -167,8 +177,8 @@ var WaveLoading = function (_Base) {
             var percentText = '%';
             var progressText = ceil(progress);
 
-            if (this.progressListeners) {
-                var res = this.progressListeners(this.progress);
+            this.progressListeners.forEach(function (callback) {
+                var res = callback(_this3.progress);
                 if ((typeof res === 'undefined' ? 'undefined' : _typeof(res)) !== UNDEFINED) {
                     if (isPlainObject(res)) {
                         progressText = res.text;
@@ -178,7 +188,7 @@ var WaveLoading = function (_Base) {
                         percentText = '';
                     }
                 }
-            }
+            });
 
             cxt.font = font;
             var progressWidth = cxt.measureText(progressText).width;
@@ -196,19 +206,64 @@ var WaveLoading = function (_Base) {
             cxt.fillText(percentText, x + progressWidth, halfCH + smallFontOffsetTop);
         }
     }, {
-        key: '_setOffsetTop',
-        value: function _setOffsetTop() {
-            if (!this.paused) {
+        key: 'calcProgress',
+        value: function calcProgress() {
+            if (this.immediatelyComplete) {
+                this.progress += this.immediatelyComplete;
+                this.immediatelyComplete += 0.5;
+                return;
+            }
+
+            if (this.progress >= 99) return;
+
+            var _set3 = this.set,
+                easing = _set3.easing,
+                duration = _set3.duration;
+
+
+            if (!this.startTime) {
+                this.startTime = Date.now();
+            }
+
+            // x: percent Complete      percent Complete: elapsedTime / duration
+            // t: current time          elapsed time: currentTime - startTime
+            // b: beginning value       start value
+            // c: change in value       finish value
+            // d: duration              duration
+            var time = Date.now() - this.startTime;
+            var percent = time / duration;
+
+            if (percent <= 1) {
+                this.progress = JParticles.easing[easing](
+
+                // x, t, b, c, d
+                percent, time, 0, 100, duration);
+
+                if (this.progress >= 99) {
+                    this.progress = 99;
+                }
+            }
+        }
+    }, {
+        key: 'calcOffsetTop',
+        value: function calcOffsetTop() {
+
+            // enhance performance when the loading progress continue for 99%
+            if (!this.immediatelyComplete && this.progress === 99) return;
+
+            if (this.progress === 100) {
+                this.set.offsetTop = -this.set.crestHeight;
+            } else {
                 this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch + this.set.crestHeight);
             }
         }
     }, {
         key: 'resize',
         value: function resize() {
-            var _this3 = this;
+            var _this4 = this;
 
             _resize(this, function () {
-                _this3.halfCH = _this3.ch / 2;
+                _this4.halfCH = _this4.ch / 2;
             });
         }
     }, {
@@ -225,14 +280,21 @@ var WaveLoading = function (_Base) {
     }, {
         key: 'done',
         value: function done() {
-            this.paused ? this.open() : this.pause();
+            if (!this.immediatelyComplete) {
+                this.immediatelyComplete = 1;
+            }
         }
     }, {
         key: 'onProgress',
-        value: function onProgress(callback) {
-            if (isFunction(callback)) {
-                this.progressListeners = callback;
-            }
+        value: function onProgress() {
+            registerListener.apply(undefined, [this.progressListeners].concat(Array.prototype.slice.call(arguments)));
+            return this;
+        }
+    }, {
+        key: 'onFinished',
+        value: function onFinished() {
+            registerListener.apply(undefined, [this.finishedListeners].concat(Array.prototype.slice.call(arguments)));
+            return this;
         }
     }]);
 
@@ -248,7 +310,8 @@ WaveLoading.defaultConfig = {
     // 小字体样式，如：“%”
     smallFont: 'normal 900 14px Arial',
 
-    // 小字体相对于中点向下的偏移值，为了让显示更层次分明，好看。
+    // 小字体相对于中点向下的偏移值，
+    // 细节的处理，为了让显示更好看。
     smallFontOffsetTop: 1,
 
     // 文本颜色
@@ -272,13 +335,16 @@ WaveLoading.defaultConfig = {
 
     // 加载到 99% 的时长，单位毫秒(ms)
     // 用时越久，越慢加载到 99%。
-    duration: 2000,
+    duration: 5000,
 
     // 加载过程的运动效果，
     // 目前支持匀速(linear)，先加速再减速(swing)，两种
     easing: 'swing'
 };
 
+
+delete WaveLoading.prototype.pause;
+delete WaveLoading.prototype.open;
 
 defineReadOnlyProperty(WaveLoading, 'waveLoading');
                 }();
