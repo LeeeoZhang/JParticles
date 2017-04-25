@@ -236,6 +236,29 @@ function calcSpeed(max, min) {
 }
 
 /**
+ * 为插件事件添加增强的监听器
+ *
+ * eg:
+ *   onDestroy() {
+ *     registerListener(this.destructionListeners, ...arguments);
+ *   }
+ *
+ * @param listener {array} 监听器集合
+ * @param arg {function} 回调函数
+ */
+function registerListener(listener) {
+    for (var _len = arguments.length, arg = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        arg[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < arg.length; i++) {
+        if (isFunction(arg[i])) {
+            listener.push(arg[i]);
+        }
+    }
+}
+
+/**
  * 生成 color 函数，用于给粒子赋予颜色
  * @param color {string|array} 颜色数组
  * @returns {function}
@@ -349,7 +372,7 @@ var Base = function () {
         _classCallCheck(this, Base);
 
         if (this.container = isElement(selector) ? selector : doc.querySelector(selector)) {
-            this.set = extend(true, {}, Base.commonConfig, constructor.defaultConfig, options);
+            this.set = extend(true, {}, JParticles.commonConfig, constructor.defaultConfig, options);
             this.c = doc.createElement('canvas');
             this.cxt = this.c.getContext('2d');
             this.paused = false;
@@ -400,11 +423,10 @@ var Base = function () {
     }, {
         key: 'onDestroy',
         value: function onDestroy() {
-            for (var i = 0; i < arguments.length; i++) {
-                if (isFunction(arguments[i])) {
-                    this.destructionListeners.push(arguments[i]);
-                }
-            }
+            registerListener.apply(undefined, [this.destructionListeners].concat(Array.prototype.slice.call(arguments)));
+
+            // 让事件支持链式操作
+            return this;
         }
     }, {
         key: 'pause',
@@ -429,21 +451,6 @@ var Base = function () {
 // requestAnimationFrame 兼容处理
 
 
-Base.commonConfig = {
-
-    // 画布全局透明度 {number}
-    // 取值范围：[0-1]
-    opacity: 1,
-
-    // 粒子颜色 {string|array}
-    // 1、空数组表示随机取色。
-    // 2、在特定颜色的数组里随机取色，如：['red', 'blue', 'green']。
-    // 3、当为 string 类型时，如：'red'，则表示粒子都填充为红色。
-    color: [],
-
-    // 自适应窗口尺寸变化 {boolean}
-    resize: true
-};
 win.requestAnimationFrame = function (win) {
     return win.requestAnimationFrame || win.webkitRequestAnimationFrame || win.mozRequestAnimationFrame || function (fn) {
         win.setTimeout(fn, 1000 / 60);
@@ -531,7 +538,39 @@ var utils = {
     open: _open,
     resize: _resize,
     modifyPrototype: modifyPrototype,
-    defineReadOnlyProperty: defineReadOnlyProperty
+    defineReadOnlyProperty: defineReadOnlyProperty,
+
+    registerListener: registerListener
+};
+
+var commonConfig = {
+
+    // 画布全局透明度 {number}
+    // 取值范围：[0-1]
+    opacity: 1,
+
+    // 粒子颜色 {string|array}
+    // 1、空数组表示随机取色。
+    // 2、在特定颜色的数组里随机取色，如：['red', 'blue', 'green']。
+    // 3、当为 string 类型时，如：'red'，则表示粒子都填充为红色。
+    color: [],
+
+    // 自适应窗口尺寸变化 {boolean}
+    resize: true
+};
+
+// http://easings.net
+var easing = {
+    linear: function linear(x, t, b, c, d) {
+        return b + (c - b) * x;
+    },
+    swing: function swing() {
+        return easing.easeInOutQuad.apply(easing, arguments);
+    },
+    easeInOutQuad: function easeInOutQuad(x, t, b, c, d) {
+        if ((t /= d / 2) < 1) return c / 2 * t * t + b;
+        return -c / 2 * (--t * (t - 2) - 1) + b;
+    }
 };
 
 var JParticles = {
@@ -551,6 +590,9 @@ var JParticles = {
         }
     }
 })(JParticles);
+
+defineReadOnlyProperty(commonConfig, 'commonConfig');
+defineReadOnlyProperty(easing, 'easing');
 
 win.JParticles = JParticles;
     // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
