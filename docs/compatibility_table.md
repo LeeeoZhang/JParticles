@@ -13,6 +13,9 @@ DOMNodeRemoved:
 	
 	IE9+  Safari 4+  Opera 15+  Chrome 15+  Firefox 6+
 
+Date.now:
+
+	IE9+  Safari 4+  Opera 10.5+  Chrome 5+  Firefox 3.0+
 
 So, the library should work fine on the following browsers.
 
