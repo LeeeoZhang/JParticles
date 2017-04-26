@@ -99,9 +99,11 @@
             });
         });
 
-        // 超过首屏测试
+        // 超过首屏及 lineShape API 测试
         bind('#instance4', function () {
-            return new JParticles.particle('#instance4 .demo');
+            return new JParticles.particle('#instance4 .demo', {
+                lineShape: 'cube'
+            });
         });
     </script>
 </body>

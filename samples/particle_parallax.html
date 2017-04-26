@@ -35,26 +35,17 @@
                 pause
             </button>
         </div>
-        <div class="rebuild">
-            <div class="btn btn-default">
-                重建粒子特效，性能测试
-            </div>
-        </div>
     </div>
 
     <script src="../production/jparticles.js"></script>
     <script src="../production/particle.js"></script>
     <script src="js/event.js"></script>
     <script>
-        var i = 0;
-        function build() {
-            console.log(++i);
-            bind('#instance', function () {
-                return new JParticles.particle('#instance .demo');
+        bind('#instance', function () {
+            return new JParticles.particle('#instance .demo', {
+                parallax: true
             });
-        }
-        build();
-        document.getElementsByClassName('rebuild')[0].onclick = build;
+        });
     </script>
 </body>
 </html>

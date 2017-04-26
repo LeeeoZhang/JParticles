@@ -871,9 +871,43 @@ var Particle = function (_Base) {
                     this.posX = random() * this.cw;
                     this.posY = random() * this.ch;
                     this.event();
+
+                    this.defineLineShape();
                 }
                 this.createDots();
                 this.draw();
+            }
+        }
+    }, {
+        key: 'defineLineShape',
+        value: function defineLineShape() {
+            var _this2 = this;
+
+            var _set3 = this.set,
+                proximity = _set3.proximity,
+                range = _set3.range,
+                lineShape = _set3.lineShape;
+
+            switch (lineShape) {
+                case 'cube':
+                    this.lineShapeMaker = function (x, y, sx, sy, cb) {
+                        var posX = _this2.posX,
+                            posY = _this2.posY;
+
+                        if (abs(x - sx) <= proximity && abs(y - sy) <= proximity && abs(x - posX) <= range && abs(y - posY) <= range && abs(sx - posX) <= range && abs(sy - posY) <= range) {
+                            cb();
+                        }
+                    };
+                    break;
+                default:
+                    this.lineShapeMaker = function (x, y, sx, sy, cb) {
+                        var posX = _this2.posX,
+                            posY = _this2.posY;
+
+                        if (abs(x - sx) <= proximity && abs(y - sy) <= proximity && (abs(x - posX) <= range && abs(y - posY) <= range || abs(sx - posX) <= range && abs(sy - posY) <= range)) {
+                            cb();
+                        }
+                    };
             }
         }
     }, {
@@ -882,12 +916,12 @@ var Particle = function (_Base) {
             var cw = this.cw,
                 ch = this.ch,
                 color = this.color;
-            var _set3 = this.set,
-                num = _set3.num,
-                maxR = _set3.maxR,
-                minR = _set3.minR,
-                maxSpeed = _set3.maxSpeed,
-                minSpeed = _set3.minSpeed;
+            var _set4 = this.set,
+                num = _set4.num,
+                maxR = _set4.maxR,
+                minR = _set4.minR,
+                maxSpeed = _set4.maxSpeed,
+                minSpeed = _set4.minSpeed;
 
             var realNumber = pInt(scaleValue(num, cw));
             var dots = this.dots = [];
@@ -911,11 +945,11 @@ var Particle = function (_Base) {
                 ch = this.ch,
                 cxt = this.cxt,
                 paused = this.paused;
-            var _set4 = this.set,
-                num = _set4.num,
-                range = _set4.range,
-                lineWidth = _set4.lineWidth,
-                opacity = _set4.opacity;
+            var _set5 = this.set,
+                num = _set5.num,
+                range = _set5.range,
+                lineWidth = _set5.lineWidth,
+                opacity = _set5.opacity;
 
 
             if (num <= 0) return;
@@ -967,11 +1001,7 @@ var Particle = function (_Base) {
         value: function connectDots() {
             var dots = this.dots,
                 cxt = this.cxt,
-                posX = this.posX,
-                posY = this.posY;
-            var _set5 = this.set,
-                proximity = _set5.proximity,
-                range = _set5.range;
+                lineShapeMaker = this.lineShapeMaker;
 
             var length = dots.length;
 
@@ -980,12 +1010,12 @@ var Particle = function (_Base) {
                 var y = dot.y;
                 var color = dot.color;
 
-                while (++i < length) {
+                var _loop = function _loop() {
                     var sibDot = dots[i];
                     var sx = sibDot.x;
                     var sy = sibDot.y;
 
-                    if (abs(x - sx) <= proximity && abs(y - sy) <= proximity && (abs(x - posX) <= range && abs(y - posY) <= range || abs(sx - posX) <= range && abs(sy - posY) <= range)) {
+                    lineShapeMaker(x, y, sx, sy, function () {
                         cxt.save();
                         cxt.beginPath();
                         cxt.moveTo(x, y);
@@ -993,7 +1023,11 @@ var Particle = function (_Base) {
                         cxt.strokeStyle = color;
                         cxt.stroke();
                         cxt.restore();
-                    }
+                    });
+                };
+
+                while (++i < length) {
+                    _loop();
                 }
             });
         }
@@ -1005,7 +1039,7 @@ var Particle = function (_Base) {
     }, {
         key: 'event',
         value: function event() {
-            var _this2 = this;
+            var _this3 = this;
 
             var eventElem = this.set.eventElem;
 
@@ -1036,23 +1070,23 @@ var Particle = function (_Base) {
             eventHandler.call(this);
 
             this.onDestroy(function () {
-                utils.off(eventElem, 'mousemove', _this2.moveHandler);
+                utils.off(eventElem, 'mousemove', _this3.moveHandler);
             });
         }
     }, {
         key: 'resize',
         value: function resize() {
-            var _this3 = this;
+            var _this4 = this;
 
             utils.resize(this, function (scaleX, scaleY) {
-                var _set6 = _this3.set,
+                var _set6 = _this4.set,
                     num = _set6.num,
                     range = _set6.range;
 
                 if (num > 0 && range > 0) {
-                    _this3.posX *= scaleX;
-                    _this3.posY *= scaleY;
-                    _this3.getElemOffset();
+                    _this4.posX *= scaleX;
+                    _this4.posY *= scaleY;
+                    _this4.getElemOffset();
                 }
             });
         }
@@ -1093,6 +1127,11 @@ Particle.defaultConfig = {
 
     // 线段的宽度
     lineWidth: .2,
+
+    // 连线的形状
+    // spider: 散开的蜘蛛状
+    // cube: 合拢的立方体状
+    lineShape: 'spider',
 
     // 改变定位点坐标的事件元素
     // null 表示 canvas 画布，或传入原生元素对象，如 document 等

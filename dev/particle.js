@@ -66,6 +66,11 @@ class Particle extends Base {
         // 线段的宽度
         lineWidth: .2,
 
+        // 连线的形状
+        // spider: 散开的蜘蛛状
+        // cube: 合拢的立方体状
+        lineShape: 'spider',
+
         // 改变定位点坐标的事件元素
         // null 表示 canvas 画布，或传入原生元素对象，如 document 等
         eventElem: null
@@ -94,9 +99,48 @@ class Particle extends Base {
                 this.posX = random() * this.cw;
                 this.posY = random() * this.ch;
                 this.event();
+
+                this.defineLineShape();
             }
             this.createDots();
             this.draw();
+        }
+    }
+
+    defineLineShape() {
+        const {proximity, range, lineShape} = this.set;
+        switch (lineShape) {
+            case 'cube':
+                this.lineShapeMaker = (x, y, sx, sy, cb) => {
+                    const {posX, posY} = this;
+                    if (
+                        abs(x - sx) <= proximity &&
+                        abs(y - sy) <= proximity &&
+                        abs(x - posX) <= range &&
+                        abs(y - posY) <= range &&
+                        abs(sx - posX) <= range &&
+                        abs(sy - posY) <= range
+                    ) {
+                        cb();
+                    }
+                };
+                break;
+            default:
+                this.lineShapeMaker = (x, y, sx, sy, cb) => {
+                    const {posX, posY} = this;
+                    if (
+                        abs(x - sx) <= proximity &&
+                        abs(y - sy) <= proximity &&
+                        (
+                            abs(x - posX) <= range &&
+                            abs(y - posY) <= range ||
+                            abs(sx - posX) <= range &&
+                            abs(sy - posY) <= range
+                        )
+                    ) {
+                        cb();
+                    }
+                };
         }
     }
 
@@ -169,8 +213,7 @@ class Particle extends Base {
     }
 
     connectDots() {
-        const {dots, cxt, posX, posY} = this;
-        const {proximity, range} = this.set;
+        const {dots, cxt, lineShapeMaker} = this;
         const length = dots.length;
 
         dots.forEach((dot, i) => {
@@ -183,12 +226,7 @@ class Particle extends Base {
                 const sx = sibDot.x;
                 const sy = sibDot.y;
 
-                if (abs(x - sx) <= proximity &&
-                    abs(y - sy) <= proximity &&
-                    (abs(x - posX) <= range &&
-                    abs(y - posY) <= range ||
-                    abs(sx - posX) <= range &&
-                    abs(sy - posY) <= range)) {
+                lineShapeMaker(x, y, sx, sy, () => {
                     cxt.save();
                     cxt.beginPath();
                     cxt.moveTo(x, y);
@@ -196,7 +234,7 @@ class Particle extends Base {
                     cxt.strokeStyle = color;
                     cxt.stroke();
                     cxt.restore();
-                }
+                });
             }
         });
     }
