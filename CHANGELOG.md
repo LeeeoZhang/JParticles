@@ -1,3 +1,15 @@
+### 3.0.0 *(2017.xx.xx)*
+ - **`Particleground.js` 升级到 `3.0.0` 并改名为 `JParticles`。**
+ - **新增 `waveLoading` 模拟进度条加载特效。**
+ - 所有特效：增加 `onDestroy()` 方法。
+ - 所有特效：事件支持链式操作。
+ - particle: 新增 `lineShape` 参数，定义粒子的形状效果。
+ - particle: 新增 `parallax` 参数，视差效果。
+ - particle: 修改原来的 `distance` 参数为更接近词意的 `proximity`。
+ - wave: 新增 `setOptions()` 方法。
+ - wave: 删除原来的 `setOffsetTop()` 方法。
+ - wave: 修改原来的 `stroke` 参数为更一致性的 `line`。
+
 ### 延误说明 *(2016.11.28)*
 
 实在对不起，自从11月搬家花了一个周末的时间，接下来工作转到另一个事业部，得以工作等事为重，学习react等，耽误了pjs的开发。下次更新会把pjs的粒子特效加上视差效果，增加QQ登录背景效果，即低多边形Delaunay三角的实现，当然学习怎么实现Delaunay三角算法可能也需要点时间。还得耽误一段时间，实在抱歉。
