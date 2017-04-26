@@ -73,7 +73,10 @@ class Particle extends Base {
 
         // 改变定位点坐标的事件元素
         // null 表示 canvas 画布，或传入原生元素对象，如 document 等
-        eventElem: null
+        eventElem: null,
+
+        // 视差效果
+        parallax: false
     };
 
     get version() {
@@ -104,6 +107,7 @@ class Particle extends Base {
             }
             this.createDots();
             this.draw();
+            this.parallaxEvent();
         }
     }
 
@@ -274,6 +278,28 @@ class Particle extends Base {
         this.onDestroy(() => {
             utils.off(eventElem, 'mousemove', this.moveHandler);
         });
+    }
+
+    parallaxEvent() {
+        const {parallax, eventElem} = this.set;
+        if (parallax) {
+            this.parallaxHandler = e => {
+                this.runningParallax = true;
+                let halfLength = this.dots.length / 2;
+                while (halfLength--) {
+                    let dot = this.dots[halfLength + 2];
+//                    dot.x += 5;
+                    console.log(dot)
+//                    dot.y += 5;
+                }
+                console.log(e)
+            };
+
+            utils.on(eventElem, 'mousemove', this.parallaxHandler);
+            this.onDestroy(() => {
+                utils.off(eventElem, 'mousemove', this.parallaxHandler);
+            });
+        }
     }
 
     resize() {

@@ -876,6 +876,7 @@ var Particle = function (_Base) {
                 }
                 this.createDots();
                 this.draw();
+                this.parallaxEvent();
             }
         }
     }, {
@@ -1074,19 +1075,47 @@ var Particle = function (_Base) {
             });
         }
     }, {
-        key: 'resize',
-        value: function resize() {
+        key: 'parallaxEvent',
+        value: function parallaxEvent() {
             var _this4 = this;
 
+            var _set6 = this.set,
+                parallax = _set6.parallax,
+                eventElem = _set6.eventElem;
+
+            if (parallax) {
+                this.parallaxHandler = function (e) {
+                    _this4.runningParallax = true;
+                    var halfLength = _this4.dots.length / 2;
+                    while (halfLength--) {
+                        var dot = _this4.dots[halfLength + 2];
+                        //                    dot.x += 5;
+                        console.log(dot);
+                        //                    dot.y += 5;
+                    }
+                    console.log(e);
+                };
+
+                utils.on(eventElem, 'mousemove', this.parallaxHandler);
+                this.onDestroy(function () {
+                    utils.off(eventElem, 'mousemove', _this4.parallaxHandler);
+                });
+            }
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this5 = this;
+
             utils.resize(this, function (scaleX, scaleY) {
-                var _set6 = _this4.set,
-                    num = _set6.num,
-                    range = _set6.range;
+                var _set7 = _this5.set,
+                    num = _set7.num,
+                    range = _set7.range;
 
                 if (num > 0 && range > 0) {
-                    _this4.posX *= scaleX;
-                    _this4.posY *= scaleY;
-                    _this4.getElemOffset();
+                    _this5.posX *= scaleX;
+                    _this5.posY *= scaleY;
+                    _this5.getElemOffset();
                 }
             });
         }
@@ -1135,7 +1164,10 @@ Particle.defaultConfig = {
 
     // 改变定位点坐标的事件元素
     // null 表示 canvas 画布，或传入原生元素对象，如 document 等
-    eventElem: null
+    eventElem: null,
+
+    // 视差效果
+    parallax: false
 };
 modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
 
