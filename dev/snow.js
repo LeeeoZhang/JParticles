@@ -2,8 +2,8 @@ const {utils, Base} = JParticles;
 const {random, abs, PI} = Math;
 const twicePI = PI * 2;
 const {
-    pInt, limitRandom,
-    calcSpeed, defineReadOnlyProperty
+    pInt, limitRandom, calcSpeed,
+    defineReadOnlyProperty
 } = utils;
 
 class Snow extends Base {
