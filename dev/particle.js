@@ -1,10 +1,10 @@
 const {utils, Base} = JParticles;
-const {random, abs, PI} = Math;
+const {random, abs, PI, ceil} = Math;
 const twicePI = PI * 2;
 const {
     pInt, limitRandom, calcSpeed, scaleValue,
     getCss, offset, isElement, isFunction,
-    modifyPrototype, defineReadOnlyProperty
+    defineReadOnlyProperty
 } = utils;
 
 /**
@@ -21,17 +21,6 @@ function checkParentsProperty(elem, property, value) {
         }
     }
     return false;
-}
-
-function eventHandler(eventType) {
-    const {num, range, eventElem} = this.set;
-
-    if (num > 0 && range > 0) {
-
-        // 使用传递过来的关键字判断绑定事件还是移除事件
-        eventType = eventType === 'pause' ? 'off' : 'on';
-        utils[eventType](eventElem, 'mousemove', this.moveHandler);
-    }
 }
 
 class Particle extends Base {
@@ -91,20 +80,21 @@ class Particle extends Base {
         const {num, range, eventElem} = this.set;
 
         if (num > 0) {
+
+            // 设置触发事件的元素
+            if (!isElement(eventElem) && eventElem !== document) {
+                this.set.eventElem = this.c;
+            }
+
             if (range > 0) {
 
-                // 设置移动事件元素
-                if (!isElement(eventElem) && eventElem !== document) {
-                    this.set.eventElem = this.c;
-                }
-
                 // 定位点坐标
-                this.posX = random() * this.cw;
-                this.posY = random() * this.ch;
-                this.event();
-
+                this.positionX = random() * this.cw;
+                this.positionY = random() * this.ch;
                 this.defineLineShape();
+                this.positionEvent();
             }
+
             this.createDots();
             this.draw();
             this.parallaxEvent();
@@ -116,14 +106,14 @@ class Particle extends Base {
         switch (lineShape) {
             case 'cube':
                 this.lineShapeMaker = (x, y, sx, sy, cb) => {
-                    const {posX, posY} = this;
+                    const {positionX, positionY} = this;
                     if (
                         abs(x - sx) <= proximity &&
                         abs(y - sy) <= proximity &&
-                        abs(x - posX) <= range &&
-                        abs(y - posY) <= range &&
-                        abs(sx - posX) <= range &&
-                        abs(sy - posY) <= range
+                        abs(x - positionX) <= range &&
+                        abs(y - positionY) <= range &&
+                        abs(sx - positionX) <= range &&
+                        abs(sy - positionY) <= range
                     ) {
                         cb();
                     }
@@ -131,15 +121,15 @@ class Particle extends Base {
                 break;
             default:
                 this.lineShapeMaker = (x, y, sx, sy, cb) => {
-                    const {posX, posY} = this;
+                    const {positionX, positionY} = this;
                     if (
                         abs(x - sx) <= proximity &&
                         abs(y - sy) <= proximity &&
                         (
-                            abs(x - posX) <= range &&
-                            abs(y - posY) <= range ||
-                            abs(sx - posX) <= range &&
-                            abs(sy - posY) <= range
+                            abs(x - positionX) <= range &&
+                            abs(y - positionY) <= range ||
+                            abs(sx - positionX) <= range &&
+                            abs(sy - positionY) <= range
                         )
                     ) {
                         cb();
@@ -162,7 +152,15 @@ class Particle extends Base {
                 y: limitRandom(ch - r, r),
                 vx: calcSpeed(maxSpeed, minSpeed),
                 vy: calcSpeed(maxSpeed, minSpeed),
-                color: color()
+                color: color(),
+
+                // 定义粒子在视差图层里的层级关系
+                // 值越小视差效果越强烈：1, 2, 3
+                layer: ceil(limitRandom(3, 1)),
+
+                // 定义粒子视差的偏移值
+                parallaxOffsetX: 0,
+                parallaxOffsetY: 0
             });
         }
     }
@@ -180,23 +178,20 @@ class Particle extends Base {
         cxt.globalAlpha = opacity;
 
         this.dots.forEach(dot => {
-            const r = dot.r;
-
             cxt.save();
             cxt.beginPath();
-            cxt.arc(dot.x, dot.y, r, 0, twicePI);
+            cxt.arc(dot.x, dot.y, dot.r, 0, twicePI);
             cxt.fillStyle = dot.color;
             cxt.fill();
             cxt.restore();
 
-            // 暂停的时候，vx和vy保持不变，
+            // 暂停的时候，vx 和 vy 保持不变，
             // 处理自适应窗口变化时出现粒子移动的状态
             if (!paused) {
                 dot.x += dot.vx;
                 dot.y += dot.vy;
 
-                const x = dot.x;
-                const y = dot.y;
+                const {x, y, r} = dot;
 
                 if (x + r >= cw || x - r <= 0) {
                     dot.vx *= -1;
@@ -221,9 +216,7 @@ class Particle extends Base {
         const length = dots.length;
 
         dots.forEach((dot, i) => {
-            const x = dot.x;
-            const y = dot.y;
-            const color = dot.color;
+            const {x, y, color} = dot;
 
             while (++i < length) {
                 const sibDot = dots[i];
@@ -243,80 +236,89 @@ class Particle extends Base {
         });
     }
 
-    getElemOffset() {
-        return (this.elemOffset = this.elemOffset ? offset(this.set.eventElem) : null);
+    setElemOffset() {
+        return (this.elemOffset = this.set.eventElem === document ? null : offset(this.set.eventElem));
     }
 
-    event() {
+    positionEvent() {
         const {eventElem} = this.set;
 
-        if (eventElem !== document) {
-            this.elemOffset = true;
-        }
+        // 更新定位点的坐标
+        const updatePositionHandler = e => {
+            if (this.paused) return;
 
-        // move 事件处理函数
-        this.moveHandler = function (e) {
-            this.posX = e.pageX;
-            this.posY = e.pageY;
+            this.positionX = e.pageX;
+            this.positionY = e.pageY;
 
             // 动态计算 elemOffset 值
-            if (this.getElemOffset()) {
+            if (this.setElemOffset()) {
 
                 // 动态判断祖先节点是否具有固定定位，有则使用client计算
                 if (checkParentsProperty(eventElem, 'position', 'fixed')) {
-                    this.posX = e.clientX;
-                    this.posY = e.clientY;
+                    this.positionX = e.clientX;
+                    this.positionY = e.clientY;
                 }
-                this.posX -= this.elemOffset.left;
-                this.posY -= this.elemOffset.top;
+                this.positionX -= this.elemOffset.left;
+                this.positionY -= this.elemOffset.top;
             }
-        }.bind(this);
+        };
 
-        // 添加 move 事件
-        eventHandler.call(this);
-
+        utils.on(eventElem, 'mousemove', updatePositionHandler);
         this.onDestroy(() => {
-            utils.off(eventElem, 'mousemove', this.moveHandler);
+            utils.off(eventElem, 'mousemove', updatePositionHandler);
         });
     }
 
     parallaxEvent() {
         const {parallax, eventElem} = this.set;
-        if (parallax) {
-            this.parallaxHandler = e => {
-                this.runningParallax = true;
-                let halfLength = this.dots.length / 2;
-                while (halfLength--) {
-                    let dot = this.dots[halfLength + 2];
-//                    dot.x += 5;
-                    console.log(dot)
-//                    dot.y += 5;
-                }
-                console.log(e)
-            };
+        if (!parallax) return;
 
-            utils.on(eventElem, 'mousemove', this.parallaxHandler);
-            this.onDestroy(() => {
-                utils.off(eventElem, 'mousemove', this.parallaxHandler);
+        const parallaxHandler = e => {
+            const {cw, ch} = this;
+
+            let left = e.pageX;
+            let top = e.pageY;
+            if (this.setElemOffset()) {
+                left -= this.elemOffset.left;
+                top -= this.elemOffset.top;
+            }
+
+            // 视差景深，值越小视差效果越强烈
+            const parallaxPerspective = 5;
+
+            this.dots.forEach(dot => {
+                /*const x = (left - (cw / 2)) / (parallaxPerspective * dot.layer);
+                dot.parallaxOffsetX = x;
+                dot.parallaxOffsetX += (x - dot.parallaxOffsetX) / 10;*/
+
+                /*const y = (top - (ch / 2) - top) / (parallaxPerspective * dot.layer);
+                dot.parallaxOffsetY += (y - dot.parallaxOffsetY) / 10;*/
+
+                dot.parallaxOffsetX = left - cw / 2 - dot.parallaxOffsetX;
+
+                console.log(dot.x, dot.parallaxOffsetX);
+                dot.x += dot.parallaxOffsetX;
+
+                //dot.y += dot.parallaxOffsetY;
             });
-        }
+        };
+
+        utils.on(eventElem, 'mousemove', parallaxHandler);
+        this.onDestroy(() => {
+            utils.off(eventElem, 'mousemove', parallaxHandler);
+        });
     }
 
     resize() {
         utils.resize(this, (scaleX, scaleY) => {
             const {num, range} = this.set;
             if (num > 0 && range > 0) {
-                this.posX *= scaleX;
-                this.posY *= scaleY;
-                this.getElemOffset();
+                this.positionX *= scaleX;
+                this.positionY *= scaleY;
             }
         });
     }
 }
 
-// 修改原型 pause, open 方法
-modifyPrototype(Particle.prototype, 'pause, open', eventHandler);
-
-// 使用防止属性被更改的 appendProperty 方法，
 // 挂载插件到 JParticles 对象上。
 defineReadOnlyProperty(Particle, 'particle');
