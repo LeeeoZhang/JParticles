@@ -860,6 +860,9 @@ var Particle = function (_Base) {
                     this.positionEvent();
                 }
 
+                // 初始化鼠标在视差上的坐标
+                this.mouseX = this.mouseY = 0;
+
                 this.createDots();
                 this.draw();
                 this.parallaxEvent();
@@ -938,8 +941,7 @@ var Particle = function (_Base) {
         value: function draw() {
             var cw = this.cw,
                 ch = this.ch,
-                cxt = this.cxt,
-                paused = this.paused;
+                cxt = this.cxt;
             var _set4 = this.set,
                 num = _set4.num,
                 range = _set4.range,
@@ -955,33 +957,23 @@ var Particle = function (_Base) {
             cxt.lineWidth = lineWidth;
             cxt.globalAlpha = opacity;
 
+            // 更新粒子坐标
+            this.updateXY();
+
+            // 绘制粒子
             this.dots.forEach(function (dot) {
+                var x = dot.x,
+                    y = dot.y,
+                    r = dot.r,
+                    parallaxOffsetX = dot.parallaxOffsetX,
+                    parallaxOffsetY = dot.parallaxOffsetY;
+
                 cxt.save();
                 cxt.beginPath();
-                cxt.arc(dot.x, dot.y, dot.r, 0, twicePI);
+                cxt.arc(x + parallaxOffsetX, y + parallaxOffsetY, r, 0, twicePI);
                 cxt.fillStyle = dot.color;
                 cxt.fill();
                 cxt.restore();
-
-                // 暂停的时候，vx 和 vy 保持不变，
-                // 处理自适应窗口变化时出现粒子移动的状态
-                if (!paused) {
-                    dot.x += dot.vx;
-                    dot.y += dot.vy;
-
-                    var x = dot.x,
-                        y = dot.y,
-                        r = dot.r;
-
-
-                    if (x + r >= cw || x - r <= 0) {
-                        dot.vx *= -1;
-                    }
-
-                    if (y + r >= ch || y - r <= 0) {
-                        dot.vy *= -1;
-                    }
-                }
             });
 
             // 当连接范围小于 0 时，不连接线段
@@ -1001,21 +993,20 @@ var Particle = function (_Base) {
             var length = dots.length;
 
             dots.forEach(function (dot, i) {
-                var x = dot.x,
-                    y = dot.y,
-                    color = dot.color;
+                var x = dot.x + dot.parallaxOffsetX;
+                var y = dot.y + dot.parallaxOffsetY;
 
                 var _loop = function _loop() {
                     var sibDot = dots[i];
-                    var sx = sibDot.x;
-                    var sy = sibDot.y;
+                    var sx = sibDot.x + sibDot.parallaxOffsetX;
+                    var sy = sibDot.y + sibDot.parallaxOffsetY;
 
                     lineShapeMaker(x, y, sx, sy, function () {
                         cxt.save();
                         cxt.beginPath();
                         cxt.moveTo(x, y);
                         cxt.lineTo(sx, sy);
-                        cxt.strokeStyle = color;
+                        cxt.strokeStyle = dot.color;
                         cxt.stroke();
                         cxt.restore();
                     });
@@ -1032,14 +1023,66 @@ var Particle = function (_Base) {
             return this.elemOffset = this.set.eventElem === document ? null : offset(this.set.eventElem);
         }
     }, {
+        key: 'updateXY',
+        value: function updateXY() {
+            var paused = this.paused,
+                mouseX = this.mouseX,
+                mouseY = this.mouseY,
+                cw = this.cw,
+                ch = this.ch;
+            var _set5 = this.set,
+                parallax = _set5.parallax,
+                parallaxPerspective = _set5.parallaxPerspective;
+
+
+            this.dots.forEach(function (dot) {
+                if (parallax) {
+
+                    // https://github.com/jnicol/particleground
+                    var divisor = parallaxPerspective * dot.layer;
+                    dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
+                    dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
+                }
+
+                // 暂停的时候，vx 和 vy 保持不变，
+                // 防止自适应窗口变化时出现粒子移动
+                if (!paused) {
+                    dot.x += dot.vx;
+                    dot.y += dot.vy;
+
+                    var x = dot.x,
+                        y = dot.y,
+                        r = dot.r,
+                        parallaxOffsetX = dot.parallaxOffsetX,
+                        parallaxOffsetY = dot.parallaxOffsetY;
+
+                    x += parallaxOffsetX;
+                    y += parallaxOffsetY;
+
+                    if (x + r >= cw || x - r <= 0) {
+                        dot.vx *= -1;
+                    }
+
+                    if (y + r >= ch || y - r <= 0) {
+                        dot.vy *= -1;
+                    }
+                }
+            });
+        }
+    }, {
         key: 'positionEvent',
         value: function positionEvent() {
             var _this3 = this;
 
-            var eventElem = this.set.eventElem;
+            var _set6 = this.set,
+                eventElem = _set6.eventElem,
+                range = _set6.range;
+
+            // 性能优化
+
+            if (range > this.cw && range > this.ch) return;
 
             // 更新定位点的坐标
-
             var updatePositionHandler = function updatePositionHandler(e) {
                 if (_this3.paused) return;
 
@@ -1049,7 +1092,7 @@ var Particle = function (_Base) {
                 // 动态计算 elemOffset 值
                 if (_this3.setElemOffset()) {
 
-                    // 动态判断祖先节点是否具有固定定位，有则使用client计算
+                    // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
                     if (checkParentsProperty(eventElem, 'position', 'fixed')) {
                         _this3.positionX = e.clientX;
                         _this3.positionY = e.clientY;
@@ -1069,9 +1112,9 @@ var Particle = function (_Base) {
         value: function parallaxEvent() {
             var _this4 = this;
 
-            var _set5 = this.set,
-                parallax = _set5.parallax,
-                eventElem = _set5.eventElem;
+            var _set7 = this.set,
+                parallax = _set7.parallax,
+                eventElem = _set7.eventElem;
 
             if (!parallax) return;
 
@@ -1083,28 +1126,18 @@ var Particle = function (_Base) {
                 var left = e.pageX;
                 var top = e.pageY;
                 if (_this4.setElemOffset()) {
+
+                    // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
+                    if (checkParentsProperty(eventElem, 'position', 'fixed')) {
+                        left = e.clientX;
+                        top = e.clientY;
+                    }
                     left -= _this4.elemOffset.left;
                     top -= _this4.elemOffset.top;
                 }
 
-                // 视差景深，值越小视差效果越强烈
-                var parallaxPerspective = 5;
-
-                _this4.dots.forEach(function (dot) {
-                    /*const x = (left - (cw / 2)) / (parallaxPerspective * dot.layer);
-                    dot.parallaxOffsetX = x;
-                    dot.parallaxOffsetX += (x - dot.parallaxOffsetX) / 10;*/
-
-                    /*const y = (top - (ch / 2) - top) / (parallaxPerspective * dot.layer);
-                    dot.parallaxOffsetY += (y - dot.parallaxOffsetY) / 10;*/
-
-                    dot.parallaxOffsetX = left - cw / 2 - dot.parallaxOffsetX;
-
-                    console.log(dot.x, dot.parallaxOffsetX);
-                    dot.x += dot.parallaxOffsetX;
-
-                    //dot.y += dot.parallaxOffsetY;
-                });
+                _this4.mouseX = left - cw / 2;
+                _this4.mouseY = top - ch / 2;
             };
 
             utils.on(eventElem, 'mousemove', parallaxHandler);
@@ -1118,9 +1151,9 @@ var Particle = function (_Base) {
             var _this5 = this;
 
             utils.resize(this, function (scaleX, scaleY) {
-                var _set6 = _this5.set,
-                    num = _set6.num,
-                    range = _set6.range;
+                var _set8 = _this5.set,
+                    num = _set8.num,
+                    range = _set8.range;
 
                 if (num > 0 && range > 0) {
                     _this5.positionX *= scaleX;
@@ -1176,7 +1209,10 @@ Particle.defaultConfig = {
     eventElem: null,
 
     // 视差效果
-    parallax: false
+    parallax: false,
+
+    // 视差景深，值越小视差效果越强烈
+    parallaxPerspective: 5
 };
 defineReadOnlyProperty(Particle, 'particle');
                 }();

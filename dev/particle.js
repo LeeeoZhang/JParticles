@@ -65,7 +65,10 @@ class Particle extends Base {
         eventElem: null,
 
         // 视差效果
-        parallax: false
+        parallax: false,
+
+        // 视差景深，值越小视差效果越强烈
+        parallaxPerspective: 5
     };
 
     get version() {
@@ -94,6 +97,9 @@ class Particle extends Base {
                 this.defineLineShape();
                 this.positionEvent();
             }
+
+            // 初始化鼠标在视差上的坐标
+            this.mouseX = this.mouseY = 0;
 
             this.createDots();
             this.draw();
@@ -166,7 +172,7 @@ class Particle extends Base {
     }
 
     draw() {
-        const {cw, ch, cxt, paused} = this;
+        const {cw, ch, cxt} = this;
         const {num, range, lineWidth, opacity} = this.set;
 
         if (num <= 0) return;
@@ -177,30 +183,22 @@ class Particle extends Base {
         cxt.lineWidth = lineWidth;
         cxt.globalAlpha = opacity;
 
+        // 更新粒子坐标
+        this.updateXY();
+
+        // 绘制粒子
         this.dots.forEach(dot => {
+            const {x, y, r, parallaxOffsetX, parallaxOffsetY} = dot;
             cxt.save();
             cxt.beginPath();
-            cxt.arc(dot.x, dot.y, dot.r, 0, twicePI);
+            cxt.arc(
+                x + parallaxOffsetX,
+                y + parallaxOffsetY,
+                r, 0, twicePI
+            );
             cxt.fillStyle = dot.color;
             cxt.fill();
             cxt.restore();
-
-            // 暂停的时候，vx 和 vy 保持不变，
-            // 处理自适应窗口变化时出现粒子移动的状态
-            if (!paused) {
-                dot.x += dot.vx;
-                dot.y += dot.vy;
-
-                const {x, y, r} = dot;
-
-                if (x + r >= cw || x - r <= 0) {
-                    dot.vx *= -1;
-                }
-
-                if (y + r >= ch || y - r <= 0) {
-                    dot.vy *= -1;
-                }
-            }
         });
 
         // 当连接范围小于 0 时，不连接线段
@@ -216,19 +214,20 @@ class Particle extends Base {
         const length = dots.length;
 
         dots.forEach((dot, i) => {
-            const {x, y, color} = dot;
+            const x = dot.x + dot.parallaxOffsetX;
+            const y = dot.y + dot.parallaxOffsetY;
 
             while (++i < length) {
                 const sibDot = dots[i];
-                const sx = sibDot.x;
-                const sy = sibDot.y;
+                const sx = sibDot.x + sibDot.parallaxOffsetX;
+                const sy = sibDot.y + sibDot.parallaxOffsetY;
 
                 lineShapeMaker(x, y, sx, sy, () => {
                     cxt.save();
                     cxt.beginPath();
                     cxt.moveTo(x, y);
                     cxt.lineTo(sx, sy);
-                    cxt.strokeStyle = color;
+                    cxt.strokeStyle = dot.color;
                     cxt.stroke();
                     cxt.restore();
                 });
@@ -240,8 +239,45 @@ class Particle extends Base {
         return (this.elemOffset = this.set.eventElem === document ? null : offset(this.set.eventElem));
     }
 
+    updateXY() {
+        const {paused, mouseX, mouseY, cw, ch} = this;
+        const {parallax, parallaxPerspective} = this.set;
+
+        this.dots.forEach(dot => {
+            if (parallax) {
+
+                // https://github.com/jnicol/particleground
+                const divisor = parallaxPerspective * dot.layer;
+                dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
+                dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
+            }
+
+            // 暂停的时候，vx 和 vy 保持不变，
+            // 防止自适应窗口变化时出现粒子移动
+            if (!paused) {
+                dot.x += dot.vx;
+                dot.y += dot.vy;
+
+                let {x, y, r, parallaxOffsetX, parallaxOffsetY} = dot;
+                x += parallaxOffsetX;
+                y += parallaxOffsetY;
+
+                if (x + r >= cw || x - r <= 0) {
+                    dot.vx *= -1;
+                }
+
+                if (y + r >= ch || y - r <= 0) {
+                    dot.vy *= -1;
+                }
+            }
+        });
+    }
+
     positionEvent() {
-        const {eventElem} = this.set;
+        const {eventElem, range} = this.set;
+
+        // 性能优化
+        if (range > this.cw && range > this.ch) return;
 
         // 更新定位点的坐标
         const updatePositionHandler = e => {
@@ -253,7 +289,7 @@ class Particle extends Base {
             // 动态计算 elemOffset 值
             if (this.setElemOffset()) {
 
-                // 动态判断祖先节点是否具有固定定位，有则使用client计算
+                // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
                 if (checkParentsProperty(eventElem, 'position', 'fixed')) {
                     this.positionX = e.clientX;
                     this.positionY = e.clientY;
@@ -279,28 +315,18 @@ class Particle extends Base {
             let left = e.pageX;
             let top = e.pageY;
             if (this.setElemOffset()) {
+
+                // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
+                if (checkParentsProperty(eventElem, 'position', 'fixed')) {
+                    left = e.clientX;
+                    top = e.clientY;
+                }
                 left -= this.elemOffset.left;
                 top -= this.elemOffset.top;
             }
 
-            // 视差景深，值越小视差效果越强烈
-            const parallaxPerspective = 5;
-
-            this.dots.forEach(dot => {
-                /*const x = (left - (cw / 2)) / (parallaxPerspective * dot.layer);
-                dot.parallaxOffsetX = x;
-                dot.parallaxOffsetX += (x - dot.parallaxOffsetX) / 10;*/
-
-                /*const y = (top - (ch / 2) - top) / (parallaxPerspective * dot.layer);
-                dot.parallaxOffsetY += (y - dot.parallaxOffsetY) / 10;*/
-
-                dot.parallaxOffsetX = left - cw / 2 - dot.parallaxOffsetX;
-
-                console.log(dot.x, dot.parallaxOffsetX);
-                dot.x += dot.parallaxOffsetX;
-
-                //dot.y += dot.parallaxOffsetY;
-            });
+            this.mouseX = left - cw / 2;
+            this.mouseY = top - ch / 2;
         };
 
         utils.on(eventElem, 'mousemove', parallaxHandler);
