@@ -1036,17 +1036,19 @@ var Particle = function (_Base) {
 
 
             this.dots.forEach(function (dot) {
-                if (parallax) {
-
-                    // https://github.com/jnicol/particleground
-                    var divisor = parallaxPerspective * dot.layer;
-                    dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
-                    dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
-                }
 
                 // 暂停的时候，vx 和 vy 保持不变，
                 // 防止自适应窗口变化时出现粒子移动
                 if (!paused) {
+
+                    if (parallax) {
+
+                        // https://github.com/jnicol/particleground
+                        var divisor = parallaxPerspective * dot.layer;
+                        dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
+                        dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
+                    }
+
                     dot.x += dot.vx;
                     dot.y += dot.vy;
 
@@ -1119,12 +1121,11 @@ var Particle = function (_Base) {
             if (!parallax) return;
 
             var parallaxHandler = function parallaxHandler(e) {
-                var cw = _this4.cw,
-                    ch = _this4.ch;
-
+                if (_this4.paused) return;
 
                 var left = e.pageX;
                 var top = e.pageY;
+
                 if (_this4.setElemOffset()) {
 
                     // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
@@ -1135,6 +1136,9 @@ var Particle = function (_Base) {
                     left -= _this4.elemOffset.left;
                     top -= _this4.elemOffset.top;
                 }
+
+                var cw = _this4.cw,
+                    ch = _this4.ch;
 
                 _this4.mouseX = left - cw / 2;
                 _this4.mouseY = top - ch / 2;
@@ -1212,7 +1216,7 @@ Particle.defaultConfig = {
     parallax: false,
 
     // 视差景深，值越小视差效果越强烈
-    parallaxPerspective: 5
+    parallaxPerspective: 3
 };
 defineReadOnlyProperty(Particle, 'particle');
                 }();

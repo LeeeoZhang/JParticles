@@ -68,7 +68,7 @@ class Particle extends Base {
         parallax: false,
 
         // 视差景深，值越小视差效果越强烈
-        parallaxPerspective: 5
+        parallaxPerspective: 3
     };
 
     get version() {
@@ -236,7 +236,11 @@ class Particle extends Base {
     }
 
     setElemOffset() {
-        return (this.elemOffset = this.set.eventElem === document ? null : offset(this.set.eventElem));
+        return (
+            this.elemOffset = this.set.eventElem === document
+                ? null
+                : offset(this.set.eventElem)
+        );
     }
 
     updateXY() {
@@ -244,17 +248,19 @@ class Particle extends Base {
         const {parallax, parallaxPerspective} = this.set;
 
         this.dots.forEach(dot => {
-            if (parallax) {
-
-                // https://github.com/jnicol/particleground
-                const divisor = parallaxPerspective * dot.layer;
-                dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
-                dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
-            }
 
             // 暂停的时候，vx 和 vy 保持不变，
             // 防止自适应窗口变化时出现粒子移动
             if (!paused) {
+
+                if (parallax) {
+
+                    // https://github.com/jnicol/particleground
+                    const divisor = parallaxPerspective * dot.layer;
+                    dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
+                    dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
+                }
+
                 dot.x += dot.vx;
                 dot.y += dot.vy;
 
@@ -310,10 +316,11 @@ class Particle extends Base {
         if (!parallax) return;
 
         const parallaxHandler = e => {
-            const {cw, ch} = this;
+            if (this.paused) return;
 
             let left = e.pageX;
             let top = e.pageY;
+
             if (this.setElemOffset()) {
 
                 // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
@@ -325,6 +332,7 @@ class Particle extends Base {
                 top -= this.elemOffset.top;
             }
 
+            const {cw, ch} = this;
             this.mouseX = left - cw / 2;
             this.mouseY = top - ch / 2;
         };
