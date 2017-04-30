@@ -9,6 +9,7 @@ const wrap = require('./gulp-wrap');
 
 const devPath = '../dev/';
 const destPath = '../production/';
+const excludeFile = /(jparticles(\.all)?\.js|maps)\s/g;
 const reload = browserSync.reload;
 
 // Compile all scripts.
@@ -30,7 +31,7 @@ gulp.task('compile', () => {
         // Generate 'jparticles.all.js'.
         .on('end', () => {
             fs.readdir(destPath, (err, files) => {
-                files = files.join(' ').replace(/jparticles(\.all)?\.js\s/g, '');
+                files = files.join(' ').replace(excludeFile, '');
                 files = ('jparticles.js ' + files).split(' ');
                 files = files.map(filename => {
                     return destPath + filename;
@@ -50,7 +51,8 @@ gulp.task('service', ['compile'], () => {
             baseDir: ['../', '../samples/']
         },
         startPath: '/particle.html',
-        injectChanges: false
+        injectChanges: false,
+        open: !(process.argv.indexOf('no-open') !== -1)
     });
 
     gulp.watch(`${devPath}*.js`, ['compile']);

@@ -235,14 +235,6 @@ class Particle extends Base {
         });
     }
 
-    setElemOffset() {
-        return (
-            this.elemOffset = this.set.eventElem === document
-                ? null
-                : offset(this.set.eventElem)
-        );
-    }
-
     updateXY() {
         const {paused, mouseX, mouseY, cw, ch} = this;
         const {parallax, parallaxPerspective} = this.set;
@@ -277,6 +269,14 @@ class Particle extends Base {
                 }
             }
         });
+    }
+
+    setElemOffset() {
+        return (
+            this.elemOffset = this.set.eventElem === document
+                ? null
+                : offset(this.set.eventElem)
+        );
     }
 
     positionEvent() {

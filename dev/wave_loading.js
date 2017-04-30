@@ -77,7 +77,7 @@ class WaveLoading extends Base {
         ['offsetLeft', 'crestHeight'].forEach(attr => {
             this.set[attr] = scaleValue(
                 this.set[attr],
-                'offsetLeft' ? this.cw : this.ch
+                attr === 'offsetLeft' ? this.cw : this.ch
             );
         });
     }

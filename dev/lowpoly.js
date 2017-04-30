@@ -1,20 +1,21 @@
 const {utils, Base} = JParticles;
-const {pInt, limitRandom, calcSpeed} = utils;
-const {random, abs, PI} = Math;
+const {random, abs, PI, sin, ceil} = Math;
 const twicePI = PI * 2;
+const UNDEFINED = 'undefined';
+const {
+    pInt, limitRandom, calcSpeed,
+    scaleValue, randomColor, isArray,
+    isFunction, isPlainObject, resize,
+    defineReadOnlyProperty
+} = utils;
 
-JParticles.lowpoly = class Lowpoly extends Base {
+class Lowpoly extends Base {
 
     static defaultConfig = {
-        color: '#fff',
-        maxR: 6.5,
-        minR: .4,
-        maxSpeed: .6,
-        minSpeed: 0
     };
 
     get version() {
-        return '2.0.0';
+        return '3.0.0';
     }
 
     constructor(selector, options) {
@@ -30,7 +31,8 @@ JParticles.lowpoly = class Lowpoly extends Base {
     }
 
     draw() {
-
         this.requestAnimationFrame();
     }
-};
+}
+
+defineReadOnlyProperty(Lowpoly, 'lowpoly');
