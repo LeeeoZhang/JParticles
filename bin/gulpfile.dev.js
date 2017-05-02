@@ -26,25 +26,26 @@ gulp.task('compile', () => {
             sourceRoot: `../${devPath}`
         }))
         .pipe(gulp.dest(destPath))
-        .pipe(reload({stream: true}))
+        .pipe(reload({stream: true}));
+});
 
-        // Generate 'jparticles.all.js'.
-        .on('end', () => {
-            fs.readdir(destPath, (err, files) => {
-                files = files.join(' ').replace(excludeFile, '');
-                files = ('jparticles.js ' + files).split(' ');
-                files = files.map(filename => {
-                    return destPath + filename;
-                });
-                gulp.src(files)
-                    .pipe(concat('jparticles.all.js'))
-                    .pipe(gulp.dest(destPath));
-            });
-        });
+// Generate "jparticles.all.js".
+gulp.task('package', ['compile'], () => {
+    let files = fs.readdirSync(destPath);
+
+    files = files.join(' ').replace(excludeFile, '');
+    files = ('jparticles.js ' + files).split(' ');
+    files = files.map(filename => {
+        return destPath + filename;
+    });
+
+    return gulp.src(files)
+        .pipe(concat('jparticles.all.js'))
+        .pipe(gulp.dest(destPath));
 });
 
 // Static service.
-gulp.task('service', ['compile'], () => {
+gulp.task('service', ['package'], () => {
 
     browserSync.init({
         server: {

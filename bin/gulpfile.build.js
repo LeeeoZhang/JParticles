@@ -29,25 +29,26 @@ gulp.task('compile', () => {
             presets: ['es2015', 'stage-0']
         }))
         .pipe(wrap())
-        .pipe(gulp.dest(destPath))
-        .on('end', () => {
-            let files = fs.readdirSync(destPath);
+        .pipe(gulp.dest(destPath));
+});
 
-            files = files.join(' ').replace(excludeFile, '');
-            files = ('jparticles.js ' + files).split(' ');
-            files = files.map(filename => {
-                return destPath + filename;
-            });
+gulp.task('package', ['compile'], () => {
+    let files = fs.readdirSync(destPath);
 
-            return gulp.src(files)
-                .pipe(concat('jparticles.all.js'))
-                .pipe(gulp.dest(destPath));
-        });
+    files = files.join(' ').replace(excludeFile, '');
+    files = ('jparticles.js ' + files).split(' ');
+    files = files.map(filename => {
+        return destPath + filename;
+    });
+
+    return gulp.src(files)
+        .pipe(concat('jparticles.all.js'))
+        .pipe(gulp.dest(destPath));
 });
 
 // Build JParticles.
-gulp.task('build', () => {
-    gulp.src(`${destPath}*.js`)
+gulp.task('build', ['package'], () => {
+    return gulp.src(`${destPath}*.js`)
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())
@@ -65,8 +66,4 @@ gulp.task('build', () => {
         .pipe(gulp.dest(destPath));
 });
 
-gulp.task('default', ['compile'], () => {
-    setTimeout(() => {
-        gulp.run('build');
-    }, 1000);
-});
+gulp.task('default', ['build']);
