@@ -260,12 +260,17 @@ class Particle extends Base {
                 x += parallaxOffsetX;
                 y += parallaxOffsetY;
 
-                if (x + r >= cw || x - r <= 0) {
-                    dot.vx *= -1;
+                // 自然碰撞反向，事件移动反向
+                if (x + r >= cw) {
+                    dot.vx = -abs(dot.vx);
+                } else if (x - r <= 0) {
+                    dot.vx = abs(dot.vx);
                 }
 
-                if (y + r >= ch || y - r <= 0) {
-                    dot.vy *= -1;
+                if (y + r >= ch) {
+                    dot.vy = -abs(dot.vy);
+                } else if (y - r <= 0) {
+                    dot.vy = abs(dot.vy);
                 }
             }
         });
