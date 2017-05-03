@@ -1,11 +1,11 @@
 const {utils, Base} = JParticles;
 const {random, abs, PI, sin} = Math;
 const twicePI = PI * 2;
-const UNDEFINED = 'undefined';
 const {
     pInt, limitRandom, calcSpeed,
     scaleValue, randomColor, isArray,
-    isPlainObject, defineReadOnlyProperty
+    isPlainObject, isUndefined,
+    defineReadOnlyProperty
 } = utils;
 
 class Wave extends Base {
@@ -95,7 +95,7 @@ class Wave extends Base {
         while (num--) {
             const val = isArray(attrValue) ? attrValue[num] : attrValue;
 
-            stdValue[num] = typeof val === UNDEFINED
+            stdValue[num] = isUndefined(val)
                 ? this.generateDefaultValue(attr)
                 : this.scaleValue(attr, val, scale);
 
@@ -157,7 +157,7 @@ class Wave extends Base {
             value = this.scaleValue(name, value, scale);
 
             // 未定义部分保持原有值
-            if (typeof value === UNDEFINED) {
+            if (isUndefined(value)) {
                 value = curValue;
             }
 

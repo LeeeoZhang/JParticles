@@ -1,12 +1,11 @@
 const {utils, Base} = JParticles;
 const {random, abs, PI, sin, ceil} = Math;
 const twicePI = PI * 2;
-const UNDEFINED = 'undefined';
 const {
     pInt, limitRandom, calcSpeed,
     scaleValue, randomColor, isArray,
-    isFunction, isPlainObject, resize,
-    defineReadOnlyProperty,
+    isFunction, isPlainObject, isUndefined,
+    resize, defineReadOnlyProperty,
     registerListener
 } = utils;
 
@@ -160,7 +159,7 @@ class WaveLoading extends Base {
 
         this.progressListeners.forEach(callback => {
             const res = callback(this.progress);
-            if (typeof res !== UNDEFINED) {
+            if (!isUndefined(res)) {
                 if (isPlainObject(res)) {
                     progressText = res.text;
                     percentText = res.smallText || '';
