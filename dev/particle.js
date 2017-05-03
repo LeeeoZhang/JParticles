@@ -4,7 +4,8 @@ const twicePI = PI * 2;
 const {
     pInt, limitRandom, calcSpeed, scaleValue,
     getCss, offset, isElement, isFunction,
-    defineReadOnlyProperty
+    isNull, on, off, orientationSupport,
+    resize, defineReadOnlyProperty
 } = utils;
 
 /**
@@ -29,7 +30,7 @@ class Particle extends Base {
 
         // 粒子个数，默认为容器宽度的 0.12 倍
         // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
-        // 0 是没有意义的，下同
+        // 0 是没有意义的
         num: .12,
 
         // 粒子最大半径(0, +∞)
@@ -46,11 +47,13 @@ class Particle extends Base {
 
         // 两点连线的最大值
         // 在 range 范围内的两点距离小于 proximity，则两点之间连线
-        proximity: 130,
+        // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
+        proximity: .2,
 
         // 定位点的范围，范围越大连线越多
         // 当 range 等于 0 时，不连线，相关值无效
-        range: 160,
+        // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
+        range: .2,
 
         // 线段的宽度
         lineWidth: .2,
@@ -80,14 +83,10 @@ class Particle extends Base {
     }
 
     init() {
-        const {num, range, eventElem} = this.set;
+        const {num, range} = this.set;
 
         if (num > 0) {
-
-            // 设置触发事件的元素
-            if (!isElement(eventElem) && eventElem !== document) {
-                this.set.eventElem = this.c;
-            }
+            this.attrNormalize();
 
             if (range > 0) {
 
@@ -100,10 +99,21 @@ class Particle extends Base {
 
             // 初始化鼠标在视差上的坐标
             this.mouseX = this.mouseY = 0;
-
             this.createDots();
             this.draw();
             this.parallaxEvent();
+        }
+    }
+
+    attrNormalize() {
+        const {cw, set} = this;
+        ['num', 'proximity', 'range'].forEach(attr => {
+            set[attr] = pInt(scaleValue(set[attr], cw));
+        });
+
+        // 设置触发事件的元素
+        if (!isElement(set.eventElem) && set.eventElem !== document) {
+            set.eventElem = this.c;
         }
     }
 
@@ -146,11 +156,10 @@ class Particle extends Base {
 
     createDots() {
         const {cw, ch, color} = this;
-        const {num, maxR, minR, maxSpeed, minSpeed} = this.set;
-        let realNumber = pInt(scaleValue(num, cw));
+        let {num, maxR, minR, maxSpeed, minSpeed} = this.set;
         let dots = this.dots = [];
 
-        while (realNumber--) {
+        while (num--) {
             let r = limitRandom(maxR, minR);
             dots.push({
                 r,
@@ -260,7 +269,7 @@ class Particle extends Base {
                 x += parallaxOffsetX;
                 y += parallaxOffsetY;
 
-                // 自然碰撞反向，事件移动反向
+                // 自然碰撞反向，视差事件移动反向
                 if (x + r >= cw) {
                     dot.vx = -abs(dot.vx);
                 } else if (x - r <= 0) {
@@ -284,43 +293,22 @@ class Particle extends Base {
         );
     }
 
-    positionEvent() {
-        const {eventElem, range} = this.set;
+    proxyEvent(move, rientation) {
+        const {eventElem} = this.set;
+        let orientationHandler = null;
 
-        // 性能优化
-        if (range > this.cw && range > this.ch) return;
+        if (orientationSupport) {
+            orientationHandler = e => {
+                if (this.paused || isNull(e.beta)) return;
 
-        // 更新定位点的坐标
-        const updatePositionHandler = e => {
-            if (this.paused) return;
+                // 转换 beta 范围 [-180, 180] 成 [-90, 90]
+                rientation(Math.min(Math.max(e.beta, -90), 90), e.gamma);
+            };
 
-            this.positionX = e.pageX;
-            this.positionY = e.pageY;
+            on(window, 'deviceorientation', orientationHandler);
+        }
 
-            // 动态计算 elemOffset 值
-            if (this.setElemOffset()) {
-
-                // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
-                if (checkParentsProperty(eventElem, 'position', 'fixed')) {
-                    this.positionX = e.clientX;
-                    this.positionY = e.clientY;
-                }
-                this.positionX -= this.elemOffset.left;
-                this.positionY -= this.elemOffset.top;
-            }
-        };
-
-        utils.on(eventElem, 'mousemove', updatePositionHandler);
-        this.onDestroy(() => {
-            utils.off(eventElem, 'mousemove', updatePositionHandler);
-        });
-    }
-
-    parallaxEvent() {
-        const {parallax, eventElem} = this.set;
-        if (!parallax) return;
-
-        const parallaxHandler = e => {
+        const moveHandler = e => {
             if (this.paused) return;
 
             let left = e.pageX;
@@ -336,24 +324,58 @@ class Particle extends Base {
                 left -= this.elemOffset.left;
                 top -= this.elemOffset.top;
             }
-
-            const {cw, ch} = this;
-            this.mouseX = left - cw / 2;
-            this.mouseY = top - ch / 2;
+            move(left, top);
         };
 
-        utils.on(eventElem, 'mousemove', parallaxHandler);
+        on(eventElem, 'mousemove', moveHandler);
         this.onDestroy(() => {
-            utils.off(eventElem, 'mousemove', parallaxHandler);
+            off(eventElem, 'mousemove', moveHandler);
+            off(window, 'deviceorientation', orientationHandler);
+        });
+    }
+
+    positionEvent() {
+        const {range} = this.set;
+
+        // 性能优化
+        if (range > this.cw && range > this.ch) return;
+
+        // 鼠标移动事件
+        this.proxyEvent((left, top) => {
+            this.positionX = left;
+            this.positionY = top;
+
+            // 陀螺仪事件
+        }, (beta, gamma) => {
+            this.positionY = -(beta - 90) / 180 * this.ch;
+            this.positionX = -(gamma - 90) / 180 * this.cw;
+        });
+    }
+
+    parallaxEvent() {
+        if (!this.set.parallax) return;
+
+        this.proxyEvent((left, top) => {
+            this.mouseX = left - this.cw / 2;
+            this.mouseY = top - this.ch / 2;
+        }, (beta, gamma) => {
+
+            // 一半高度或宽度的对应比例值
+            // mouseX: - gamma / 90 * cw / 2;
+            // mouseY: - beta / 90 * ch / 2;
+            this.mouseX = -gamma * this.cw / 180;
+            this.mouseY = -beta * this.ch / 180;
         });
     }
 
     resize() {
-        utils.resize(this, (scaleX, scaleY) => {
+        resize(this, (scaleX, scaleY) => {
             const {num, range} = this.set;
             if (num > 0 && range > 0) {
                 this.positionX *= scaleX;
                 this.positionY *= scaleY;
+                this.mouseX *= scaleX;
+                this.mouseY *= scaleY;
             }
         });
     }

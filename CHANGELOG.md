@@ -1,10 +1,12 @@
 ### 3.0.0 *(2017.xx.xx)*
  - **`Particleground.js` 升级到 `3.0.0` 并改名为 `JParticles`。**
- - **新增 `waveLoading` 模拟进度条加载特效。**
+ - **新增特效： `waveLoading` 模拟进度条加载。**
  - 所有特效：增加 `onDestroy()` 方法。
  - 所有特效：事件支持链式操作。
  - particle: 新增 `lineShape` 参数，定义粒子的形状效果。
  - particle: 新增 `parallax` 参数，视差效果。
+ - particle: 增加陀螺仪特性，为定位点和视差效果。
+ - particle：增强 `range` 和 `proximity` 参数支持 `(0, 1)` 的传值。
  - particle: 修改原来的 `distance` 参数为更接近词意的 `proximity`。
  - wave: 新增 `setOptions()` 方法。
  - wave: 删除原来的 `setOffsetTop()` 方法。

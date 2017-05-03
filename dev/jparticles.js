@@ -40,7 +40,9 @@ const win = window;
 const doc = document;
 const {random, floor} = Math;
 const {isArray} = Array;
+const UNDEFINED = 'undefined';
 
+const orientationSupport = !!win.DeviceOrientationEvent;
 const defaultCanvasWidth = 485;
 const defaultCanvasHeight = 300;
 const regExp = {
@@ -129,19 +131,27 @@ function isPlainObject(obj) {
     return typeChecking(obj, '[object Object]');
 }
 
-function isElement(obj) {
-    // document(nodeType===9)不能是element，因为它没有很多element该有的属性
-    // 如用getComputedStyle获取不到它的宽高，就会报错
-    // 当传入0的时候，不加!!会返回0，而不是Boolean值
-    return !!(obj && obj.nodeType === 1);
-}
-
 function isString(val) {
     return typeof val === 'string';
 }
 
 function isBoolean(val) {
     return typeof val === 'boolean';
+}
+
+function isUndefined(val) {
+    return typeof val === UNDEFINED;
+}
+
+function isNull(val) {
+    return val === null;
+}
+
+function isElement(obj) {
+    // document(nodeType===9)不能是element，因为它没有很多element该有的属性
+    // 如用getComputedStyle获取不到它的宽高，就会报错
+    // 当传入0的时候，不加!!会返回0，而不是Boolean值
+    return !!(obj && obj.nodeType === 1);
 }
 
 /**
@@ -459,6 +469,7 @@ const observeElementRemoved = (() => {
 
 // 工具箱
 const utils = {
+    orientationSupport,
     regExp,
     pInt,
     trimAll,
@@ -473,6 +484,8 @@ const utils = {
     isArray,
     isString,
     isBoolean,
+    isUndefined,
+    isNull,
     isElement,
 
     observeElementRemoved,
