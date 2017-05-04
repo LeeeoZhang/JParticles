@@ -40,7 +40,6 @@ const win = window;
 const doc = document;
 const {random, floor} = Math;
 const {isArray} = Array;
-const UNDEFINED = 'undefined';
 
 const orientationSupport = !!win.DeviceOrientationEvent;
 const defaultCanvasWidth = 485;
@@ -140,7 +139,7 @@ function isBoolean(val) {
 }
 
 function isUndefined(val) {
-    return typeof val === UNDEFINED;
+    return typeof val === 'undefined';
 }
 
 function isNull(val) {
