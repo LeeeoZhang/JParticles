@@ -1,14 +1,11 @@
+import './helpers/dom';
 import test from 'ava';
-import jsdom, {JSDOM} from 'jsdom';
-import jps from '../production/jparticles';
 import pkg from '../package.json';
-
-test.before('add dom', async t => {
-    await new JSDOM();
-});
+const JParticles = require('../production/jparticles');
+const {utils, Base, version} = JParticles;
 
 test('version', t => {
-    if (jps.version === pkg.version) {
+    if (version === pkg.version) {
         t.pass('版本号测试通过');
     } else {
         t.fail('版本号测试失败');
