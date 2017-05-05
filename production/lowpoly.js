@@ -1,1 +1,69 @@
-+function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var r=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),o=JParticles,i=o.utils,a=o.Base,u=(Math.random,Math.abs,Math.PI,Math.sin,Math.ceil,i.pInt,i.limitRandom,i.calcSpeed,i.scaleValue,i.randomColor,i.isArray,i.isFunction,i.isPlainObject,i.resize,i.defineReadOnlyProperty),c=function(o){function i(n,r){return e(this,i),t(this,(i.__proto__||Object.getPrototypeOf(i)).call(this,i,n,r))}return n(i,o),r(i,[{key:"version",get:function(){return"3.0.0"}}]),r(i,[{key:"init",value:function(){}},{key:"createDots",value:function(){}},{key:"draw",value:function(){this.requestAnimationFrame()}}]),i}(a);c.defaultConfig={},u(c,"lowpoly")}();
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI,
+    sin = Math.sin,
+    ceil = Math.ceil;
+
+var twicePI = PI * 2;
+var UNDEFINED = 'undefined';
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    scaleValue = utils.scaleValue,
+    randomColor = utils.randomColor,
+    isArray = utils.isArray,
+    isFunction = utils.isFunction,
+    isPlainObject = utils.isPlainObject,
+    resize = utils.resize,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
+
+var Lowpoly = function (_Base) {
+    _inherits(Lowpoly, _Base);
+
+    _createClass(Lowpoly, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function Lowpoly(selector, options) {
+        _classCallCheck(this, Lowpoly);
+
+        return _possibleConstructorReturn(this, (Lowpoly.__proto__ || Object.getPrototypeOf(Lowpoly)).call(this, Lowpoly, selector, options));
+    }
+
+    _createClass(Lowpoly, [{
+        key: 'init',
+        value: function init() {}
+    }, {
+        key: 'createDots',
+        value: function createDots() {}
+    }, {
+        key: 'draw',
+        value: function draw() {
+            this.requestAnimationFrame();
+        }
+    }]);
+
+    return Lowpoly;
+}(Base);
+
+Lowpoly.defaultConfig = {};
+
+
+defineReadOnlyProperty(Lowpoly, 'lowpoly'); }();
+//# sourceMappingURL=maps/lowpoly.js.map

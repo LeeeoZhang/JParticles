@@ -1,6 +1,1998 @@
+
++function() {
+    var runSupport = true;
+    var isIE8 = /msie\s8.0/i.test(navigator.userAgent);
+    if (!Object.defineProperty || isIE8) {
+        runSupport = false;
+        Object.defineProperty = function (target, prop, descriptor) {
+            target[prop] = descriptor.value;
+        };
+    }
+
+    // 兼容不支持的浏览器的报错行为，如 IE8
+    // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create
+    if (typeof Object.create != 'function') {
+        Object.create = (function() {
+            function Temp() {}
+            var hasOwn = Object.prototype.hasOwnProperty;
+            return function (O) {
+                if (typeof O != 'object') {
+                    throw TypeError('Object prototype may only be an Object or null');
+                }
+                Temp.prototype = O;
+                var obj = new Temp();
+                Temp.prototype = null;
+                if (arguments.length > 1) {
+                    var Properties = Object(arguments[1]);
+                    for (var prop in Properties) {
+                        if (hasOwn.call(Properties, prop)) {
+                            obj[prop] = Properties[prop];
+                        }
+                    }
+                }
+                return obj;
+            };
+        })();
+    }
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /**
- * JParticles v3.0.0 (https://github.com/Barrior/JParticles)
- * Copyright 2016-present Barrior <Barrior@qq.com>
- * Licensed under the MIT (https://opensource.org/licenses/MIT)
+ * 规定：
+ *  defaultConfig：默认配置项，需挂载到构造函数对象上
+ *
+ * 对象的属性
+ *  set: 参数配置
+ *  set.opacity 透明度
+ *  set.color: 颜色
+ *  set.resize: 自适应
+ *
+ *  c: canvas对象
+ *  cw: canvas宽度
+ *  ch: canvas高度
+ *  cxt: canvas 2d 绘图环境
+ *  container: {DOM Element} 包裹canvas的容器
+ *  dots: {array} 通过arc绘制的粒子对象集
+ *  [dot].x: 通过arc绘制的粒子的x值
+ *  [dot].y: 通过arc绘制的粒子的y值
+ *  paused: {boolean} 是否暂停
+ *  canvasRemoved: {boolean} canvas从DOM中被移除
+ *
+ * 对象的方法
+ *  color：返回随机或设定好的粒子颜色
+ *
+ * 子类原型对象的方法
+ *  init: 初始化配置或方法调用
+ *  draw: 绘图函数
+ *
+ * 继承 Base 父类的方法
+ *  pause: 暂停粒子运动
+ *  open: 开启粒子运动
+ *  resize: 自适应窗口，需手动调用
+ *
+ * 继承 Base 父类的事件
+ *  onDestroy: 动画被销毁后执行的事件
  */
-+function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e){return parseInt(e,10)}function n(e){return e.replace(F.trimAll,"")}function i(){return"#"+L().toString(16).slice(-6)}function o(e,t){return e===t?e:L()*(e-t)+t}function r(){var e=arguments,t=e[0]||{},n=!1,i=e.length,o=1,s=void 0,a=void 0;for(f(t)&&(n=t,t=e[1]||{},o++);o<i;o++)for(a in e[o])s=e[o][a],n&&(c(s)||A(s))?t[a]=r(n,A(s)?[]:{},s):t[a]=s;return t}function s(e,t){return Object.prototype.toString.call(e)===t}function a(e){return s(e,"[object Function]")}function c(e){return s(e,"[object Object]")}function l(e){return"string"==typeof e}function f(e){return"boolean"==typeof e}function u(e){return(void 0===e?"undefined":_(e))===z}function h(e){return null===e}function p(e){return!(!e||1!==e.nodeType)}function y(e,n){var i=j.getComputedStyle(e)[n];return F.styleValue.test(i)?t(i):i}function v(e){for(var t=e.offsetLeft||0,n=e.offsetTop||0;e=e.offsetParent;)t+=e.offsetLeft,n+=e.offsetTop;return{left:t,top:n}}function d(e,t,n){e.addEventListener(t,n)}function m(e,t,n){e.removeEventListener(t,n)}function b(e){e.cw=e.c.width=y(e.container,"width")||Y,e.ch=e.c.height=y(e.container,"height")||D}function g(e,t){return e>0&&e<1?t*e:e}function w(e,t){return(o(e,t)||e)*(L()>.5?1:-1)}function x(e){for(var t=arguments.length,n=Array(t>1?t-1:0),i=1;i<t;i++)n[i-1]=arguments[i];for(var o=0;o<n.length;o++)a(n[o])&&e.push(n[o])}function O(e){var t=!!A(e)&&e.length,n=function(){return e[M(L()*t)]};return l(e)?function(){return e}:t?n:i}function k(e,t){e.canvasRemoved||!e.set||e.paused||(a(t)&&t.call(e,"pause"),e.paused=!0)}function P(e,t){!e.canvasRemoved&&e.set&&e.paused&&(a(t)&&t.call(e,"open"),e.paused=!1,e.draw())}function E(e,t){e.set.resize&&(e._resizeHandler=function(){var n=e.cw,i=e.ch;b(e);var o=e.cw/n,r=e.ch/i;A(e.dots)&&e.dots.forEach(function(e){c(e)&&(e.x*=o,e.y*=r)}),a(t)&&t.call(e,o,r),e.paused&&e.draw()},d(j,"resize",e._resizeHandler))}function T(e,t,i){n(t).split(",").forEach(function(t){e[t]=function(){I[t](this,i)}})}function C(e,t){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:V;Object.defineProperty(n,t,{value:e,writable:!1,enumerable:!0,configurable:!1})}var S=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),_="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},j=window,R=document,L=Math.random,M=Math.floor,A=Array.isArray,z="undefined",X=!!j.DeviceOrientationEvent,Y=485,D=300,F={trimAll:/\s/g,styleValue:/^\d+(\.\d+)?[a-z]+$/i},H=function(){function t(n,i,o){e(this,t),(this.container=p(i)?i:R.querySelector(i))&&(this.set=r(!0,{},V.commonConfig,n.defaultConfig,o),this.c=R.createElement("canvas"),this.cxt=this.c.getContext("2d"),this.paused=!1,b(this),this.container.innerHTML="",this.container.appendChild(this.c),this.color=O(this.set.color),this.observeCanvasRemoved(),this.init(),this.resize())}return S(t,[{key:"requestAnimationFrame",value:function(){this.canvasRemoved||this.paused||j.requestAnimationFrame(this.draw.bind(this))}},{key:"observeCanvasRemoved",value:function(){var e=this;this.destructionListeners=[],N(this.c,function(){e.canvasRemoved=!0,e._resizeHandler&&m(j,"resize",e._resizeHandler),e.destructionListeners.forEach(function(e){e()})})}},{key:"onDestroy",value:function(){return x.apply(void 0,[this.destructionListeners].concat(Array.prototype.slice.call(arguments))),this}},{key:"pause",value:function(){k(this)}},{key:"open",value:function(){P(this)}},{key:"resize",value:function(){E(this)}}]),t}();j.requestAnimationFrame=function(e){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||function(t){e.setTimeout(t,1e3/60)}}(j);var N=function(){var e=j.MutationObserver||j.WebKitMutationObserver,t=function e(t,n){if(t===n)return!0;if(p(t))for(var i=t.children,o=i.length;o--;)if(e(i[o],n))return!0;return!1},n=function(n,i){new e(function(e,o){for(var r=e.length;r--;)for(var s=e[r].removedNodes,a=s.length;a--;)if(t(s[a],n))return o.disconnect(),i()}).observe(document,{childList:!0,subtree:!0})},i=function(e,n){var i=function i(o){t(o.target,e)&&(document.removeEventListener("DOMNodeRemoved",i),n())};document.addEventListener("DOMNodeRemoved",i)};return e?n:i}(),I={orientationSupport:X,regExp:F,pInt:t,trimAll:n,randomColor:i,limitRandom:o,extend:r,typeChecking:s,isPlainObject:c,isFunction:a,isArray:A,isString:l,isBoolean:f,isUndefined:u,isNull:h,isElement:p,observeElementRemoved:N,getCss:y,offset:v,on:d,off:m,scaleValue:g,calcSpeed:w,pause:k,open:P,resize:E,modifyPrototype:T,defineReadOnlyProperty:C,registerListener:x},W={opacity:1,color:[],resize:!0},q={linear:function(e,t,n,i,o){return n+(i-n)*e},swing:function(){return q.easeInOutQuad.apply(q,arguments)},easeInOutQuad:function(e,t,n,i,o){return(t/=o/2)<1?i/2*t*t+n:-i/2*(--t*(t-2)-1)+n}},V={version:"3.0.0",utils:I,Base:H};!function e(t){for(var n in t){var i=t[n];C(i,n,t),c(i)&&e(i)}}(V),C(W,"commonConfig"),C(q,"easing"),j.JParticles=V,"function"==typeof define&&define.amd?define(function(){return V}):"object"==typeof module&&module.exports&&(module.exports=V)}(),function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),o=JParticles,r=o.utils,s=o.Base,a=(Math.random,Math.abs,Math.PI,Math.sin,Math.ceil,r.pInt,r.limitRandom,r.calcSpeed,r.scaleValue,r.randomColor,r.isArray,r.isFunction,r.isPlainObject,r.resize,r.defineReadOnlyProperty),c=function(o){function r(n,i){return e(this,r),t(this,(r.__proto__||Object.getPrototypeOf(r)).call(this,r,n,i))}return n(r,o),i(r,[{key:"version",get:function(){return"3.0.0"}}]),i(r,[{key:"init",value:function(){}},{key:"createDots",value:function(){}},{key:"draw",value:function(){this.requestAnimationFrame()}}]),r}(s);c.defaultConfig={},a(c,"lowpoly")}(),function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function i(e,t,n){for(;e=e.offsetParent;)if(m(e,t)===n)return!0;return!1}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),r=JParticles,s=r.utils,a=r.Base,c=Math.random,l=Math.abs,f=Math.PI,u=Math.ceil,h=2*f,p=s.pInt,y=s.limitRandom,v=s.calcSpeed,d=s.scaleValue,m=s.getCss,b=s.offset,g=s.isElement,w=(s.isFunction,s.isNull),x=s.on,O=s.off,k=s.orientationSupport,P=s.resize,E=s.defineReadOnlyProperty,T=function(r){function s(n,i){return e(this,s),t(this,(s.__proto__||Object.getPrototypeOf(s)).call(this,s,n,i))}return n(s,r),o(s,[{key:"version",get:function(){return"3.0.0"}}]),o(s,[{key:"init",value:function(){var e=this.set,t=e.num,n=e.range;t>0&&(this.attrNormalize(),n>0&&(this.positionX=c()*this.cw,this.positionY=c()*this.ch,this.defineLineShape(),this.positionEvent()),this.mouseX=this.mouseY=0,this.createDots(),this.draw(),this.parallaxEvent())}},{key:"attrNormalize",value:function(){var e=this.cw,t=this.set;["num","proximity","range"].forEach(function(n){t[n]=p(d(t[n],e))}),g(t.eventElem)||t.eventElem===document||(t.eventElem=this.c)}},{key:"defineLineShape",value:function(){var e=this,t=this.set,n=t.proximity,i=t.range;switch(t.lineShape){case"cube":this.lineShapeMaker=function(t,o,r,s,a){var c=e.positionX,f=e.positionY;l(t-r)<=n&&l(o-s)<=n&&l(t-c)<=i&&l(o-f)<=i&&l(r-c)<=i&&l(s-f)<=i&&a()};break;default:this.lineShapeMaker=function(t,o,r,s,a){var c=e.positionX,f=e.positionY;l(t-r)<=n&&l(o-s)<=n&&(l(t-c)<=i&&l(o-f)<=i||l(r-c)<=i&&l(s-f)<=i)&&a()}}}},{key:"createDots",value:function(){for(var e=this.cw,t=this.ch,n=this.color,i=this.set,o=i.num,r=i.maxR,s=i.minR,a=i.maxSpeed,c=i.minSpeed,l=this.dots=[];o--;){var f=y(r,s);l.push({r:f,x:y(e-f,f),y:y(t-f,f),vx:v(a,c),vy:v(a,c),color:n(),layer:u(y(3,1)),parallaxOffsetX:0,parallaxOffsetY:0})}}},{key:"draw",value:function(){var e=this.cw,t=this.ch,n=this.cxt,i=this.set,o=i.num,r=i.range,s=i.lineWidth,a=i.opacity;o<=0||(n.clearRect(0,0,e,t),n.lineWidth=s,n.globalAlpha=a,this.updateXY(),this.dots.forEach(function(e){var t=e.x,i=e.y,o=e.r,r=e.parallaxOffsetX,s=e.parallaxOffsetY;n.save(),n.beginPath(),n.arc(t+r,i+s,o,0,h),n.fillStyle=e.color,n.fill(),n.restore()}),r>0&&this.connectDots(),this.requestAnimationFrame())}},{key:"connectDots",value:function(){var e=this.dots,t=this.cxt,n=this.lineShapeMaker,i=e.length;e.forEach(function(o,r){for(var s=o.x+o.parallaxOffsetX,a=o.y+o.parallaxOffsetY;++r<i;)!function(){var i=e[r],c=i.x+i.parallaxOffsetX,l=i.y+i.parallaxOffsetY;n(s,a,c,l,function(){t.save(),t.beginPath(),t.moveTo(s,a),t.lineTo(c,l),t.strokeStyle=o.color,t.stroke(),t.restore()})}()})}},{key:"updateXY",value:function(){var e=this.paused,t=this.mouseX,n=this.mouseY,i=this.cw,o=this.ch,r=this.set,s=r.parallax,a=r.parallaxPerspective;this.dots.forEach(function(r){if(!e){if(s){var c=a*r.layer;r.parallaxOffsetX+=(t/c-r.parallaxOffsetX)/10,r.parallaxOffsetY+=(n/c-r.parallaxOffsetY)/10}r.x+=r.vx,r.y+=r.vy;var f=r.x,u=r.y,h=r.r,p=r.parallaxOffsetX,y=r.parallaxOffsetY;f+=p,u+=y,f+h>=i?r.vx=-l(r.vx):f-h<=0&&(r.vx=l(r.vx)),u+h>=o?r.vy=-l(r.vy):u-h<=0&&(r.vy=l(r.vy))}})}},{key:"setElemOffset",value:function(){return this.elemOffset=this.set.eventElem===document?null:b(this.set.eventElem)}},{key:"proxyEvent",value:function(e,t){var n=this,o=this.set.eventElem,r=null;k&&(r=function(e){n.paused||w(e.beta)||t(Math.min(Math.max(e.beta,-90),90),e.gamma)},x(window,"deviceorientation",r));var s=function(t){if(!n.paused){var r=t.pageX,s=t.pageY;n.setElemOffset()&&(i(o,"position","fixed")&&(r=t.clientX,s=t.clientY),r-=n.elemOffset.left,s-=n.elemOffset.top),e(r,s)}};x(o,"mousemove",s),this.onDestroy(function(){O(o,"mousemove",s),O(window,"deviceorientation",r)})}},{key:"positionEvent",value:function(){var e=this,t=this.set.range;t>this.cw&&t>this.ch||this.proxyEvent(function(t,n){e.positionX=t,e.positionY=n},function(t,n){e.positionY=-(t-90)/180*e.ch,e.positionX=-(n-90)/180*e.cw})}},{key:"parallaxEvent",value:function(){var e=this;this.set.parallax&&this.proxyEvent(function(t,n){e.mouseX=t-e.cw/2,e.mouseY=n-e.ch/2},function(t,n){e.mouseX=-n*e.cw/180,e.mouseY=-t*e.ch/180})}},{key:"resize",value:function(){var e=this;P(this,function(t,n){var i=e.set,o=i.num,r=i.range;o>0&&r>0&&(e.positionX*=t,e.positionY*=n,e.mouseX*=t,e.mouseY*=n)})}}]),s}(a);T.defaultConfig={num:.12,maxR:2.4,minR:.6,maxSpeed:1,minSpeed:0,proximity:.2,range:.2,lineWidth:.2,lineShape:"spider",eventElem:null,parallax:!1,parallaxPerspective:3},E(T,"particle")}(),function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),o=JParticles,r=o.utils,s=o.Base,a=Math.random,c=Math.abs,l=Math.PI,f=2*l,u=r.pInt,h=r.limitRandom,p=r.calcSpeed,y=r.defineReadOnlyProperty,v=function(o){function r(n,i){return e(this,r),t(this,(r.__proto__||Object.getPrototypeOf(r)).call(this,r,n,i))}return n(r,o),i(r,[{key:"version",get:function(){return"3.0.0"}}]),i(r,[{key:"init",value:function(){this.dots=[],this.createDots(),this.draw()}},{key:"snowShape",value:function(){var e=this.set,t=e.maxR,n=e.minR,i=e.maxSpeed,o=e.minSpeed,r=h(t,n);return{r:r,x:a()*this.cw,y:-r,vx:p(i,o),vy:c(r*p(i,o)),color:this.color()}}},{key:"createDots",value:function(){for(var e=u(6*a());e--;)this.dots.push(this.snowShape())}},{key:"draw",value:function(){var e=this,t=this.cxt,n=this.cw,i=this.ch,o=this.paused,r=this.set.opacity;t.clearRect(0,0,n,i),t.globalAlpha=r,this.dots.forEach(function(r,s,c){var l=r.x,u=r.y,h=r.r;t.save(),t.beginPath(),t.arc(l,u,h,0,f),t.fillStyle=r.color,t.fill(),t.restore(),o||(r.x+=r.vx,r.y+=r.vy,a()>.99&&a()>.5&&(r.vx*=-1),l<0||l-h>n?c.splice(s,1,e.snowShape()):u-h>i&&c.splice(s,1))}),!o&&a()>.9&&this.createDots(),this.requestAnimationFrame()}}]),r}(s);v.defaultConfig={color:"#fff",maxR:6.5,minR:.4,maxSpeed:.6,minSpeed:0},y(v,"snow")}(),function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),o=JParticles,r=o.utils,s=o.Base,a=Math.random,c=(Math.abs,Math.PI),l=Math.sin,f=2*c,u=(r.pInt,r.limitRandom),h=(r.calcSpeed,r.scaleValue),p=r.randomColor,y=r.isArray,v=r.isPlainObject,d=r.isUndefined,m=r.defineReadOnlyProperty,b=function(o){function s(n,i){return e(this,s),t(this,(s.__proto__||Object.getPrototypeOf(s)).call(this,s,n,i))}return n(s,o),i(s,[{key:"version",get:function(){return"3.0.0"}}]),i(s,[{key:"init",value:function(){this.set.num>0&&(this.rippleLength=[],this.attrNormalize(),this.createDots(),this.draw())}},{key:"attrNormalize",value:function(){var e=this;["fill","fillColor","line","lineColor","lineWidth","offsetLeft","offsetTop","crestHeight","rippleNum","speed"].forEach(function(t){return e.attrProcessor(t)})}},{key:"attrProcessor",value:function(e){var t=this.set.num,n=this.set[e],i=n,o="offsetLeft"===e?this.cw:this.ch;for(y(n)||(i=this.set[e]=[]);t--;){var r=y(n)?n[t]:n;i[t]=d(r)?this.generateDefaultValue(e):this.scaleValue(e,r,o),"rippleNum"===e&&(this.rippleLength[t]=this.cw/i[t])}}},{key:"generateDefaultValue",value:function(e){var t=this.cw,n=this.ch;switch(e){case"lineColor":case"fillColor":e=p();break;case"lineWidth":e=u(2,.2);break;case"offsetLeft":e=a()*t;break;case"offsetTop":case"crestHeight":e=a()*n;break;case"rippleNum":e=u(t/2,1);break;case"speed":e=u(.4,.1);break;case"fill":e=!1;break;case"line":e=!0}return e}},{key:"scaleValue",value:function(e,t,n){return"offsetTop"===e||"offsetLeft"===e||"crestHeight"===e?h(t,n):t}},{key:"dynamicProcessor",value:function(e,t){var n=this,i="offsetLeft"===e?this.cw:this.ch,o=y(t);this.set[e].forEach(function(r,s,a){var c=o?t[s]:t;c=n.scaleValue(e,c,i),d(c)&&(c=r),a[s]=c})}},{key:"setOptions",value:function(e){if(this.set.num>0&&v(e))for(var t in e)"opacity"===t&&e[t]?this.set.opacity=e[t]:-1!==this.dynamicOptions.indexOf(t)&&this.dynamicProcessor(t,e[t])}},{key:"createDots",value:function(){for(var e=this.cw,t=this.rippleLength,n=this.set.num,i=this.dots=[];n--;)for(var o=i[n]=[],r=f/t[n],s=0;s<=e;s++)o.push({x:s,y:s*r})}},{key:"draw",value:function(){var e=this.cxt,t=this.cw,n=this.ch,i=this.paused,o=this.set,r=o.num,s=o.opacity;r<=0||(e.clearRect(0,0,t,n),e.globalAlpha=s,this.dots.forEach(function(r,s){var a=o.crestHeight[s],c=o.offsetLeft[s],f=o.offsetTop[s],u=o.speed[s];e.save(),e.beginPath(),r.forEach(function(t,n){e[n?"lineTo":"moveTo"](t.x,a*l(t.y+c)+f),!i&&(t.y-=u)}),o.fill[s]&&(e.lineTo(t,n),e.lineTo(0,n),e.closePath(),e.fillStyle=o.fillColor[s],e.fill()),o.line[s]&&(e.lineWidth=o.lineWidth[s],e.strokeStyle=o.lineColor[s],e.stroke()),e.restore()}),this.requestAnimationFrame())}},{key:"resize",value:function(){var e=this;r.resize(this,function(t,n){e.set.num>0&&e.dots.forEach(function(e){e.forEach(function(e){e.x*=t,e.y*=n})})})}}]),s}(s);b.defaultConfig={num:3,fill:!1,fillColor:[],line:!0,lineColor:[],lineWidth:[],offsetLeft:[],offsetTop:[],crestHeight:[],rippleNum:[],speed:[]},b.prototype.dynamicOptions=["fill","fillColor","line","lineColor","lineWidth","offsetLeft","offsetTop","crestHeight","speed"],m(b,"wave")}(),function(){"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function t(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function n(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,n,i){return n&&e(t.prototype,n),i&&e(t,i),t}}(),o=JParticles,r=o.utils,s=o.Base,a=(Math.random,Math.abs,Math.PI),c=Math.sin,l=Math.ceil,f=2*a,u=(r.pInt,r.limitRandom,r.calcSpeed,r.scaleValue),h=(r.randomColor,r.isArray,r.isFunction,r.isPlainObject),p=r.isUndefined,y=r.resize,v=r.defineReadOnlyProperty,d=r.registerListener,m=function(o){function r(n,i){return e(this,r),t(this,(r.__proto__||Object.getPrototypeOf(r)).call(this,r,n,i))}return n(r,o),i(r,[{key:"version",get:function(){return"3.0.0"}}]),i(r,[{key:"init",value:function(){this.c.style.borderRadius="50%",this.progress=0,this.set.offsetTop=this.ch,this.halfCH=this.ch/2,this.progressListeners=[],this.finishedListeners=[],this.attrNormalize(),this.createDots(),this.draw()}},{key:"attrNormalize",value:function(){var e=this;["offsetLeft","crestHeight"].forEach(function(t){e.set[t]=u(e.set[t],"offsetLeft"===t?e.cw:e.ch)})}},{key:"createDots",value:function(){for(var e=this.cw,t=this.dots=[],n=e/this.set.rippleNum,i=f/n,o=0;o<=e;o++)t.push({x:o,y:o*i})}},{key:"draw",value:function(){this.calcOffsetTop(),this.drawWave(),this.drawText(),this.calcProgress(),this.progress<=100?this.requestAnimationFrame():(this.progress=100,this.calcOffsetTop(),this.drawWave(),this.drawText(),this.finishedListeners.forEach(function(e){return e()}))}},{key:"drawWave",value:function(){var e=this.cxt,t=this.cw,n=this.ch,i=this.set,o=i.opacity,r=i.crestHeight,s=i.offsetLeft,a=i.offsetTop,l=i.fillColor,f=i.speed;e.clearRect(0,0,t,n),e.globalAlpha=o,e.save(),e.beginPath(),this.dots.forEach(function(t,n){e[n?"lineTo":"moveTo"](t.x,r*c(t.y+s)+a),t.y-=f}),e.lineTo(t,n),e.lineTo(0,n),e.closePath(),e.fillStyle=l,e.fill(),e.restore()}},{key:"drawText",value:function(){var e=this,t=this.cxt,n=this.cw,i=this.halfCH,o=this.progress,r=this.set,s=r.font,a=r.smallFont,c=r.color,f=r.smallFontOffsetTop,u="%",y=l(o);this.progressListeners.forEach(function(t){var n=t(e.progress);p(n)||(h(n)?(y=n.text,u=n.smallText||""):(y=n,u=""))}),t.font=s;var v=t.measureText(y).width;t.font=a;var d=t.measureText(u).width,m=(n-v-d)/2;t.textBaseline="middle",t.fillStyle=c,t.font=s,t.fillText(y,m,i),t.font=a,t.fillText(u,m+v,i+f)}},{key:"calcProgress",value:function(){if(this.immediatelyComplete)return this.progress+=this.immediatelyComplete,void(this.immediatelyComplete+=.5);if(!(this.progress>=99)){var e=this.set,t=e.easing,n=e.duration;this.startTime||(this.startTime=Date.now());var i=Date.now()-this.startTime,o=i/n;o<=1&&(this.progress=JParticles.easing[t](o,i,0,100,n),this.progress>=99&&(this.progress=99))}}},{key:"calcOffsetTop",value:function(){(this.immediatelyComplete||99!==this.progress)&&(100===this.progress?this.set.offsetTop=-this.set.crestHeight:this.set.offsetTop=l((100-this.progress)/100*this.ch+this.set.crestHeight))}},{key:"resize",value:function(){var e=this;y(this,function(){e.halfCH=e.ch/2})}},{key:"setOptions",value:function(e){if(h(e))for(var t in e)"offsetTop"!==t&&t in this.set&&(this.set[t]=e[t])}},{key:"done",value:function(){this.immediatelyComplete||(this.immediatelyComplete=1)}},{key:"onProgress",value:function(){return d.apply(void 0,[this.progressListeners].concat(Array.prototype.slice.call(arguments))),this}},{key:"onFinished",value:function(){return d.apply(void 0,[this.finishedListeners].concat(Array.prototype.slice.call(arguments))),this}}]),r}(s);m.defaultConfig={font:"normal 900 20px Arial",smallFont:"normal 900 14px Arial",smallFontOffsetTop:1,color:"#333",fillColor:"#27C9E5",offsetLeft:0,crestHeight:4,rippleNum:1,speed:.3,duration:5e3,easing:"swing"},delete m.prototype.pause,delete m.prototype.open,v(m,"waveLoading")}();
+// 编译构建时通过 package.json 的 version 生成版本
+var version = '2.0.0';
+var win = window;
+var doc = document;
+var random = Math.random,
+    floor = Math.floor;
+var isArray = Array.isArray;
+
+
+var orientationSupport = !!win.DeviceOrientationEvent;
+var defaultCanvasWidth = 485;
+var defaultCanvasHeight = 300;
+var regExp = {
+    trimAll: /\s/g,
+    styleValue: /^\d+(\.\d+)?[a-z]+$/i
+};
+
+function pInt(str) {
+    return parseInt(str, 10);
+}
+
+function trimAll(str) {
+    return str.replace(regExp.trimAll, '');
+}
+
+function randomColor() {
+    // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+    return '#' + random().toString(16).slice(-6);
+}
+
+/**
+ * 限制随机数的范围
+ * @param max {number}
+ * @param min {number}
+ * @returns {number}
+ */
+function limitRandom(max, min) {
+    return max === min ? max : random() * (max - min) + min;
+}
+
+/**
+ * 对象的复制，跟jQuery extend方法一致（站在jQuery的肩膀之上）。
+ * extend( target [, object1 ] [, objectN ] )
+ * extend( [ deep ,] target, object1 [, objectN ] )
+ * @returns {object}
+ */
+function extend() {
+    var arg = arguments,
+        target = arg[0] || {},
+        deep = false,
+        length = arg.length,
+        i = 1,
+        value = void 0,
+        attr = void 0;
+
+    if (isBoolean(target)) {
+        deep = target;
+        target = arg[1] || {};
+        i++;
+    }
+
+    for (; i < length; i++) {
+        for (attr in arg[i]) {
+
+            value = arg[i][attr];
+
+            if (deep && (isPlainObject(value) || isArray(value))) {
+
+                target[attr] = extend(deep, isArray(value) ? [] : {}, value);
+            } else {
+                target[attr] = value;
+            }
+        }
+    }
+
+    return target;
+}
+
+/**
+ * 对象的检测
+ * @param obj {*} 需要检测的对象
+ * @param type {string} 对象所属类型
+ * @returns {boolean}
+ */
+function typeChecking(obj, type) {
+    // 直接使用 toString.call(obj) 在 ie 会下报错
+    return Object.prototype.toString.call(obj) === type;
+}
+
+function isFunction(obj) {
+    return typeChecking(obj, '[object Function]');
+}
+
+function isPlainObject(obj) {
+    return typeChecking(obj, '[object Object]');
+}
+
+function isString(val) {
+    return typeof val === 'string';
+}
+
+function isBoolean(val) {
+    return typeof val === 'boolean';
+}
+
+function isUndefined(val) {
+    return typeof val === 'undefined';
+}
+
+function isNull(val) {
+    return val === null;
+}
+
+function isElement(obj) {
+    // document(nodeType===9)不能是element，因为它没有很多element该有的属性
+    // 如用getComputedStyle获取不到它的宽高，就会报错
+    // 当传入0的时候，不加!!会返回0，而不是Boolean值
+    return !!(obj && obj.nodeType === 1);
+}
+
+/**
+ * 获取对象的css属性值
+ * @param elem {element}
+ * @param attr {string}
+ * @returns {string|number}
+ */
+function getCss(elem, attr) {
+    var val = win.getComputedStyle(elem)[attr];
+
+    // 对于属性值是 200px 这样的形式，返回 200 这样的数字值
+    return regExp.styleValue.test(val) ? pInt(val) : val;
+}
+
+/**
+ * 获取对象距离页面的top、left值
+ * @param elem {element}
+ * @returns {{left: (number), top: (number)}}
+ */
+function offset(elem) {
+    var left = elem.offsetLeft || 0;
+    var top = elem.offsetTop || 0;
+    while (elem = elem.offsetParent) {
+        left += elem.offsetLeft;
+        top += elem.offsetTop;
+    }
+    return {
+        left: left,
+        top: top
+    };
+}
+
+function on(elem, evtName, handler) {
+    elem.addEventListener(evtName, handler);
+}
+
+function off(elem, evtName, handler) {
+    elem.removeEventListener(evtName, handler);
+}
+
+function setCanvasWH(context) {
+    context.cw = context.c.width = getCss(context.container, 'width') || defaultCanvasWidth;
+    context.ch = context.c.height = getCss(context.container, 'height') || defaultCanvasHeight;
+}
+
+/**
+ * 计算刻度值
+ * @param val {number} 乘数，(0, 1)表示被乘数的倍数，0 & [1, +∞)表示具体数值
+ * @param scale {number} 被乘数
+ * @returns {number}
+ */
+function scaleValue(val, scale) {
+    return val > 0 && val < 1 ? scale * val : val;
+}
+
+/**
+ * 计算速度值
+ * @param max {number}
+ * @param min {number}
+ * @returns {number}
+ */
+function calcSpeed(max, min) {
+    return (limitRandom(max, min) || max) * (random() > .5 ? 1 : -1);
+}
+
+/**
+ * 为插件事件添加增强的监听器
+ *
+ * eg:
+ *   onDestroy() {
+ *     registerListener(this.destructionListeners, ...arguments);
+ *   }
+ *
+ * @param listener {array} 监听器集合
+ * @param arg {function} 回调函数
+ */
+function registerListener(listener) {
+    for (var _len = arguments.length, arg = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        arg[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < arg.length; i++) {
+        if (isFunction(arg[i])) {
+            listener.push(arg[i]);
+        }
+    }
+}
+
+/**
+ * 生成 color 函数，用于给粒子赋予颜色
+ * @param color {string|array} 颜色数组
+ * @returns {function}
+ */
+function generateColor(color) {
+    var colorLength = isArray(color) ? color.length : false;
+    var recolor = function recolor() {
+        return color[floor(random() * colorLength)];
+    };
+    return isString(color) ? function () {
+        return color;
+    } : colorLength ? recolor : randomColor;
+}
+
+// 暂停粒子运动
+function _pause(context, callback) {
+
+    // 没有set表示实例创建失败，防止错误调用报错
+    if (!context.canvasRemoved && context.set && !context.paused) {
+
+        // 传递 pause 关键字供特殊使用
+        isFunction(callback) && callback.call(context, 'pause');
+        context.paused = true;
+    }
+}
+
+// 开启粒子运动
+function _open(context, callback) {
+    if (!context.canvasRemoved && context.set && context.paused) {
+        isFunction(callback) && callback.call(context, 'open');
+        context.paused = false;
+        context.draw();
+    }
+}
+
+// 自适应窗口，重新计算粒子坐标
+function _resize(context, callback) {
+    if (context.set.resize) {
+        context._resizeHandler = function () {
+            var oldCW = context.cw;
+            var oldCH = context.ch;
+
+            // 重新设置canvas宽高
+            setCanvasWH(context);
+
+            // 计算比例
+            var scaleX = context.cw / oldCW;
+            var scaleY = context.ch / oldCH;
+
+            // 重新赋值
+            if (isArray(context.dots)) {
+                context.dots.forEach(function (v) {
+                    if (isPlainObject(v)) {
+                        v.x *= scaleX;
+                        v.y *= scaleY;
+                    }
+                });
+            }
+
+            if (isFunction(callback)) {
+                callback.call(context, scaleX, scaleY);
+            }
+
+            context.paused && context.draw();
+        };
+        on(win, 'resize', context._resizeHandler);
+    }
+}
+
+/**
+ * 修改插件原型上的方法
+ * 使用：modifyPrototype(Particle.prototype, 'pause', function(){})
+ * @param prototype {Object} 原型对象
+ * @param names {string} 方法名，多个方法名用逗号隔开
+ * @param callback {function} 回调函数
+ */
+function modifyPrototype(prototype, names, callback) {
+    trimAll(names).split(',').forEach(function (name) {
+        prototype[name] = function () {
+            utils[name](this, callback);
+        };
+    });
+}
+
+/**
+ * 使用此方法挂载插件到 JParticles 对象上，防止被修改。
+ * function.name 的兼容性并不高，所以插件需手动传递 name 值。
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name
+ *
+ * eg:
+ * defineReadOnlyProperty(Particle, 'particle')
+ * defineReadOnlyProperty(regExp, 'regExp', utils)
+ *
+ * @param value {Class|*} 插件类或其他值
+ * @param name  {string} 属性名称
+ * @param target {object} 要在其上定义属性的对象
+ */
+function defineReadOnlyProperty(value, name) {
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : JParticles;
+
+    Object.defineProperty(target, name, {
+        value: value,
+        writable: false,
+        enumerable: true,
+        configurable: false
+    });
+}
+
+var Base = function () {
+    function Base(constructor, selector, options) {
+        _classCallCheck(this, Base);
+
+        // 构建任务自动添加 runSupport 变量，
+        // 即不支持 Object.defineProperty 的浏览器和 IE8 将不支持创建特效
+        if (runSupport && (this.container = isElement(selector) ? selector : doc.querySelector(selector))) {
+            this.set = extend(true, {}, JParticles.commonConfig, constructor.defaultConfig, options);
+            this.c = doc.createElement('canvas');
+            this.cxt = this.c.getContext('2d');
+            this.paused = false;
+
+            setCanvasWH(this);
+
+            this.container.innerHTML = '';
+            this.container.appendChild(this.c);
+
+            this.color = generateColor(this.set.color);
+
+            this.observeCanvasRemoved();
+            this.init();
+            this.resize();
+        }
+    }
+
+    _createClass(Base, [{
+        key: 'requestAnimationFrame',
+        value: function requestAnimationFrame() {
+            if (!this.canvasRemoved && !this.paused) {
+                win.requestAnimationFrame(this.draw.bind(this));
+            }
+        }
+    }, {
+        key: 'observeCanvasRemoved',
+        value: function observeCanvasRemoved() {
+            var _this = this;
+
+            this.destructionListeners = [];
+            observeElementRemoved(this.c, function () {
+
+                // canvas 从DOM中被移除
+                // 1、停止 requestAnimationFrame，避免性能损耗
+                _this.canvasRemoved = true;
+
+                // 2、移除外在事件
+                if (_this._resizeHandler) {
+                    off(win, 'resize', _this._resizeHandler);
+                }
+
+                // 3、触发销毁回调事件
+                _this.destructionListeners.forEach(function (callback) {
+                    callback();
+                });
+            });
+        }
+    }, {
+        key: 'onDestroy',
+        value: function onDestroy() {
+            registerListener.apply(undefined, [this.destructionListeners].concat(Array.prototype.slice.call(arguments)));
+
+            // 让事件支持链式操作
+            return this;
+        }
+    }, {
+        key: 'pause',
+        value: function pause() {
+            _pause(this);
+        }
+    }, {
+        key: 'open',
+        value: function open() {
+            _open(this);
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            _resize(this);
+        }
+    }]);
+
+    return Base;
+}();
+
+// requestAnimationFrame 兼容处理
+
+
+win.requestAnimationFrame = function (win) {
+    return win.requestAnimationFrame || win.webkitRequestAnimationFrame || win.mozRequestAnimationFrame || function (fn) {
+        win.setTimeout(fn, 1000 / 60);
+    };
+}(win);
+
+// 不管是 MutationObserver 还是 DOMNodeRemoved，
+// 当监听某个具体的元素时，如果父祖级被删除了，并不会触发该元素被移除的事件，
+// 所以要监听整个文档，每次移除事件都得递归遍历要监听的元素是否被删除。
+var observeElementRemoved = function () {
+    var MutationObserver = win.MutationObserver || win.WebKitMutationObserver;
+    var checkElementRemoved = function checkElementRemoved(node, element) {
+        if (node === element) {
+            return true;
+        } else if (isElement(node)) {
+            var children = node.children;
+            var length = children.length;
+            while (length--) {
+                if (checkElementRemoved(children[length], element)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    var useMutation = function useMutation(element, callback) {
+        var observer = new MutationObserver(function (mutations, observer) {
+            var i = mutations.length;
+            while (i--) {
+                var removeNodes = mutations[i].removedNodes;
+                var j = removeNodes.length;
+                while (j--) {
+                    if (checkElementRemoved(removeNodes[j], element)) {
+                        observer.disconnect();
+                        return callback();
+                    }
+                }
+            }
+        });
+        observer.observe(document, {
+            childList: true,
+            subtree: true
+        });
+    };
+    var useDOMNodeRemoved = function useDOMNodeRemoved(element, callback) {
+        var DOMNodeRemoved = function DOMNodeRemoved(e) {
+            if (checkElementRemoved(e.target, element)) {
+                document.removeEventListener('DOMNodeRemoved', DOMNodeRemoved);
+                callback();
+            }
+        };
+        document.addEventListener('DOMNodeRemoved', DOMNodeRemoved);
+    };
+    return MutationObserver ? useMutation : useDOMNodeRemoved;
+}();
+
+// 工具箱
+var utils = {
+    orientationSupport: orientationSupport,
+    regExp: regExp,
+    pInt: pInt,
+    trimAll: trimAll,
+
+    randomColor: randomColor,
+    limitRandom: limitRandom,
+
+    extend: extend,
+    typeChecking: typeChecking,
+    isPlainObject: isPlainObject,
+    isFunction: isFunction,
+    isArray: isArray,
+    isString: isString,
+    isBoolean: isBoolean,
+    isUndefined: isUndefined,
+    isNull: isNull,
+    isElement: isElement,
+
+    observeElementRemoved: observeElementRemoved,
+    getCss: getCss,
+    offset: offset,
+    on: on,
+    off: off,
+
+    scaleValue: scaleValue,
+    calcSpeed: calcSpeed,
+
+    pause: _pause,
+    open: _open,
+    resize: _resize,
+    modifyPrototype: modifyPrototype,
+    defineReadOnlyProperty: defineReadOnlyProperty,
+
+    registerListener: registerListener
+};
+
+var commonConfig = {
+
+    // 画布全局透明度 {number}
+    // 取值范围：[0-1]
+    opacity: 1,
+
+    // 粒子颜色 {string|array}
+    // 1、空数组表示随机取色。
+    // 2、在特定颜色的数组里随机取色，如：['red', 'blue', 'green']。
+    // 3、当为 string 类型时，如：'red'，则表示粒子都填充为红色。
+    color: [],
+
+    // 自适应窗口尺寸变化 {boolean}
+    resize: true
+};
+
+// http://easings.net
+var easing = {
+    linear: function linear(x, t, b, c, d) {
+        return b + (c - b) * x;
+    },
+    swing: function swing() {
+        return easing.easeInOutQuad.apply(easing, arguments);
+    },
+    easeInOutQuad: function easeInOutQuad(x, t, b, c, d) {
+        if ((t /= d / 2) < 1) return c / 2 * t * t + b;
+        return -c / 2 * (--t * (t - 2) - 1) + b;
+    }
+};
+
+var JParticles = {
+    version: version,
+    utils: utils,
+    Base: Base
+};
+
+// 设置对外提供的对象的属性及方法
+// 为只读，可枚举，不允许修改及删除。
+(function defineProperties(object) {
+    for (var name in object) {
+        var value = object[name];
+        defineReadOnlyProperty(value, name, object);
+        if (isPlainObject(value)) {
+            defineProperties(value);
+        }
+    }
+})(JParticles);
+
+defineReadOnlyProperty(commonConfig, 'commonConfig');
+defineReadOnlyProperty(easing, 'easing');
+
+win.JParticles = JParticles;
+    // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
+    // 导致后面的插件找不到 JParticles 对象而报错
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return JParticles;
+        });
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = JParticles;
+    }
+}();
+
+//# sourceMappingURL=maps/jparticles.js.map
+
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI,
+    sin = Math.sin,
+    ceil = Math.ceil;
+
+var twicePI = PI * 2;
+var UNDEFINED = 'undefined';
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    scaleValue = utils.scaleValue,
+    randomColor = utils.randomColor,
+    isArray = utils.isArray,
+    isFunction = utils.isFunction,
+    isPlainObject = utils.isPlainObject,
+    resize = utils.resize,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
+
+var Lowpoly = function (_Base) {
+    _inherits(Lowpoly, _Base);
+
+    _createClass(Lowpoly, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function Lowpoly(selector, options) {
+        _classCallCheck(this, Lowpoly);
+
+        return _possibleConstructorReturn(this, (Lowpoly.__proto__ || Object.getPrototypeOf(Lowpoly)).call(this, Lowpoly, selector, options));
+    }
+
+    _createClass(Lowpoly, [{
+        key: 'init',
+        value: function init() {}
+    }, {
+        key: 'createDots',
+        value: function createDots() {}
+    }, {
+        key: 'draw',
+        value: function draw() {
+            this.requestAnimationFrame();
+        }
+    }]);
+
+    return Lowpoly;
+}(Base);
+
+Lowpoly.defaultConfig = {};
+
+
+defineReadOnlyProperty(Lowpoly, 'lowpoly'); }();
+//# sourceMappingURL=maps/lowpoly.js.map
+
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI,
+    ceil = Math.ceil;
+
+var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    scaleValue = utils.scaleValue,
+    getCss = utils.getCss,
+    offset = utils.offset,
+    isElement = utils.isElement,
+    isFunction = utils.isFunction,
+    isNull = utils.isNull,
+    on = utils.on,
+    off = utils.off,
+    orientationSupport = utils.orientationSupport,
+    _resize = utils.resize,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
+
+/**
+ * 检查元素或其祖先节点的属性是否等于预给值
+ * @param elem {element} 起始元素
+ * @param property {string} css属性
+ * @param value {string} css属性值
+ * @returns {boolean}
+ */
+
+function checkParentsProperty(elem, property, value) {
+    while (elem = elem.offsetParent) {
+        if (getCss(elem, property) === value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+var Particle = function (_Base) {
+    _inherits(Particle, _Base);
+
+    _createClass(Particle, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function Particle(selector, options) {
+        _classCallCheck(this, Particle);
+
+        return _possibleConstructorReturn(this, (Particle.__proto__ || Object.getPrototypeOf(Particle)).call(this, Particle, selector, options));
+    }
+
+    _createClass(Particle, [{
+        key: 'init',
+        value: function init() {
+            var _set = this.set,
+                num = _set.num,
+                range = _set.range;
+
+
+            if (num > 0) {
+                this.attrNormalize();
+
+                if (range > 0) {
+
+                    // 定位点坐标
+                    this.positionX = random() * this.cw;
+                    this.positionY = random() * this.ch;
+                    this.defineLineShape();
+                    this.positionEvent();
+                }
+
+                // 初始化鼠标在视差上的坐标
+                this.mouseX = this.mouseY = 0;
+                this.createDots();
+                this.draw();
+                this.parallaxEvent();
+            }
+        }
+    }, {
+        key: 'attrNormalize',
+        value: function attrNormalize() {
+            var cw = this.cw,
+                set = this.set;
+
+            ['num', 'proximity', 'range'].forEach(function (attr) {
+                set[attr] = pInt(scaleValue(set[attr], cw));
+            });
+
+            // 设置触发事件的元素
+            if (!isElement(set.eventElem) && set.eventElem !== document) {
+                set.eventElem = this.c;
+            }
+        }
+    }, {
+        key: 'defineLineShape',
+        value: function defineLineShape() {
+            var _this2 = this;
+
+            var _set2 = this.set,
+                proximity = _set2.proximity,
+                range = _set2.range,
+                lineShape = _set2.lineShape;
+
+            switch (lineShape) {
+                case 'cube':
+                    this.lineShapeMaker = function (x, y, sx, sy, cb) {
+                        var positionX = _this2.positionX,
+                            positionY = _this2.positionY;
+
+                        if (abs(x - sx) <= proximity && abs(y - sy) <= proximity && abs(x - positionX) <= range && abs(y - positionY) <= range && abs(sx - positionX) <= range && abs(sy - positionY) <= range) {
+                            cb();
+                        }
+                    };
+                    break;
+                default:
+                    this.lineShapeMaker = function (x, y, sx, sy, cb) {
+                        var positionX = _this2.positionX,
+                            positionY = _this2.positionY;
+
+                        if (abs(x - sx) <= proximity && abs(y - sy) <= proximity && (abs(x - positionX) <= range && abs(y - positionY) <= range || abs(sx - positionX) <= range && abs(sy - positionY) <= range)) {
+                            cb();
+                        }
+                    };
+            }
+        }
+    }, {
+        key: 'createDots',
+        value: function createDots() {
+            var cw = this.cw,
+                ch = this.ch,
+                color = this.color;
+            var _set3 = this.set,
+                num = _set3.num,
+                maxR = _set3.maxR,
+                minR = _set3.minR,
+                maxSpeed = _set3.maxSpeed,
+                minSpeed = _set3.minSpeed;
+
+            var dots = this.dots = [];
+
+            while (num--) {
+                var r = limitRandom(maxR, minR);
+                dots.push({
+                    r: r,
+                    x: limitRandom(cw - r, r),
+                    y: limitRandom(ch - r, r),
+                    vx: calcSpeed(maxSpeed, minSpeed),
+                    vy: calcSpeed(maxSpeed, minSpeed),
+                    color: color(),
+
+                    // 定义粒子在视差图层里的层级关系
+                    // 值越小视差效果越强烈：1, 2, 3
+                    layer: ceil(limitRandom(3, 1)),
+
+                    // 定义粒子视差的偏移值
+                    parallaxOffsetX: 0,
+                    parallaxOffsetY: 0
+                });
+            }
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            var cw = this.cw,
+                ch = this.ch,
+                cxt = this.cxt;
+            var _set4 = this.set,
+                num = _set4.num,
+                range = _set4.range,
+                lineWidth = _set4.lineWidth,
+                opacity = _set4.opacity;
+
+
+            if (num <= 0) return;
+
+            cxt.clearRect(0, 0, cw, ch);
+
+            // 当canvas宽高改变的时候，全局属性需要重新设置
+            cxt.lineWidth = lineWidth;
+            cxt.globalAlpha = opacity;
+
+            // 更新粒子坐标
+            this.updateXY();
+
+            // 绘制粒子
+            this.dots.forEach(function (dot) {
+                var x = dot.x,
+                    y = dot.y,
+                    r = dot.r,
+                    parallaxOffsetX = dot.parallaxOffsetX,
+                    parallaxOffsetY = dot.parallaxOffsetY;
+
+                cxt.save();
+                cxt.beginPath();
+                cxt.arc(x + parallaxOffsetX, y + parallaxOffsetY, r, 0, twicePI);
+                cxt.fillStyle = dot.color;
+                cxt.fill();
+                cxt.restore();
+            });
+
+            // 当连接范围小于 0 时，不连接线段
+            if (range > 0) {
+                this.connectDots();
+            }
+
+            this.requestAnimationFrame();
+        }
+    }, {
+        key: 'connectDots',
+        value: function connectDots() {
+            var dots = this.dots,
+                cxt = this.cxt,
+                lineShapeMaker = this.lineShapeMaker;
+
+            var length = dots.length;
+
+            dots.forEach(function (dot, i) {
+                var x = dot.x + dot.parallaxOffsetX;
+                var y = dot.y + dot.parallaxOffsetY;
+
+                var _loop = function _loop() {
+                    var sibDot = dots[i];
+                    var sx = sibDot.x + sibDot.parallaxOffsetX;
+                    var sy = sibDot.y + sibDot.parallaxOffsetY;
+
+                    lineShapeMaker(x, y, sx, sy, function () {
+                        cxt.save();
+                        cxt.beginPath();
+                        cxt.moveTo(x, y);
+                        cxt.lineTo(sx, sy);
+                        cxt.strokeStyle = dot.color;
+                        cxt.stroke();
+                        cxt.restore();
+                    });
+                };
+
+                while (++i < length) {
+                    _loop();
+                }
+            });
+        }
+    }, {
+        key: 'updateXY',
+        value: function updateXY() {
+            var paused = this.paused,
+                mouseX = this.mouseX,
+                mouseY = this.mouseY,
+                cw = this.cw,
+                ch = this.ch;
+            var _set5 = this.set,
+                parallax = _set5.parallax,
+                parallaxPerspective = _set5.parallaxPerspective;
+
+
+            this.dots.forEach(function (dot) {
+
+                // 暂停的时候，vx 和 vy 保持不变，
+                // 防止自适应窗口变化时出现粒子移动
+                if (!paused) {
+
+                    if (parallax) {
+
+                        // https://github.com/jnicol/particleground
+                        var divisor = parallaxPerspective * dot.layer;
+                        dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
+                        dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
+                    }
+
+                    dot.x += dot.vx;
+                    dot.y += dot.vy;
+
+                    var x = dot.x,
+                        y = dot.y,
+                        r = dot.r,
+                        parallaxOffsetX = dot.parallaxOffsetX,
+                        parallaxOffsetY = dot.parallaxOffsetY;
+
+                    x += parallaxOffsetX;
+                    y += parallaxOffsetY;
+
+                    // 自然碰撞反向，视差事件移动反向
+                    if (x + r >= cw) {
+                        dot.vx = -abs(dot.vx);
+                    } else if (x - r <= 0) {
+                        dot.vx = abs(dot.vx);
+                    }
+
+                    if (y + r >= ch) {
+                        dot.vy = -abs(dot.vy);
+                    } else if (y - r <= 0) {
+                        dot.vy = abs(dot.vy);
+                    }
+                }
+            });
+        }
+    }, {
+        key: 'setElemOffset',
+        value: function setElemOffset() {
+            return this.elemOffset = this.set.eventElem === document ? null : offset(this.set.eventElem);
+        }
+    }, {
+        key: 'proxyEvent',
+        value: function proxyEvent(move, rientation) {
+            var _this3 = this;
+
+            var eventElem = this.set.eventElem;
+
+            var orientationHandler = null;
+
+            if (orientationSupport) {
+                orientationHandler = function orientationHandler(e) {
+                    if (_this3.paused || isNull(e.beta)) return;
+
+                    // 转换 beta 范围 [-180, 180] 成 [-90, 90]
+                    rientation(Math.min(Math.max(e.beta, -90), 90), e.gamma);
+                };
+
+                on(window, 'deviceorientation', orientationHandler);
+            }
+
+            var moveHandler = function moveHandler(e) {
+                if (_this3.paused) return;
+
+                var left = e.pageX;
+                var top = e.pageY;
+
+                if (_this3.setElemOffset()) {
+
+                    // 动态判断祖先节点是否具有固定定位，有则使用 client 计算
+                    if (checkParentsProperty(eventElem, 'position', 'fixed')) {
+                        left = e.clientX;
+                        top = e.clientY;
+                    }
+                    left -= _this3.elemOffset.left;
+                    top -= _this3.elemOffset.top;
+                }
+                move(left, top);
+            };
+
+            on(eventElem, 'mousemove', moveHandler);
+            this.onDestroy(function () {
+                off(eventElem, 'mousemove', moveHandler);
+                off(window, 'deviceorientation', orientationHandler);
+            });
+        }
+    }, {
+        key: 'positionEvent',
+        value: function positionEvent() {
+            var _this4 = this;
+
+            var range = this.set.range;
+
+            // 性能优化
+
+            if (range > this.cw && range > this.ch) return;
+
+            // 鼠标移动事件
+            this.proxyEvent(function (left, top) {
+                _this4.positionX = left;
+                _this4.positionY = top;
+
+                // 陀螺仪事件
+            }, function (beta, gamma) {
+                _this4.positionY = -(beta - 90) / 180 * _this4.ch;
+                _this4.positionX = -(gamma - 90) / 180 * _this4.cw;
+            });
+        }
+    }, {
+        key: 'parallaxEvent',
+        value: function parallaxEvent() {
+            var _this5 = this;
+
+            if (!this.set.parallax) return;
+
+            this.proxyEvent(function (left, top) {
+                _this5.mouseX = left - _this5.cw / 2;
+                _this5.mouseY = top - _this5.ch / 2;
+            }, function (beta, gamma) {
+
+                // 一半高度或宽度的对应比例值
+                // mouseX: - gamma / 90 * cw / 2;
+                // mouseY: - beta / 90 * ch / 2;
+                _this5.mouseX = -gamma * _this5.cw / 180;
+                _this5.mouseY = -beta * _this5.ch / 180;
+            });
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this6 = this;
+
+            _resize(this, function (scaleX, scaleY) {
+                var _set6 = _this6.set,
+                    num = _set6.num,
+                    range = _set6.range;
+
+                if (num > 0 && range > 0) {
+                    _this6.positionX *= scaleX;
+                    _this6.positionY *= scaleY;
+                    _this6.mouseX *= scaleX;
+                    _this6.mouseY *= scaleY;
+                }
+            });
+        }
+    }]);
+
+    return Particle;
+}(Base);
+
+// 挂载插件到 JParticles 对象上。
+
+
+Particle.defaultConfig = {
+
+    // 粒子个数，默认为容器宽度的 0.12 倍
+    // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
+    // 0 是没有意义的
+    num: .12,
+
+    // 粒子最大半径(0, +∞)
+    maxR: 2.4,
+
+    // 粒子最小半径(0, +∞)
+    minR: .6,
+
+    // 粒子最大运动速度(0, +∞)
+    maxSpeed: 1,
+
+    // 粒子最小运动速度(0, +∞)
+    minSpeed: 0,
+
+    // 两点连线的最大值
+    // 在 range 范围内的两点距离小于 proximity，则两点之间连线
+    // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
+    proximity: .2,
+
+    // 定位点的范围，范围越大连线越多
+    // 当 range 等于 0 时，不连线，相关值无效
+    // (0, 1) 显示为容器宽度相应倍数的个数，0 & [1, +∞) 显示具体个数
+    range: .2,
+
+    // 线段的宽度
+    lineWidth: .2,
+
+    // 连线的形状
+    // spider: 散开的蜘蛛状
+    // cube: 合拢的立方体状
+    lineShape: 'spider',
+
+    // 改变定位点坐标的事件元素
+    // null 表示 canvas 画布，或传入原生元素对象，如 document 等
+    eventElem: null,
+
+    // 视差效果
+    parallax: false,
+
+    // 视差景深，值越小视差效果越强烈
+    parallaxPerspective: 3
+};
+defineReadOnlyProperty(Particle, 'particle'); }();
+//# sourceMappingURL=maps/particle.js.map
+
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI;
+
+var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
+
+var Snow = function (_Base) {
+    _inherits(Snow, _Base);
+
+    _createClass(Snow, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function Snow(selector, options) {
+        _classCallCheck(this, Snow);
+
+        return _possibleConstructorReturn(this, (Snow.__proto__ || Object.getPrototypeOf(Snow)).call(this, Snow, selector, options));
+    }
+
+    _createClass(Snow, [{
+        key: 'init',
+        value: function init() {
+            this.dots = [];
+            this.createDots();
+            this.draw();
+        }
+    }, {
+        key: 'snowShape',
+        value: function snowShape() {
+            var _set = this.set,
+                maxR = _set.maxR,
+                minR = _set.minR,
+                maxSpeed = _set.maxSpeed,
+                minSpeed = _set.minSpeed;
+
+            var r = limitRandom(maxR, minR);
+
+            return {
+                r: r,
+                x: random() * this.cw,
+                y: -r,
+                vx: calcSpeed(maxSpeed, minSpeed),
+
+                // r 越大，设置垂直速度越快，这样比较有近快远慢的层次效果
+                vy: abs(r * calcSpeed(maxSpeed, minSpeed)),
+                color: this.color()
+            };
+        }
+    }, {
+        key: 'createDots',
+        value: function createDots() {
+
+            // 随机创建 0-6 个雪花
+            var count = pInt(random() * 6);
+            while (count--) {
+                this.dots.push(this.snowShape());
+            }
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            var _this2 = this;
+
+            var cxt = this.cxt,
+                cw = this.cw,
+                ch = this.ch,
+                paused = this.paused;
+            var opacity = this.set.opacity;
+
+
+            cxt.clearRect(0, 0, cw, ch);
+            cxt.globalAlpha = opacity;
+
+            this.dots.forEach(function (dot, i, array) {
+                var x = dot.x,
+                    y = dot.y,
+                    r = dot.r;
+
+
+                cxt.save();
+                cxt.beginPath();
+                cxt.arc(x, y, r, 0, twicePI);
+                cxt.fillStyle = dot.color;
+                cxt.fill();
+                cxt.restore();
+
+                if (!paused) {
+                    dot.x += dot.vx;
+                    dot.y += dot.vy;
+
+                    // 雪花反方向飘落
+                    if (random() > .99 && random() > .5) {
+                        dot.vx *= -1;
+                    }
+
+                    // 雪花从侧边出去，删除再添加
+                    if (x < 0 || x - r > cw) {
+                        array.splice(i, 1, _this2.snowShape());
+
+                        // 雪花从底部出去，删除
+                    } else if (y - r > ch) {
+                        array.splice(i, 1);
+                    }
+                }
+            });
+
+            // 添加雪花
+            if (!paused && random() > .9) {
+                this.createDots();
+            }
+
+            this.requestAnimationFrame();
+        }
+    }]);
+
+    return Snow;
+}(Base);
+
+Snow.defaultConfig = {
+
+    // 雪花颜色
+    color: '#fff',
+    maxR: 6.5,
+    minR: .4,
+    maxSpeed: .6,
+    minSpeed: 0
+};
+
+
+defineReadOnlyProperty(Snow, 'snow'); }();
+//# sourceMappingURL=maps/snow.js.map
+
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI,
+    sin = Math.sin;
+
+var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    _scaleValue = utils.scaleValue,
+    randomColor = utils.randomColor,
+    isArray = utils.isArray,
+    isPlainObject = utils.isPlainObject,
+    isUndefined = utils.isUndefined,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty;
+
+var Wave = function (_Base) {
+    _inherits(Wave, _Base);
+
+    _createClass(Wave, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function Wave(selector, options) {
+        _classCallCheck(this, Wave);
+
+        return _possibleConstructorReturn(this, (Wave.__proto__ || Object.getPrototypeOf(Wave)).call(this, Wave, selector, options));
+    }
+
+    _createClass(Wave, [{
+        key: 'init',
+        value: function init() {
+            if (this.set.num > 0) {
+
+                // 线条波长，每个周期(2π)在canvas上的实际长度
+                this.rippleLength = [];
+
+                this.attrNormalize();
+                this.createDots();
+                this.draw();
+            }
+        }
+    }, {
+        key: 'attrNormalize',
+        value: function attrNormalize() {
+            var _this2 = this;
+
+            ['fill', 'fillColor', 'line', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'rippleNum', 'speed'].forEach(function (attr) {
+                return _this2.attrProcessor(attr);
+            });
+        }
+    }, {
+        key: 'attrProcessor',
+        value: function attrProcessor(attr) {
+            var num = this.set.num;
+            var attrValue = this.set[attr];
+            var stdValue = attrValue;
+            var scale = attr === 'offsetLeft' ? this.cw : this.ch;
+
+            if (!isArray(attrValue)) {
+                stdValue = this.set[attr] = [];
+            }
+
+            // 将数组、字符串、数字、布尔类型属性标准化，例如 num = 3：
+            // crestHeight: []或[2]或[2, 2], 标准化成: [2, 2, 2]
+            // crestHeight: 2, 标准化成: [2, 2, 2]
+            // 注意：(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值，其他属性同理
+            // scaleValue 用于处理属性值为 (0, 1) 或 [1, +∞) 这样的情况，返回计算好的数值。
+            while (num--) {
+                var val = isArray(attrValue) ? attrValue[num] : attrValue;
+
+                stdValue[num] = isUndefined(val) ? this.generateDefaultValue(attr) : this.scaleValue(attr, val, scale);
+
+                if (attr === 'rippleNum') {
+                    this.rippleLength[num] = this.cw / stdValue[num];
+                }
+            }
+        }
+
+        // 以下为缺省情况，属性对应的默认值
+
+    }, {
+        key: 'generateDefaultValue',
+        value: function generateDefaultValue(attr) {
+            var cw = this.cw,
+                ch = this.ch;
+
+
+            switch (attr) {
+                case 'lineColor':
+                case 'fillColor':
+                    attr = randomColor();
+                    break;
+                case 'lineWidth':
+                    attr = limitRandom(2, .2);
+                    break;
+                case 'offsetLeft':
+                    attr = random() * cw;
+                    break;
+                case 'offsetTop':
+                case 'crestHeight':
+                    attr = random() * ch;
+                    break;
+                case 'rippleNum':
+                    attr = limitRandom(cw / 2, 1);
+                    break;
+                case 'speed':
+                    attr = limitRandom(.4, .1);
+                    break;
+                case 'fill':
+                    attr = false;
+                    break;
+                case 'line':
+                    attr = true;
+                    break;
+            }
+            return attr;
+        }
+    }, {
+        key: 'scaleValue',
+        value: function scaleValue(attr, value, scale) {
+            if (attr === 'offsetTop' || attr === 'offsetLeft' || attr === 'crestHeight') {
+                return _scaleValue(value, scale);
+            }
+            return value;
+        }
+    }, {
+        key: 'dynamicProcessor',
+        value: function dynamicProcessor(name, newValue) {
+            var _this3 = this;
+
+            var scale = name === 'offsetLeft' ? this.cw : this.ch;
+            var isArrayType = isArray(newValue);
+
+            this.set[name].forEach(function (curValue, i, array) {
+
+                var value = isArrayType ? newValue[i] : newValue;
+                value = _this3.scaleValue(name, value, scale);
+
+                // 未定义部分保持原有值
+                if (isUndefined(value)) {
+                    value = curValue;
+                }
+
+                array[i] = value;
+            });
+        }
+    }, {
+        key: 'setOptions',
+        value: function setOptions(newOptions) {
+            if (this.set.num > 0 && isPlainObject(newOptions)) {
+                for (var name in newOptions) {
+
+                    // 不允许 opacity 为 0
+                    if (name === 'opacity' && newOptions[name]) {
+                        this.set.opacity = newOptions[name];
+                    } else if (this.dynamicOptions.indexOf(name) !== -1) {
+                        this.dynamicProcessor(name, newOptions[name]);
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'createDots',
+        value: function createDots() {
+            var cw = this.cw,
+                rippleLength = this.rippleLength;
+            var num = this.set.num;
+
+            var dots = this.dots = [];
+
+            while (num--) {
+                var line = dots[num] = [];
+
+                // 点的y轴步进
+                var step = twicePI / rippleLength[num];
+
+                // 创建一条线段所需的点
+                for (var i = 0; i <= cw; i++) {
+                    line.push({
+                        x: i,
+                        y: i * step
+                    });
+                }
+            }
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            var cxt = this.cxt,
+                cw = this.cw,
+                ch = this.ch,
+                paused = this.paused,
+                set = this.set;
+            var num = set.num,
+                opacity = set.opacity;
+
+
+            if (num <= 0) return;
+
+            cxt.clearRect(0, 0, cw, ch);
+            cxt.globalAlpha = opacity;
+
+            this.dots.forEach(function (line, i) {
+                var crestHeight = set.crestHeight[i];
+                var offsetLeft = set.offsetLeft[i];
+                var offsetTop = set.offsetTop[i];
+                var speed = set.speed[i];
+
+                cxt.save();
+                cxt.beginPath();
+
+                line.forEach(function (dot, j) {
+                    cxt[j ? 'lineTo' : 'moveTo'](dot.x,
+
+                    // y = A sin ( ωx + φ ) + h
+                    crestHeight * sin(dot.y + offsetLeft) + offsetTop);
+                    !paused && (dot.y -= speed);
+                });
+
+                if (set.fill[i]) {
+                    cxt.lineTo(cw, ch);
+                    cxt.lineTo(0, ch);
+                    cxt.closePath();
+                    cxt.fillStyle = set.fillColor[i];
+                    cxt.fill();
+                }
+
+                if (set.line[i]) {
+                    cxt.lineWidth = set.lineWidth[i];
+                    cxt.strokeStyle = set.lineColor[i];
+                    cxt.stroke();
+                }
+
+                cxt.restore();
+            });
+
+            this.requestAnimationFrame();
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this4 = this;
+
+            utils.resize(this, function (scaleX, scaleY) {
+                if (_this4.set.num > 0) {
+                    _this4.dots.forEach(function (line) {
+                        line.forEach(function (dot) {
+                            dot.x *= scaleX;
+                            dot.y *= scaleY;
+                        });
+                    });
+                }
+            });
+        }
+    }]);
+
+    return Wave;
+}(Base);
+
+// 仅允许 opacity 和以下选项动态设置
+
+
+Wave.defaultConfig = {
+
+    // 线条个数
+    num: 3,
+
+    // 是否填充背景色，设置为false相关值无效
+    fill: false,
+
+    // 填充的背景色，当fill设置为true时生效
+    fillColor: [],
+
+    // 是否绘制边框，设置为false相关值无效
+    line: true,
+
+    // 边框颜色，当stroke设置为true时生效，下同
+    lineColor: [],
+
+    // 边框宽度
+    lineWidth: [],
+
+    // 线条横向偏移值，距离canvas画布左边的偏移值
+    // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
+    offsetLeft: [],
+
+    // 线条纵向偏移值，线条中点到canvas画布顶部的距离
+    // (0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+    offsetTop: [],
+
+    // 波峰高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+    crestHeight: [],
+
+    // 波纹个数，即正弦周期个数
+    rippleNum: [],
+
+    // 运动速度
+    speed: []
+};
+Wave.prototype.dynamicOptions = ['fill', 'fillColor', 'line', 'lineColor', 'lineWidth', 'offsetLeft', 'offsetTop', 'crestHeight', 'speed'];
+
+defineReadOnlyProperty(Wave, 'wave'); }();
+//# sourceMappingURL=maps/wave.js.map
+
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI,
+    sin = Math.sin,
+    ceil = Math.ceil;
+
+var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    scaleValue = utils.scaleValue,
+    randomColor = utils.randomColor,
+    isArray = utils.isArray,
+    isFunction = utils.isFunction,
+    isPlainObject = utils.isPlainObject,
+    isUndefined = utils.isUndefined,
+    _resize = utils.resize,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty,
+    registerListener = utils.registerListener;
+
+var WaveLoading = function (_Base) {
+    _inherits(WaveLoading, _Base);
+
+    _createClass(WaveLoading, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function WaveLoading(selector, options) {
+        _classCallCheck(this, WaveLoading);
+
+        return _possibleConstructorReturn(this, (WaveLoading.__proto__ || Object.getPrototypeOf(WaveLoading)).call(this, WaveLoading, selector, options));
+    }
+
+    _createClass(WaveLoading, [{
+        key: 'init',
+        value: function init() {
+            this.c.style.borderRadius = '50%';
+            this.progress = 0;
+            this.set.offsetTop = this.ch;
+            this.halfCH = this.ch / 2;
+            this.progressListeners = [];
+            this.finishedListeners = [];
+            this.attrNormalize();
+            this.createDots();
+            this.draw();
+        }
+    }, {
+        key: 'attrNormalize',
+        value: function attrNormalize() {
+            var _this2 = this;
+
+            ['offsetLeft', 'crestHeight'].forEach(function (attr) {
+                _this2.set[attr] = scaleValue(_this2.set[attr], attr === 'offsetLeft' ? _this2.cw : _this2.ch);
+            });
+        }
+    }, {
+        key: 'createDots',
+        value: function createDots() {
+            var cw = this.cw;
+
+            var dots = this.dots = [];
+
+            // 线条波长，每个周期(2π)在canvas上的实际长度
+            var rippleLength = cw / this.set.rippleNum;
+
+            // 点的y轴步进
+            var step = twicePI / rippleLength;
+
+            // 一条线段所需的点
+            for (var i = 0; i <= cw; i++) {
+                dots.push({
+                    x: i,
+                    y: i * step
+                });
+            }
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            this.calcOffsetTop();
+            this.drawWave();
+            this.drawText();
+            this.calcProgress();
+
+            if (this.progress <= 100) {
+                this.requestAnimationFrame();
+            } else {
+                this.progress = 100;
+                this.calcOffsetTop();
+                this.drawWave();
+                this.drawText();
+                this.finishedListeners.forEach(function (cb) {
+                    return cb();
+                });
+            }
+        }
+    }, {
+        key: 'drawWave',
+        value: function drawWave() {
+            var cxt = this.cxt,
+                cw = this.cw,
+                ch = this.ch;
+            var _set = this.set,
+                opacity = _set.opacity,
+                crestHeight = _set.crestHeight,
+                offsetLeft = _set.offsetLeft,
+                offsetTop = _set.offsetTop,
+                fillColor = _set.fillColor,
+                speed = _set.speed;
+
+
+            cxt.clearRect(0, 0, cw, ch);
+            cxt.globalAlpha = opacity;
+            cxt.save();
+            cxt.beginPath();
+
+            this.dots.forEach(function (dot, i) {
+                cxt[i ? 'lineTo' : 'moveTo'](dot.x,
+
+                // y = A sin ( ωx + φ ) + h
+                crestHeight * sin(dot.y + offsetLeft) + offsetTop);
+                dot.y -= speed;
+            });
+
+            cxt.lineTo(cw, ch);
+            cxt.lineTo(0, ch);
+            cxt.closePath();
+            cxt.fillStyle = fillColor;
+            cxt.fill();
+            cxt.restore();
+        }
+    }, {
+        key: 'drawText',
+        value: function drawText() {
+            var _this3 = this;
+
+            var cxt = this.cxt,
+                cw = this.cw,
+                halfCH = this.halfCH,
+                progress = this.progress;
+            var _set2 = this.set,
+                font = _set2.font,
+                smallFont = _set2.smallFont,
+                color = _set2.color,
+                smallFontOffsetTop = _set2.smallFontOffsetTop;
+
+
+            var percentText = '%';
+            var progressText = ceil(progress);
+
+            this.progressListeners.forEach(function (callback) {
+                var res = callback(_this3.progress);
+                if (!isUndefined(res)) {
+                    if (isPlainObject(res)) {
+                        progressText = res.text;
+                        percentText = res.smallText || '';
+                    } else {
+                        progressText = res;
+                        percentText = '';
+                    }
+                }
+            });
+
+            cxt.font = font;
+            var progressWidth = cxt.measureText(progressText).width;
+
+            cxt.font = smallFont;
+            var percentWidth = cxt.measureText(percentText).width;
+
+            var x = (cw - progressWidth - percentWidth) / 2;
+
+            cxt.textBaseline = 'middle';
+            cxt.fillStyle = color;
+            cxt.font = font;
+            cxt.fillText(progressText, x, halfCH);
+            cxt.font = smallFont;
+            cxt.fillText(percentText, x + progressWidth, halfCH + smallFontOffsetTop);
+        }
+    }, {
+        key: 'calcProgress',
+        value: function calcProgress() {
+            if (this.immediatelyComplete) {
+                this.progress += this.immediatelyComplete;
+                this.immediatelyComplete += 0.5;
+                return;
+            }
+
+            if (this.progress >= 99) return;
+
+            var _set3 = this.set,
+                easing = _set3.easing,
+                duration = _set3.duration;
+
+
+            if (!this.startTime) {
+                this.startTime = Date.now();
+            }
+
+            // x: percent Complete      percent Complete: elapsedTime / duration
+            // t: current time          elapsed time: currentTime - startTime
+            // b: beginning value       start value
+            // c: change in value       finish value
+            // d: duration              duration
+            var time = Date.now() - this.startTime;
+            var percent = time / duration;
+
+            if (percent <= 1) {
+                this.progress = JParticles.easing[easing](
+
+                // x, t, b, c, d
+                percent, time, 0, 100, duration);
+
+                if (this.progress >= 99) {
+                    this.progress = 99;
+                }
+            }
+        }
+    }, {
+        key: 'calcOffsetTop',
+        value: function calcOffsetTop() {
+
+            // enhance performance when the loading progress continue for 99%
+            if (!this.immediatelyComplete && this.progress === 99) return;
+
+            if (this.progress === 100) {
+                this.set.offsetTop = -this.set.crestHeight;
+            } else {
+                this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch + this.set.crestHeight);
+            }
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this4 = this;
+
+            _resize(this, function () {
+                _this4.halfCH = _this4.ch / 2;
+            });
+        }
+    }, {
+        key: 'setOptions',
+        value: function setOptions(newOptions) {
+            if (isPlainObject(newOptions)) {
+                for (var name in newOptions) {
+                    if (name !== 'offsetTop' && name in this.set) {
+                        this.set[name] = newOptions[name];
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'done',
+        value: function done() {
+            if (!this.immediatelyComplete) {
+                this.immediatelyComplete = 1;
+            }
+        }
+    }, {
+        key: 'onProgress',
+        value: function onProgress() {
+            registerListener.apply(undefined, [this.progressListeners].concat(Array.prototype.slice.call(arguments)));
+            return this;
+        }
+    }, {
+        key: 'onFinished',
+        value: function onFinished() {
+            registerListener.apply(undefined, [this.finishedListeners].concat(Array.prototype.slice.call(arguments)));
+            return this;
+        }
+    }]);
+
+    return WaveLoading;
+}(Base);
+
+WaveLoading.defaultConfig = {
+
+    // [font style][font weight][font size][font family]
+    // 文本样式，同css一样，必须包含 [font size] 和 [font family]
+    font: 'normal 900 20px Arial',
+
+    // 小字体样式，如：“%”
+    smallFont: 'normal 900 14px Arial',
+
+    // 小字体相对于中点向下的偏移值，
+    // 细节的处理，为了让显示更好看。
+    smallFontOffsetTop: 1,
+
+    // 文本颜色
+    color: '#333',
+
+    // 填充的背景色
+    fillColor: '#27C9E5',
+
+    // 线条横向偏移值，距离canvas画布左边的偏移值
+    // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
+    offsetLeft: 0,
+
+    // 波峰高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+    crestHeight: 4,
+
+    // 波纹个数，即正弦周期个数
+    rippleNum: 1,
+
+    // 波浪的运动速度
+    speed: .3,
+
+    // 加载到 99% 的时长，单位毫秒(ms)
+    // 用时越久，越慢加载到 99%。
+    duration: 5000,
+
+    // 加载过程的运动效果，
+    // 目前支持匀速(linear)，先加速再减速(swing)，两种
+    easing: 'swing'
+};
+
+
+delete WaveLoading.prototype.pause;
+delete WaveLoading.prototype.open;
+
+defineReadOnlyProperty(WaveLoading, 'waveLoading'); }();
+//# sourceMappingURL=maps/wave_loading.js.map

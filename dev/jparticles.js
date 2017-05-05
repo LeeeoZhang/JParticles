@@ -341,7 +341,10 @@ function defineReadOnlyProperty(value, name, target = JParticles) {
 
 class Base {
     constructor(constructor, selector, options) {
-        if (this.container = isElement(selector) ? selector : doc.querySelector(selector)) {
+
+        // 构建任务自动添加 runSupport 变量，
+        // 即不支持 Object.defineProperty 的浏览器和 IE8 将不支持创建特效
+        if (runSupport && (this.container = isElement(selector) ? selector : doc.querySelector(selector))) {
             this.set = extend(true, {}, JParticles.commonConfig, constructor.defaultConfig, options);
             this.c = doc.createElement('canvas');
             this.cxt = this.c.getContext('2d');

@@ -15,7 +15,7 @@ const reload = browserSync.reload;
 // Compile all scripts.
 gulp.task('compile', () => {
     return gulp.src(`${devPath}*.js`)
-        .pipe(changed(destPath))
+//        .pipe(changed(destPath))
         .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015', 'stage-0']

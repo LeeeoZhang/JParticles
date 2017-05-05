@@ -1,1 +1,337 @@
-+function(){"use strict";function t(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function e(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function s(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}var i=function(){function t(t,e){for(var s=0;s<e.length;s++){var i=e[s];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,s,i){return s&&t(e.prototype,s),i&&t(e,i),e}}(),r=JParticles,o=r.utils,n=r.Base,a=(Math.random,Math.abs,Math.PI),l=Math.sin,h=Math.ceil,f=2*a,c=(o.pInt,o.limitRandom,o.calcSpeed,o.scaleValue),u=(o.randomColor,o.isArray,o.isFunction,o.isPlainObject),p=o.isUndefined,y=o.resize,d=o.defineReadOnlyProperty,m=o.registerListener,v=function(r){function o(s,i){return t(this,o),e(this,(o.__proto__||Object.getPrototypeOf(o)).call(this,o,s,i))}return s(o,r),i(o,[{key:"version",get:function(){return"3.0.0"}}]),i(o,[{key:"init",value:function(){this.c.style.borderRadius="50%",this.progress=0,this.set.offsetTop=this.ch,this.halfCH=this.ch/2,this.progressListeners=[],this.finishedListeners=[],this.attrNormalize(),this.createDots(),this.draw()}},{key:"attrNormalize",value:function(){var t=this;["offsetLeft","crestHeight"].forEach(function(e){t.set[e]=c(t.set[e],"offsetLeft"===e?t.cw:t.ch)})}},{key:"createDots",value:function(){for(var t=this.cw,e=this.dots=[],s=t/this.set.rippleNum,i=f/s,r=0;r<=t;r++)e.push({x:r,y:r*i})}},{key:"draw",value:function(){this.calcOffsetTop(),this.drawWave(),this.drawText(),this.calcProgress(),this.progress<=100?this.requestAnimationFrame():(this.progress=100,this.calcOffsetTop(),this.drawWave(),this.drawText(),this.finishedListeners.forEach(function(t){return t()}))}},{key:"drawWave",value:function(){var t=this.cxt,e=this.cw,s=this.ch,i=this.set,r=i.opacity,o=i.crestHeight,n=i.offsetLeft,a=i.offsetTop,h=i.fillColor,f=i.speed;t.clearRect(0,0,e,s),t.globalAlpha=r,t.save(),t.beginPath(),this.dots.forEach(function(e,s){t[s?"lineTo":"moveTo"](e.x,o*l(e.y+n)+a),e.y-=f}),t.lineTo(e,s),t.lineTo(0,s),t.closePath(),t.fillStyle=h,t.fill(),t.restore()}},{key:"drawText",value:function(){var t=this,e=this.cxt,s=this.cw,i=this.halfCH,r=this.progress,o=this.set,n=o.font,a=o.smallFont,l=o.color,f=o.smallFontOffsetTop,c="%",y=h(r);this.progressListeners.forEach(function(e){var s=e(t.progress);p(s)||(u(s)?(y=s.text,c=s.smallText||""):(y=s,c=""))}),e.font=n;var d=e.measureText(y).width;e.font=a;var m=e.measureText(c).width,v=(s-d-m)/2;e.textBaseline="middle",e.fillStyle=l,e.font=n,e.fillText(y,v,i),e.font=a,e.fillText(c,v+d,i+f)}},{key:"calcProgress",value:function(){if(this.immediatelyComplete)return this.progress+=this.immediatelyComplete,void(this.immediatelyComplete+=.5);if(!(this.progress>=99)){var t=this.set,e=t.easing,s=t.duration;this.startTime||(this.startTime=Date.now());var i=Date.now()-this.startTime,r=i/s;r<=1&&(this.progress=JParticles.easing[e](r,i,0,100,s),this.progress>=99&&(this.progress=99))}}},{key:"calcOffsetTop",value:function(){(this.immediatelyComplete||99!==this.progress)&&(100===this.progress?this.set.offsetTop=-this.set.crestHeight:this.set.offsetTop=h((100-this.progress)/100*this.ch+this.set.crestHeight))}},{key:"resize",value:function(){var t=this;y(this,function(){t.halfCH=t.ch/2})}},{key:"setOptions",value:function(t){if(u(t))for(var e in t)"offsetTop"!==e&&e in this.set&&(this.set[e]=t[e])}},{key:"done",value:function(){this.immediatelyComplete||(this.immediatelyComplete=1)}},{key:"onProgress",value:function(){return m.apply(void 0,[this.progressListeners].concat(Array.prototype.slice.call(arguments))),this}},{key:"onFinished",value:function(){return m.apply(void 0,[this.finishedListeners].concat(Array.prototype.slice.call(arguments))),this}}]),o}(n);v.defaultConfig={font:"normal 900 20px Arial",smallFont:"normal 900 14px Arial",smallFontOffsetTop:1,color:"#333",fillColor:"#27C9E5",offsetLeft:0,crestHeight:4,rippleNum:1,speed:.3,duration:5e3,easing:"swing"},delete v.prototype.pause,delete v.prototype.open,d(v,"waveLoading")}();
++function () { 'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _JParticles = JParticles,
+    utils = _JParticles.utils,
+    Base = _JParticles.Base;
+var random = Math.random,
+    abs = Math.abs,
+    PI = Math.PI,
+    sin = Math.sin,
+    ceil = Math.ceil;
+
+var twicePI = PI * 2;
+var pInt = utils.pInt,
+    limitRandom = utils.limitRandom,
+    calcSpeed = utils.calcSpeed,
+    scaleValue = utils.scaleValue,
+    randomColor = utils.randomColor,
+    isArray = utils.isArray,
+    isFunction = utils.isFunction,
+    isPlainObject = utils.isPlainObject,
+    isUndefined = utils.isUndefined,
+    _resize = utils.resize,
+    defineReadOnlyProperty = utils.defineReadOnlyProperty,
+    registerListener = utils.registerListener;
+
+var WaveLoading = function (_Base) {
+    _inherits(WaveLoading, _Base);
+
+    _createClass(WaveLoading, [{
+        key: 'version',
+        get: function get() {
+            return '3.0.0';
+        }
+    }]);
+
+    function WaveLoading(selector, options) {
+        _classCallCheck(this, WaveLoading);
+
+        return _possibleConstructorReturn(this, (WaveLoading.__proto__ || Object.getPrototypeOf(WaveLoading)).call(this, WaveLoading, selector, options));
+    }
+
+    _createClass(WaveLoading, [{
+        key: 'init',
+        value: function init() {
+            this.c.style.borderRadius = '50%';
+            this.progress = 0;
+            this.set.offsetTop = this.ch;
+            this.halfCH = this.ch / 2;
+            this.progressListeners = [];
+            this.finishedListeners = [];
+            this.attrNormalize();
+            this.createDots();
+            this.draw();
+        }
+    }, {
+        key: 'attrNormalize',
+        value: function attrNormalize() {
+            var _this2 = this;
+
+            ['offsetLeft', 'crestHeight'].forEach(function (attr) {
+                _this2.set[attr] = scaleValue(_this2.set[attr], attr === 'offsetLeft' ? _this2.cw : _this2.ch);
+            });
+        }
+    }, {
+        key: 'createDots',
+        value: function createDots() {
+            var cw = this.cw;
+
+            var dots = this.dots = [];
+
+            // 线条波长，每个周期(2π)在canvas上的实际长度
+            var rippleLength = cw / this.set.rippleNum;
+
+            // 点的y轴步进
+            var step = twicePI / rippleLength;
+
+            // 一条线段所需的点
+            for (var i = 0; i <= cw; i++) {
+                dots.push({
+                    x: i,
+                    y: i * step
+                });
+            }
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            this.calcOffsetTop();
+            this.drawWave();
+            this.drawText();
+            this.calcProgress();
+
+            if (this.progress <= 100) {
+                this.requestAnimationFrame();
+            } else {
+                this.progress = 100;
+                this.calcOffsetTop();
+                this.drawWave();
+                this.drawText();
+                this.finishedListeners.forEach(function (cb) {
+                    return cb();
+                });
+            }
+        }
+    }, {
+        key: 'drawWave',
+        value: function drawWave() {
+            var cxt = this.cxt,
+                cw = this.cw,
+                ch = this.ch;
+            var _set = this.set,
+                opacity = _set.opacity,
+                crestHeight = _set.crestHeight,
+                offsetLeft = _set.offsetLeft,
+                offsetTop = _set.offsetTop,
+                fillColor = _set.fillColor,
+                speed = _set.speed;
+
+
+            cxt.clearRect(0, 0, cw, ch);
+            cxt.globalAlpha = opacity;
+            cxt.save();
+            cxt.beginPath();
+
+            this.dots.forEach(function (dot, i) {
+                cxt[i ? 'lineTo' : 'moveTo'](dot.x,
+
+                // y = A sin ( ωx + φ ) + h
+                crestHeight * sin(dot.y + offsetLeft) + offsetTop);
+                dot.y -= speed;
+            });
+
+            cxt.lineTo(cw, ch);
+            cxt.lineTo(0, ch);
+            cxt.closePath();
+            cxt.fillStyle = fillColor;
+            cxt.fill();
+            cxt.restore();
+        }
+    }, {
+        key: 'drawText',
+        value: function drawText() {
+            var _this3 = this;
+
+            var cxt = this.cxt,
+                cw = this.cw,
+                halfCH = this.halfCH,
+                progress = this.progress;
+            var _set2 = this.set,
+                font = _set2.font,
+                smallFont = _set2.smallFont,
+                color = _set2.color,
+                smallFontOffsetTop = _set2.smallFontOffsetTop;
+
+
+            var percentText = '%';
+            var progressText = ceil(progress);
+
+            this.progressListeners.forEach(function (callback) {
+                var res = callback(_this3.progress);
+                if (!isUndefined(res)) {
+                    if (isPlainObject(res)) {
+                        progressText = res.text;
+                        percentText = res.smallText || '';
+                    } else {
+                        progressText = res;
+                        percentText = '';
+                    }
+                }
+            });
+
+            cxt.font = font;
+            var progressWidth = cxt.measureText(progressText).width;
+
+            cxt.font = smallFont;
+            var percentWidth = cxt.measureText(percentText).width;
+
+            var x = (cw - progressWidth - percentWidth) / 2;
+
+            cxt.textBaseline = 'middle';
+            cxt.fillStyle = color;
+            cxt.font = font;
+            cxt.fillText(progressText, x, halfCH);
+            cxt.font = smallFont;
+            cxt.fillText(percentText, x + progressWidth, halfCH + smallFontOffsetTop);
+        }
+    }, {
+        key: 'calcProgress',
+        value: function calcProgress() {
+            if (this.immediatelyComplete) {
+                this.progress += this.immediatelyComplete;
+                this.immediatelyComplete += 0.5;
+                return;
+            }
+
+            if (this.progress >= 99) return;
+
+            var _set3 = this.set,
+                easing = _set3.easing,
+                duration = _set3.duration;
+
+
+            if (!this.startTime) {
+                this.startTime = Date.now();
+            }
+
+            // x: percent Complete      percent Complete: elapsedTime / duration
+            // t: current time          elapsed time: currentTime - startTime
+            // b: beginning value       start value
+            // c: change in value       finish value
+            // d: duration              duration
+            var time = Date.now() - this.startTime;
+            var percent = time / duration;
+
+            if (percent <= 1) {
+                this.progress = JParticles.easing[easing](
+
+                // x, t, b, c, d
+                percent, time, 0, 100, duration);
+
+                if (this.progress >= 99) {
+                    this.progress = 99;
+                }
+            }
+        }
+    }, {
+        key: 'calcOffsetTop',
+        value: function calcOffsetTop() {
+
+            // enhance performance when the loading progress continue for 99%
+            if (!this.immediatelyComplete && this.progress === 99) return;
+
+            if (this.progress === 100) {
+                this.set.offsetTop = -this.set.crestHeight;
+            } else {
+                this.set.offsetTop = ceil((100 - this.progress) / 100 * this.ch + this.set.crestHeight);
+            }
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            var _this4 = this;
+
+            _resize(this, function () {
+                _this4.halfCH = _this4.ch / 2;
+            });
+        }
+    }, {
+        key: 'setOptions',
+        value: function setOptions(newOptions) {
+            if (isPlainObject(newOptions)) {
+                for (var name in newOptions) {
+                    if (name !== 'offsetTop' && name in this.set) {
+                        this.set[name] = newOptions[name];
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'done',
+        value: function done() {
+            if (!this.immediatelyComplete) {
+                this.immediatelyComplete = 1;
+            }
+        }
+    }, {
+        key: 'onProgress',
+        value: function onProgress() {
+            registerListener.apply(undefined, [this.progressListeners].concat(Array.prototype.slice.call(arguments)));
+            return this;
+        }
+    }, {
+        key: 'onFinished',
+        value: function onFinished() {
+            registerListener.apply(undefined, [this.finishedListeners].concat(Array.prototype.slice.call(arguments)));
+            return this;
+        }
+    }]);
+
+    return WaveLoading;
+}(Base);
+
+WaveLoading.defaultConfig = {
+
+    // [font style][font weight][font size][font family]
+    // 文本样式，同css一样，必须包含 [font size] 和 [font family]
+    font: 'normal 900 20px Arial',
+
+    // 小字体样式，如：“%”
+    smallFont: 'normal 900 14px Arial',
+
+    // 小字体相对于中点向下的偏移值，
+    // 细节的处理，为了让显示更好看。
+    smallFontOffsetTop: 1,
+
+    // 文本颜色
+    color: '#333',
+
+    // 填充的背景色
+    fillColor: '#27C9E5',
+
+    // 线条横向偏移值，距离canvas画布左边的偏移值
+    // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
+    offsetLeft: 0,
+
+    // 波峰高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+    crestHeight: 4,
+
+    // 波纹个数，即正弦周期个数
+    rippleNum: 1,
+
+    // 波浪的运动速度
+    speed: .3,
+
+    // 加载到 99% 的时长，单位毫秒(ms)
+    // 用时越久，越慢加载到 99%。
+    duration: 5000,
+
+    // 加载过程的运动效果，
+    // 目前支持匀速(linear)，先加速再减速(swing)，两种
+    easing: 'swing'
+};
+
+
+delete WaveLoading.prototype.pause;
+delete WaveLoading.prototype.open;
+
+defineReadOnlyProperty(WaveLoading, 'waveLoading'); }();
+//# sourceMappingURL=maps/wave_loading.js.map

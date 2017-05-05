@@ -1,6 +1,639 @@
+
++function() {
+    var runSupport = true;
+    var isIE8 = /msie\s8.0/i.test(navigator.userAgent);
+    if (!Object.defineProperty || isIE8) {
+        runSupport = false;
+        Object.defineProperty = function (target, prop, descriptor) {
+            target[prop] = descriptor.value;
+        };
+    }
+
+    // 兼容不支持的浏览器的报错行为，如 IE8
+    // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create
+    if (typeof Object.create != 'function') {
+        Object.create = (function() {
+            function Temp() {}
+            var hasOwn = Object.prototype.hasOwnProperty;
+            return function (O) {
+                if (typeof O != 'object') {
+                    throw TypeError('Object prototype may only be an Object or null');
+                }
+                Temp.prototype = O;
+                var obj = new Temp();
+                Temp.prototype = null;
+                if (arguments.length > 1) {
+                    var Properties = Object(arguments[1]);
+                    for (var prop in Properties) {
+                        if (hasOwn.call(Properties, prop)) {
+                            obj[prop] = Properties[prop];
+                        }
+                    }
+                }
+                return obj;
+            };
+        })();
+    }
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /**
- * JParticles v3.0.0 (https://github.com/Barrior/JParticles)
- * Copyright 2016-present Barrior <Barrior@qq.com>
- * Licensed under the MIT (https://opensource.org/licenses/MIT)
+ * 规定：
+ *  defaultConfig：默认配置项，需挂载到构造函数对象上
+ *
+ * 对象的属性
+ *  set: 参数配置
+ *  set.opacity 透明度
+ *  set.color: 颜色
+ *  set.resize: 自适应
+ *
+ *  c: canvas对象
+ *  cw: canvas宽度
+ *  ch: canvas高度
+ *  cxt: canvas 2d 绘图环境
+ *  container: {DOM Element} 包裹canvas的容器
+ *  dots: {array} 通过arc绘制的粒子对象集
+ *  [dot].x: 通过arc绘制的粒子的x值
+ *  [dot].y: 通过arc绘制的粒子的y值
+ *  paused: {boolean} 是否暂停
+ *  canvasRemoved: {boolean} canvas从DOM中被移除
+ *
+ * 对象的方法
+ *  color：返回随机或设定好的粒子颜色
+ *
+ * 子类原型对象的方法
+ *  init: 初始化配置或方法调用
+ *  draw: 绘图函数
+ *
+ * 继承 Base 父类的方法
+ *  pause: 暂停粒子运动
+ *  open: 开启粒子运动
+ *  resize: 自适应窗口，需手动调用
+ *
+ * 继承 Base 父类的事件
+ *  onDestroy: 动画被销毁后执行的事件
  */
-+function(){"use strict";function e(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}function n(e){return parseInt(e,10)}function t(e){return e.replace(I.trimAll,"")}function r(){return"#"+q().toString(16).slice(-6)}function o(e,n){return e===n?e:q()*(e-n)+n}function i(){var e=arguments,n=e[0]||{},t=!1,r=e.length,o=1,u=void 0,a=void 0;for(f(n)&&(t=n,n=e[1]||{},o++);o<r;o++)for(a in e[o])u=e[o][a],t&&(c(u)||M(u))?n[a]=i(t,M(u)?[]:{},u):n[a]=u;return n}function u(e,n){return Object.prototype.toString.call(e)===n}function a(e){return u(e,"[object Function]")}function c(e){return u(e,"[object Object]")}function s(e){return"string"==typeof e}function f(e){return"boolean"==typeof e}function l(e){return(void 0===e?"undefined":k(e))===P}function d(e){return null===e}function v(e){return!(!e||1!==e.nodeType)}function m(e,t){var r=j.getComputedStyle(e)[t];return I.styleValue.test(r)?n(r):r}function p(e){for(var n=e.offsetLeft||0,t=e.offsetTop||0;e=e.offsetParent;)n+=e.offsetLeft,t+=e.offsetTop;return{left:n,top:t}}function h(e,n,t){e.addEventListener(n,t)}function y(e,n,t){e.removeEventListener(n,t)}function b(e){e.cw=e.c.width=m(e.container,"width")||H,e.ch=e.c.height=m(e.container,"height")||D}function g(e,n){return e>0&&e<1?n*e:e}function w(e,n){return(o(e,n)||e)*(q()>.5?1:-1)}function A(e){for(var n=arguments.length,t=Array(n>1?n-1:0),r=1;r<n;r++)t[r-1]=arguments[r];for(var o=0;o<t.length;o++)a(t[o])&&e.push(t[o])}function z(e){var n=!!M(e)&&e.length,t=function(){return e[x(q()*n)]};return s(e)?function(){return e}:n?t:r}function E(e,n){e.canvasRemoved||!e.set||e.paused||(a(n)&&n.call(e,"pause"),e.paused=!0)}function O(e,n){!e.canvasRemoved&&e.set&&e.paused&&(a(n)&&n.call(e,"open"),e.paused=!1,e.draw())}function R(e,n){e.set.resize&&(e._resizeHandler=function(){var t=e.cw,r=e.ch;b(e);var o=e.cw/t,i=e.ch/r;M(e.dots)&&e.dots.forEach(function(e){c(e)&&(e.x*=o,e.y*=i)}),a(n)&&n.call(e,o,i),e.paused&&e.draw()},h(j,"resize",e._resizeHandler))}function C(e,n,r){t(n).split(",").forEach(function(n){e[n]=function(){V[n](this,r)}})}function L(e,n){var t=arguments.length>2&&void 0!==arguments[2]?arguments[2]:J;Object.defineProperty(t,n,{value:e,writable:!1,enumerable:!0,configurable:!1})}var S=function(){function e(e,n){for(var t=0;t<n.length;t++){var r=n[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(n,t,r){return t&&e(n.prototype,t),r&&e(n,r),n}}(),k="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},j=window,F=document,q=Math.random,x=Math.floor,M=Array.isArray,P="undefined",T=!!j.DeviceOrientationEvent,H=485,D=300,I={trimAll:/\s/g,styleValue:/^\d+(\.\d+)?[a-z]+$/i},N=function(){function n(t,r,o){e(this,n),(this.container=v(r)?r:F.querySelector(r))&&(this.set=i(!0,{},J.commonConfig,t.defaultConfig,o),this.c=F.createElement("canvas"),this.cxt=this.c.getContext("2d"),this.paused=!1,b(this),this.container.innerHTML="",this.container.appendChild(this.c),this.color=z(this.set.color),this.observeCanvasRemoved(),this.init(),this.resize())}return S(n,[{key:"requestAnimationFrame",value:function(){this.canvasRemoved||this.paused||j.requestAnimationFrame(this.draw.bind(this))}},{key:"observeCanvasRemoved",value:function(){var e=this;this.destructionListeners=[],_(this.c,function(){e.canvasRemoved=!0,e._resizeHandler&&y(j,"resize",e._resizeHandler),e.destructionListeners.forEach(function(e){e()})})}},{key:"onDestroy",value:function(){return A.apply(void 0,[this.destructionListeners].concat(Array.prototype.slice.call(arguments))),this}},{key:"pause",value:function(){E(this)}},{key:"open",value:function(){O(this)}},{key:"resize",value:function(){R(this)}}]),n}();j.requestAnimationFrame=function(e){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||function(n){e.setTimeout(n,1e3/60)}}(j);var _=function(){var e=j.MutationObserver||j.WebKitMutationObserver,n=function e(n,t){if(n===t)return!0;if(v(n))for(var r=n.children,o=r.length;o--;)if(e(r[o],t))return!0;return!1},t=function(t,r){new e(function(e,o){for(var i=e.length;i--;)for(var u=e[i].removedNodes,a=u.length;a--;)if(n(u[a],t))return o.disconnect(),r()}).observe(document,{childList:!0,subtree:!0})},r=function(e,t){var r=function r(o){n(o.target,e)&&(document.removeEventListener("DOMNodeRemoved",r),t())};document.addEventListener("DOMNodeRemoved",r)};return e?t:r}(),V={orientationSupport:T,regExp:I,pInt:n,trimAll:t,randomColor:r,limitRandom:o,extend:i,typeChecking:u,isPlainObject:c,isFunction:a,isArray:M,isString:s,isBoolean:f,isUndefined:l,isNull:d,isElement:v,observeElementRemoved:_,getCss:m,offset:p,on:h,off:y,scaleValue:g,calcSpeed:w,pause:E,open:O,resize:R,modifyPrototype:C,defineReadOnlyProperty:L,registerListener:A},B={opacity:1,color:[],resize:!0},Q={linear:function(e,n,t,r,o){return t+(r-t)*e},swing:function(){return Q.easeInOutQuad.apply(Q,arguments)},easeInOutQuad:function(e,n,t,r,o){return(n/=o/2)<1?r/2*n*n+t:-r/2*(--n*(n-2)-1)+t}},J={version:"3.0.0",utils:V,Base:N};!function e(n){for(var t in n){var r=n[t];L(r,t,n),c(r)&&e(r)}}(J),L(B,"commonConfig"),L(Q,"easing"),j.JParticles=J,"function"==typeof define&&define.amd?define(function(){return J}):"object"==typeof module&&module.exports&&(module.exports=J)}();
+// 编译构建时通过 package.json 的 version 生成版本
+var version = '2.0.0';
+var win = window;
+var doc = document;
+var random = Math.random,
+    floor = Math.floor;
+var isArray = Array.isArray;
+
+
+var orientationSupport = !!win.DeviceOrientationEvent;
+var defaultCanvasWidth = 485;
+var defaultCanvasHeight = 300;
+var regExp = {
+    trimAll: /\s/g,
+    styleValue: /^\d+(\.\d+)?[a-z]+$/i
+};
+
+function pInt(str) {
+    return parseInt(str, 10);
+}
+
+function trimAll(str) {
+    return str.replace(regExp.trimAll, '');
+}
+
+function randomColor() {
+    // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+    return '#' + random().toString(16).slice(-6);
+}
+
+/**
+ * 限制随机数的范围
+ * @param max {number}
+ * @param min {number}
+ * @returns {number}
+ */
+function limitRandom(max, min) {
+    return max === min ? max : random() * (max - min) + min;
+}
+
+/**
+ * 对象的复制，跟jQuery extend方法一致（站在jQuery的肩膀之上）。
+ * extend( target [, object1 ] [, objectN ] )
+ * extend( [ deep ,] target, object1 [, objectN ] )
+ * @returns {object}
+ */
+function extend() {
+    var arg = arguments,
+        target = arg[0] || {},
+        deep = false,
+        length = arg.length,
+        i = 1,
+        value = void 0,
+        attr = void 0;
+
+    if (isBoolean(target)) {
+        deep = target;
+        target = arg[1] || {};
+        i++;
+    }
+
+    for (; i < length; i++) {
+        for (attr in arg[i]) {
+
+            value = arg[i][attr];
+
+            if (deep && (isPlainObject(value) || isArray(value))) {
+
+                target[attr] = extend(deep, isArray(value) ? [] : {}, value);
+            } else {
+                target[attr] = value;
+            }
+        }
+    }
+
+    return target;
+}
+
+/**
+ * 对象的检测
+ * @param obj {*} 需要检测的对象
+ * @param type {string} 对象所属类型
+ * @returns {boolean}
+ */
+function typeChecking(obj, type) {
+    // 直接使用 toString.call(obj) 在 ie 会下报错
+    return Object.prototype.toString.call(obj) === type;
+}
+
+function isFunction(obj) {
+    return typeChecking(obj, '[object Function]');
+}
+
+function isPlainObject(obj) {
+    return typeChecking(obj, '[object Object]');
+}
+
+function isString(val) {
+    return typeof val === 'string';
+}
+
+function isBoolean(val) {
+    return typeof val === 'boolean';
+}
+
+function isUndefined(val) {
+    return typeof val === 'undefined';
+}
+
+function isNull(val) {
+    return val === null;
+}
+
+function isElement(obj) {
+    // document(nodeType===9)不能是element，因为它没有很多element该有的属性
+    // 如用getComputedStyle获取不到它的宽高，就会报错
+    // 当传入0的时候，不加!!会返回0，而不是Boolean值
+    return !!(obj && obj.nodeType === 1);
+}
+
+/**
+ * 获取对象的css属性值
+ * @param elem {element}
+ * @param attr {string}
+ * @returns {string|number}
+ */
+function getCss(elem, attr) {
+    var val = win.getComputedStyle(elem)[attr];
+
+    // 对于属性值是 200px 这样的形式，返回 200 这样的数字值
+    return regExp.styleValue.test(val) ? pInt(val) : val;
+}
+
+/**
+ * 获取对象距离页面的top、left值
+ * @param elem {element}
+ * @returns {{left: (number), top: (number)}}
+ */
+function offset(elem) {
+    var left = elem.offsetLeft || 0;
+    var top = elem.offsetTop || 0;
+    while (elem = elem.offsetParent) {
+        left += elem.offsetLeft;
+        top += elem.offsetTop;
+    }
+    return {
+        left: left,
+        top: top
+    };
+}
+
+function on(elem, evtName, handler) {
+    elem.addEventListener(evtName, handler);
+}
+
+function off(elem, evtName, handler) {
+    elem.removeEventListener(evtName, handler);
+}
+
+function setCanvasWH(context) {
+    context.cw = context.c.width = getCss(context.container, 'width') || defaultCanvasWidth;
+    context.ch = context.c.height = getCss(context.container, 'height') || defaultCanvasHeight;
+}
+
+/**
+ * 计算刻度值
+ * @param val {number} 乘数，(0, 1)表示被乘数的倍数，0 & [1, +∞)表示具体数值
+ * @param scale {number} 被乘数
+ * @returns {number}
+ */
+function scaleValue(val, scale) {
+    return val > 0 && val < 1 ? scale * val : val;
+}
+
+/**
+ * 计算速度值
+ * @param max {number}
+ * @param min {number}
+ * @returns {number}
+ */
+function calcSpeed(max, min) {
+    return (limitRandom(max, min) || max) * (random() > .5 ? 1 : -1);
+}
+
+/**
+ * 为插件事件添加增强的监听器
+ *
+ * eg:
+ *   onDestroy() {
+ *     registerListener(this.destructionListeners, ...arguments);
+ *   }
+ *
+ * @param listener {array} 监听器集合
+ * @param arg {function} 回调函数
+ */
+function registerListener(listener) {
+    for (var _len = arguments.length, arg = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        arg[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < arg.length; i++) {
+        if (isFunction(arg[i])) {
+            listener.push(arg[i]);
+        }
+    }
+}
+
+/**
+ * 生成 color 函数，用于给粒子赋予颜色
+ * @param color {string|array} 颜色数组
+ * @returns {function}
+ */
+function generateColor(color) {
+    var colorLength = isArray(color) ? color.length : false;
+    var recolor = function recolor() {
+        return color[floor(random() * colorLength)];
+    };
+    return isString(color) ? function () {
+        return color;
+    } : colorLength ? recolor : randomColor;
+}
+
+// 暂停粒子运动
+function _pause(context, callback) {
+
+    // 没有set表示实例创建失败，防止错误调用报错
+    if (!context.canvasRemoved && context.set && !context.paused) {
+
+        // 传递 pause 关键字供特殊使用
+        isFunction(callback) && callback.call(context, 'pause');
+        context.paused = true;
+    }
+}
+
+// 开启粒子运动
+function _open(context, callback) {
+    if (!context.canvasRemoved && context.set && context.paused) {
+        isFunction(callback) && callback.call(context, 'open');
+        context.paused = false;
+        context.draw();
+    }
+}
+
+// 自适应窗口，重新计算粒子坐标
+function _resize(context, callback) {
+    if (context.set.resize) {
+        context._resizeHandler = function () {
+            var oldCW = context.cw;
+            var oldCH = context.ch;
+
+            // 重新设置canvas宽高
+            setCanvasWH(context);
+
+            // 计算比例
+            var scaleX = context.cw / oldCW;
+            var scaleY = context.ch / oldCH;
+
+            // 重新赋值
+            if (isArray(context.dots)) {
+                context.dots.forEach(function (v) {
+                    if (isPlainObject(v)) {
+                        v.x *= scaleX;
+                        v.y *= scaleY;
+                    }
+                });
+            }
+
+            if (isFunction(callback)) {
+                callback.call(context, scaleX, scaleY);
+            }
+
+            context.paused && context.draw();
+        };
+        on(win, 'resize', context._resizeHandler);
+    }
+}
+
+/**
+ * 修改插件原型上的方法
+ * 使用：modifyPrototype(Particle.prototype, 'pause', function(){})
+ * @param prototype {Object} 原型对象
+ * @param names {string} 方法名，多个方法名用逗号隔开
+ * @param callback {function} 回调函数
+ */
+function modifyPrototype(prototype, names, callback) {
+    trimAll(names).split(',').forEach(function (name) {
+        prototype[name] = function () {
+            utils[name](this, callback);
+        };
+    });
+}
+
+/**
+ * 使用此方法挂载插件到 JParticles 对象上，防止被修改。
+ * function.name 的兼容性并不高，所以插件需手动传递 name 值。
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name
+ *
+ * eg:
+ * defineReadOnlyProperty(Particle, 'particle')
+ * defineReadOnlyProperty(regExp, 'regExp', utils)
+ *
+ * @param value {Class|*} 插件类或其他值
+ * @param name  {string} 属性名称
+ * @param target {object} 要在其上定义属性的对象
+ */
+function defineReadOnlyProperty(value, name) {
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : JParticles;
+
+    Object.defineProperty(target, name, {
+        value: value,
+        writable: false,
+        enumerable: true,
+        configurable: false
+    });
+}
+
+var Base = function () {
+    function Base(constructor, selector, options) {
+        _classCallCheck(this, Base);
+
+        // 构建任务自动添加 runSupport 变量，
+        // 即不支持 Object.defineProperty 的浏览器和 IE8 将不支持创建特效
+        if (runSupport && (this.container = isElement(selector) ? selector : doc.querySelector(selector))) {
+            this.set = extend(true, {}, JParticles.commonConfig, constructor.defaultConfig, options);
+            this.c = doc.createElement('canvas');
+            this.cxt = this.c.getContext('2d');
+            this.paused = false;
+
+            setCanvasWH(this);
+
+            this.container.innerHTML = '';
+            this.container.appendChild(this.c);
+
+            this.color = generateColor(this.set.color);
+
+            this.observeCanvasRemoved();
+            this.init();
+            this.resize();
+        }
+    }
+
+    _createClass(Base, [{
+        key: 'requestAnimationFrame',
+        value: function requestAnimationFrame() {
+            if (!this.canvasRemoved && !this.paused) {
+                win.requestAnimationFrame(this.draw.bind(this));
+            }
+        }
+    }, {
+        key: 'observeCanvasRemoved',
+        value: function observeCanvasRemoved() {
+            var _this = this;
+
+            this.destructionListeners = [];
+            observeElementRemoved(this.c, function () {
+
+                // canvas 从DOM中被移除
+                // 1、停止 requestAnimationFrame，避免性能损耗
+                _this.canvasRemoved = true;
+
+                // 2、移除外在事件
+                if (_this._resizeHandler) {
+                    off(win, 'resize', _this._resizeHandler);
+                }
+
+                // 3、触发销毁回调事件
+                _this.destructionListeners.forEach(function (callback) {
+                    callback();
+                });
+            });
+        }
+    }, {
+        key: 'onDestroy',
+        value: function onDestroy() {
+            registerListener.apply(undefined, [this.destructionListeners].concat(Array.prototype.slice.call(arguments)));
+
+            // 让事件支持链式操作
+            return this;
+        }
+    }, {
+        key: 'pause',
+        value: function pause() {
+            _pause(this);
+        }
+    }, {
+        key: 'open',
+        value: function open() {
+            _open(this);
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            _resize(this);
+        }
+    }]);
+
+    return Base;
+}();
+
+// requestAnimationFrame 兼容处理
+
+
+win.requestAnimationFrame = function (win) {
+    return win.requestAnimationFrame || win.webkitRequestAnimationFrame || win.mozRequestAnimationFrame || function (fn) {
+        win.setTimeout(fn, 1000 / 60);
+    };
+}(win);
+
+// 不管是 MutationObserver 还是 DOMNodeRemoved，
+// 当监听某个具体的元素时，如果父祖级被删除了，并不会触发该元素被移除的事件，
+// 所以要监听整个文档，每次移除事件都得递归遍历要监听的元素是否被删除。
+var observeElementRemoved = function () {
+    var MutationObserver = win.MutationObserver || win.WebKitMutationObserver;
+    var checkElementRemoved = function checkElementRemoved(node, element) {
+        if (node === element) {
+            return true;
+        } else if (isElement(node)) {
+            var children = node.children;
+            var length = children.length;
+            while (length--) {
+                if (checkElementRemoved(children[length], element)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    var useMutation = function useMutation(element, callback) {
+        var observer = new MutationObserver(function (mutations, observer) {
+            var i = mutations.length;
+            while (i--) {
+                var removeNodes = mutations[i].removedNodes;
+                var j = removeNodes.length;
+                while (j--) {
+                    if (checkElementRemoved(removeNodes[j], element)) {
+                        observer.disconnect();
+                        return callback();
+                    }
+                }
+            }
+        });
+        observer.observe(document, {
+            childList: true,
+            subtree: true
+        });
+    };
+    var useDOMNodeRemoved = function useDOMNodeRemoved(element, callback) {
+        var DOMNodeRemoved = function DOMNodeRemoved(e) {
+            if (checkElementRemoved(e.target, element)) {
+                document.removeEventListener('DOMNodeRemoved', DOMNodeRemoved);
+                callback();
+            }
+        };
+        document.addEventListener('DOMNodeRemoved', DOMNodeRemoved);
+    };
+    return MutationObserver ? useMutation : useDOMNodeRemoved;
+}();
+
+// 工具箱
+var utils = {
+    orientationSupport: orientationSupport,
+    regExp: regExp,
+    pInt: pInt,
+    trimAll: trimAll,
+
+    randomColor: randomColor,
+    limitRandom: limitRandom,
+
+    extend: extend,
+    typeChecking: typeChecking,
+    isPlainObject: isPlainObject,
+    isFunction: isFunction,
+    isArray: isArray,
+    isString: isString,
+    isBoolean: isBoolean,
+    isUndefined: isUndefined,
+    isNull: isNull,
+    isElement: isElement,
+
+    observeElementRemoved: observeElementRemoved,
+    getCss: getCss,
+    offset: offset,
+    on: on,
+    off: off,
+
+    scaleValue: scaleValue,
+    calcSpeed: calcSpeed,
+
+    pause: _pause,
+    open: _open,
+    resize: _resize,
+    modifyPrototype: modifyPrototype,
+    defineReadOnlyProperty: defineReadOnlyProperty,
+
+    registerListener: registerListener
+};
+
+var commonConfig = {
+
+    // 画布全局透明度 {number}
+    // 取值范围：[0-1]
+    opacity: 1,
+
+    // 粒子颜色 {string|array}
+    // 1、空数组表示随机取色。
+    // 2、在特定颜色的数组里随机取色，如：['red', 'blue', 'green']。
+    // 3、当为 string 类型时，如：'red'，则表示粒子都填充为红色。
+    color: [],
+
+    // 自适应窗口尺寸变化 {boolean}
+    resize: true
+};
+
+// http://easings.net
+var easing = {
+    linear: function linear(x, t, b, c, d) {
+        return b + (c - b) * x;
+    },
+    swing: function swing() {
+        return easing.easeInOutQuad.apply(easing, arguments);
+    },
+    easeInOutQuad: function easeInOutQuad(x, t, b, c, d) {
+        if ((t /= d / 2) < 1) return c / 2 * t * t + b;
+        return -c / 2 * (--t * (t - 2) - 1) + b;
+    }
+};
+
+var JParticles = {
+    version: version,
+    utils: utils,
+    Base: Base
+};
+
+// 设置对外提供的对象的属性及方法
+// 为只读，可枚举，不允许修改及删除。
+(function defineProperties(object) {
+    for (var name in object) {
+        var value = object[name];
+        defineReadOnlyProperty(value, name, object);
+        if (isPlainObject(value)) {
+            defineProperties(value);
+        }
+    }
+})(JParticles);
+
+defineReadOnlyProperty(commonConfig, 'commonConfig');
+defineReadOnlyProperty(easing, 'easing');
+
+win.JParticles = JParticles;
+    // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
+    // 导致后面的插件找不到 JParticles 对象而报错
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return JParticles;
+        });
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = JParticles;
+    }
+}();
+
+//# sourceMappingURL=maps/jparticles.js.map
