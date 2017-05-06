@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        body{
-            /*background-color: #000;*/
-        }
-        [id^="demo"]{
-            width: 80%;
+        #demo{
+            width: 900px;
             height: 600px;
             margin: 50px auto;
             border: 1px solid #ccc;
-            background: url(http://particleground.duapp.com/img/merry-christmas.jpg) no-repeat;
-            background-size: 100% 100%;
         }
         .btn-box{
             text-align: center;
@@ -25,8 +20,8 @@
     </style>
 </head>
 <body>
-    <div class="instance">
-        <div id="demo"></div>
+    <div id="instance">
+        <div class="demo"></div>
         <div class="btn-box">
             <button class="btn btn-primary" type="button" data-open>
                 open
@@ -37,12 +32,11 @@
         </div>
     </div>
 
-
-    <script src="../pjs/particleground.all.js"></script>
-    <script src="../js/event.js"></script>
+    <script src="js/event.js"></script>
+    <script src="../production/jparticles.all.js"></script>
     <script>
-        bind('#demo', function(){
-            return new Particleground.snow( '#demo' );
+        bind('#instance', function () {
+            return new JParticles.particle('#instance .demo');
         });
     </script>
 </body>

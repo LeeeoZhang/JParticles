@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
+        body{
+            /*background-color: #000;*/
+        }
         [id^="demo"]{
-            width: 70%;
+            width: 80%;
             height: 600px;
             margin: 50px auto;
             border: 1px solid #ccc;
@@ -23,29 +26,22 @@
     <div class="instance">
         <div id="demo"></div>
         <div class="btn-box">
-            <button id="open" class="btn btn-primary" type="button">
+            <button class="btn btn-primary" type="button" data-open>
                 open
             </button>
-            <button id="pause" class="btn btn-danger" type="button">
+            <button class="btn btn-danger" type="button" data-pause>
                 pause
             </button>
         </div>
     </div>
 
-    <script src="../pjs/particleground.all.js"></script>
+
+    <script src="../production/jparticles.all.js"></script>
+    <script src="js/event.js"></script>
     <script>
-        var effect = new Particleground.particle( '#demo', {
-            num: 100,
-            resize: false
+        bind('#demo', function () {
+            return new JParticles.lowpoly('#demo');
         });
-
-        document.getElementById('open').onclick = function(){
-            effect.open();
-        };
-
-        document.getElementById('pause').onclick = function(){
-            effect.pause();
-        };
     </script>
 </body>
 </html>

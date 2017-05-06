@@ -1,26 +1,8 @@
-[![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
+# JParticles [![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
 
+> English | [中文](./README.md)
 
-### Install
-
-```
-
-npm install JParticles --save
-
-// using
-import JParticles from 'JParticles';
-new JParticles.particle('#demo');
-
-// or using
-import JParticles from 'JParticles/production/jparticles';
-import 'JParticles/production/particle';
-new JParticles.particle('#demo');
-
-```
-
-
-### Documentation
-[See more details from the API documentation.](https://barrior.github.io/JParticles/)
+[Homepage & API Documentation](http://barrior.github.io/JParticles/)
 
 
 ### Intro

@@ -1,10 +1,7 @@
-.idea
-.git
-dev
-node_modules
-.eslintrc
+.idea/
+.git/
+node_modules/
 .gitignore
 .npmignore
-DEV_DOC.md
-gulpfile.js
 NPMREADME.md
+README_en.md

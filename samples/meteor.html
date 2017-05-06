@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .instance {
+            position: relative;
+        }
+        [id^="demo"]{
+            width: 80%;
+            height: 600px;
+            position: absolute;
+            top: 350px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .btn-box{
+            text-align: center;
+            position: relative;
+            top: 680px;
+        }
+        .btn{
+            font-size: 20px;
+        }
+
+        #demo-stars-bg {
+            background-color: #090723;
+            z-index: 1;
+        }
+
+        #demo {
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="instance">
+        <div id="demo-stars-bg"></div>
+        <div id="demo"></div>
+        <div class="btn-box">
+            <button class="btn btn-primary" type="button" data-open>
+                open
+            </button>
+            <button class="btn btn-danger" type="button" data-pause>
+                pause
+            </button>
+        </div>
+    </div>
+
+    <script src="../production/jparticles.all.js"></script>
+    <script src="js/event.js"></script>
+    <script>
+
+        // starry sky
+        let color = [];
+        for (let i = 1; i < 6; i++) {
+            color.push(`rgba(255, 255, 255, ${i/10 + .2})`)
+        }
+        new JParticles.particle('#demo-stars-bg', {
+            range: 0,
+            num: .04,
+            maxSpeed: .03,
+            maxR: 1.2,
+            color
+        });
+
+        bind('#demo', function () {
+            return new JParticles.meteor('#demo', {
+
+            });
+        });
+    </script>
+</body>
+</html>
