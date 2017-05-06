@@ -28,7 +28,7 @@ gulp.task('compile', () => {
         .pipe(babel({
             presets: ['es2015', 'stage-0']
         }))
-        .pipe(wrap('production'))
+        .pipe(wrap())
         .pipe(gulp.dest(destPath));
 });
 

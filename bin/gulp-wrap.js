@@ -52,7 +52,7 @@ const UMDFooter = `
 }();
 `;
 
-// 匹配大部分抛出错误，如：throw new Error('something');
+// 匹配部分抛出错误，如：throw new Error('something');
 const clearThrowError = /([\s;(){}])throw\s.+\(.+?\);/g;
 module.exports = (output) => {
     return through.obj((file, encoding, callback) => {
@@ -66,9 +66,9 @@ module.exports = (output) => {
             content = `+function () { ${content} }();`;
         }
 
-//        if (output === 'production') {
-//            content = content.replace(clearThrowError, '$1');
-//        }
+        if (output === 'production') {
+            content = content.replace(clearThrowError, '$1');
+        }
 
         file.contents = new Buffer(content);
 

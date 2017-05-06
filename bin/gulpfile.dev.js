@@ -15,7 +15,7 @@ const reload = browserSync.reload;
 // Compile all scripts.
 gulp.task('compile', () => {
     return gulp.src(`${devPath}*.js`)
-//        .pipe(changed(destPath))
+        .pipe(changed(destPath))
         .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015', 'stage-0']
@@ -56,7 +56,7 @@ gulp.task('service', ['package'], () => {
         open: !(process.argv.indexOf('no-open') !== -1)
     });
 
-    gulp.watch(`${devPath}*.js`, ['compile']);
+    gulp.watch(`${devPath}*.js`, ['package']);
     gulp.watch('../samples/**/*.@(html|css|js)').on('change', reload);
 });
 
