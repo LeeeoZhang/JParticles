@@ -1,5 +1,5 @@
-### 3.0.0 *(2017.xx.xx)*
- - **`Particleground.js` 升级到 `3.0.0` 并改名为 `JParticles`。**
+### 2.0.0 *(2017.xx.xx)*
+ - **`Particleground.js` 升级到 `2.0.0` 并改名为 `JParticles`。**
  - **新增特效： `waveLoading` 模拟进度条加载。**
  - 所有特效：增加 `onDestroy()` 方法。
  - 所有特效：事件支持链式操作。
