@@ -228,12 +228,15 @@ function calcSpeed(max, min) {
  * @param listener {array} 监听器集合
  * @param arg {function} 回调函数
  */
-function registerListener(listener, ...arg) {
-    for (let i = 0; i < arg.length; i++) {
-        if (isFunction(arg[i])) {
-            listener.push(arg[i]);
+function registerListener(context, listener, ...arg) {
+    if (context.set) {
+        for (let i = 0; i < arg.length; i++) {
+            if (isFunction(arg[i])) {
+                listener.push(arg[i]);
+            }
         }
     }
+    return context;
 }
 
 /**
@@ -390,10 +393,9 @@ class Base {
     }
 
     onDestroy() {
-        registerListener(this.destructionListeners, ...arguments);
 
         // 让事件支持链式操作
-        return this;
+        return registerListener(this, this.destructionListeners, ...arguments);
     }
 
     pause() {

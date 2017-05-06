@@ -22,7 +22,7 @@
             left: 0;
             text-align: center;
         }
-        #instance .demo {
+        #demo {
             display: inline-block;
             width: 120px;
             height: 120px;
@@ -36,7 +36,7 @@
 </head>
 <body>
     <div id="instance">
-        <div class="demo"></div>
+        <div id="demo"></div>
     </div>
     <div id="page">
         <iframe src="http://qq.com/" frameborder="0"></iframe>
@@ -44,9 +44,8 @@
 
     <script src="../production/jparticles.js"></script>
     <script src="../production/wave_loading.js"></script>
-    <script src="js/event.js"></script>
     <script>
-        JParticles.easing = Object.assign(JParticles.easing, {
+        JParticles.easing = JParticles.utils.extend(JParticles.easing, {
             easeOutBounce: function (x, t, b, c, d) {
                 if ((t/=d) < (1/2.75)) {
                     return c*(7.5625*t*t) + b;
@@ -64,7 +63,7 @@
 
         (function () {
             var instance = document.getElementById('instance');
-            var demo = instance.querySelector('.demo');
+            var demo = document.getElementById('demo');
             var loading = new JParticles.waveLoading(demo, {
                 font: 'normal 900 14px Arial',
 

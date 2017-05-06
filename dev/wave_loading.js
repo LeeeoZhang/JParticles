@@ -53,7 +53,7 @@ class WaveLoading extends Base {
     };
 
     get version() {
-        return '3.0.0';
+        return '2.0.0';
     }
 
     constructor(selector, options) {
@@ -247,7 +247,7 @@ class WaveLoading extends Base {
     }
 
     setOptions(newOptions) {
-        if (isPlainObject(newOptions)) {
+        if (this.set && isPlainObject(newOptions)) {
             for (const name in newOptions) {
                 if (name !== 'offsetTop' && (name in this.set)) {
                     this.set[name] = newOptions[name];
@@ -257,19 +257,17 @@ class WaveLoading extends Base {
     }
 
     done() {
-        if (!this.immediatelyComplete) {
+        if (this.set && !this.immediatelyComplete) {
             this.immediatelyComplete = 1;
         }
     }
 
     onProgress() {
-        registerListener(this.progressListeners, ...arguments);
-        return this;
+        return registerListener(this, this.progressListeners, ...arguments);
     }
 
     onFinished() {
-        registerListener(this.finishedListeners, ...arguments);
-        return this;
+        return registerListener(this, this.finishedListeners, ...arguments);
     }
 }
 

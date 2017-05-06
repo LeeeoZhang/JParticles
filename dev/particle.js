@@ -75,7 +75,7 @@ class Particle extends Base {
     };
 
     get version() {
-        return '3.0.0';
+        return '2.0.0';
     }
 
     constructor(selector, options) {
@@ -83,26 +83,22 @@ class Particle extends Base {
     }
 
     init() {
-        const {num, range} = this.set;
+        this.attrNormalize();
 
-        if (num > 0) {
-            this.attrNormalize();
+        if (this.set.range > 0) {
 
-            if (range > 0) {
-
-                // 定位点坐标
-                this.positionX = random() * this.cw;
-                this.positionY = random() * this.ch;
-                this.defineLineShape();
-                this.positionEvent();
-            }
-
-            // 初始化鼠标在视差上的坐标
-            this.mouseX = this.mouseY = 0;
-            this.createDots();
-            this.draw();
-            this.parallaxEvent();
+            // 定位点坐标
+            this.positionX = random() * this.cw;
+            this.positionY = random() * this.ch;
+            this.defineLineShape();
+            this.positionEvent();
         }
+
+        // 初始化鼠标在视差上的坐标
+        this.mouseX = this.mouseY = 0;
+        this.createDots();
+        this.draw();
+        this.parallaxEvent();
     }
 
     attrNormalize() {
@@ -182,9 +178,7 @@ class Particle extends Base {
 
     draw() {
         const {cw, ch, cxt} = this;
-        const {num, range, lineWidth, opacity} = this.set;
-
-        if (num <= 0) return;
+        const {range, lineWidth, opacity} = this.set;
 
         cxt.clearRect(0, 0, cw, ch);
 
@@ -370,8 +364,7 @@ class Particle extends Base {
 
     resize() {
         resize(this, (scaleX, scaleY) => {
-            const {num, range} = this.set;
-            if (num > 0 && range > 0) {
+            if (this.set.range > 0) {
                 this.positionX *= scaleX;
                 this.positionY *= scaleY;
                 this.mouseX *= scaleX;

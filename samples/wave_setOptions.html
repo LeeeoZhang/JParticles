@@ -48,16 +48,24 @@
         </div>
     </div>
 
-    <script src="../production/jparticles.all.js"></script>
-    <script src="js/event.js"></script>
+    <script src="../production/jparticles.js"></script>
+    <script src="../production/wave.js"></script>
     <script>
+        function getCss(elem, prop) {
+            if(window.getComputedStyle) {
+                return getComputedStyle(elem, false)[prop];
+            } else if(elem.currentStyle) {
+                return elem.currentStyle[prop];
+            }
+        }
+
         (function () {
             var instance = document.querySelector('#instance4');
             var demo = instance.querySelector('.demo');
             var btnOpen = instance.querySelector('.btn[data-open]');
             var btnPause = instance.querySelector('.btn[data-pause]');
             var progressElem = document.querySelector('#progress4');
-            var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
+            var elemHeight = parseInt(getCss(demo, 'height')) - 8;
             var progress = elemHeight;
             var timer = null;
 
@@ -117,11 +125,11 @@
             var demo = instance.querySelector('.demo');
             var btnOpen = instance.querySelector('.btn[data-open]');
             var btnPause = instance.querySelector('.btn[data-pause]');
-            var elemHeight = parseInt(getComputedStyle(demo, false).height) - 8;
+            var elemHeight = parseInt(getCss(demo, 'height')) - 8;
             var originOffsetTop = [elemHeight, elemHeight + 8, elemHeight + 16];
-            var progress = Object.assign([], originOffsetTop);
+            var progress = JParticles.utils.extend([], originOffsetTop);
             var originOffsetLeft = [2, 1, 0];
-            var offsetLeft = Object.assign([], originOffsetLeft);
+            var offsetLeft = JParticles.utils.extend([], originOffsetLeft);
             var timer = null;
 
             // 多条和多参数设置
@@ -163,8 +171,8 @@
 
             btnOpen.addEventListener('click', function () {
                 if (progress[1] <= 0) {
-                    progress = Object.assign([], originOffsetTop);
-                    offsetLeft = Object.assign([], originOffsetLeft);
+                    progress = JParticles.utils.extend([], originOffsetTop);
+                    offsetLeft = JParticles.utils.extend([], originOffsetLeft);
                 }
                 clearInterval(timer);
                 timer = setInterval(function () {

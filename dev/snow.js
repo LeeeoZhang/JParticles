@@ -19,7 +19,7 @@ class Snow extends Base {
     };
 
     get version() {
-        return '3.0.0';
+        return '2.0.0';
     }
 
     constructor(selector, options) {

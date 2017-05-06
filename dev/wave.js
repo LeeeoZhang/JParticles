@@ -5,7 +5,7 @@ const {
     pInt, limitRandom, calcSpeed,
     scaleValue, randomColor, isArray,
     isPlainObject, isUndefined,
-    defineReadOnlyProperty
+    resize, defineReadOnlyProperty
 } = utils;
 
 class Wave extends Base {
@@ -49,7 +49,7 @@ class Wave extends Base {
     };
 
     get version() {
-        return '3.0.0';
+        return '2.0.0';
     }
 
     constructor(selector, options) {
@@ -57,15 +57,13 @@ class Wave extends Base {
     }
 
     init() {
-        if (this.set.num > 0) {
 
-            // 线条波长，每个周期(2π)在canvas上的实际长度
-            this.rippleLength = [];
+        // 线条波长，每个周期(2π)在canvas上的实际长度
+        this.rippleLength = [];
 
-            this.attrNormalize();
-            this.createDots();
-            this.draw();
-        }
+        this.attrNormalize();
+        this.createDots();
+        this.draw();
     }
 
     attrNormalize() {
@@ -90,8 +88,8 @@ class Wave extends Base {
         // 将数组、字符串、数字、布尔类型属性标准化，例如 num = 3：
         // crestHeight: []或[2]或[2, 2], 标准化成: [2, 2, 2]
         // crestHeight: 2, 标准化成: [2, 2, 2]
-        // 注意：(0, 1)表示容器高度的倍数，[1, +∞)表示具体数值，其他属性同理
-        // scaleValue 用于处理属性值为 (0, 1) 或 [1, +∞) 这样的情况，返回计算好的数值。
+        // 注意：(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值，其他属性同理
+        // scaleValue 用于处理属性值为 (0, 1) 或 0 & [1, +∞) 这样的情况，返回计算好的数值。
         while (num--) {
             const val = isArray(attrValue) ? attrValue[num] : attrValue;
 
@@ -166,13 +164,10 @@ class Wave extends Base {
     }
 
     setOptions(newOptions) {
-        if (this.set.num > 0 && isPlainObject(newOptions)) {
+        if (this.set && isPlainObject(newOptions)) {
             for (const name in newOptions) {
-
-                // 不允许 opacity 为 0
-                if (name === 'opacity' && newOptions[name]) {
+                if (name === 'opacity') {
                     this.set.opacity = newOptions[name];
-
                 } else if (this.dynamicOptions.indexOf(name) !== -1) {
                     this.dynamicProcessor(name, newOptions[name]);
                 }
@@ -203,9 +198,7 @@ class Wave extends Base {
 
     draw() {
         const {cxt, cw, ch, paused, set} = this;
-        const {num, opacity} = set;
-
-        if (num <= 0) return;
+        const {opacity} = set;
 
         cxt.clearRect(0, 0, cw, ch);
         cxt.globalAlpha = opacity;
@@ -250,15 +243,13 @@ class Wave extends Base {
     }
 
     resize() {
-        utils.resize(this, (scaleX, scaleY) => {
-            if (this.set.num > 0) {
-                this.dots.forEach(line => {
-                    line.forEach(dot => {
-                        dot.x *= scaleX;
-                        dot.y *= scaleY;
-                    });
+        resize(this, (scaleX, scaleY) => {
+            this.dots.forEach(line => {
+                line.forEach(dot => {
+                    dot.x *= scaleX;
+                    dot.y *= scaleY;
                 });
-            }
+            });
         });
     }
 }
