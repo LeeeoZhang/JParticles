@@ -1,6 +1,7 @@
 .idea/
 .git/
 node_modules/
+/production/maps/
 .gitignore
 .npmignore
 NPMREADME.md

@@ -1,4 +1,4 @@
-# JParticles [![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
+# JParticles [![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles)
 
 > English | [中文](./README.md)
 

@@ -1,14 +1,14 @@
-[![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
+[![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles)
 
 
 ### Install
 
 ```
 
-npm install JParticles --save
+npm install jparticles --save
 
 // using
-import JParticles from 'JParticles';
+import JParticles from 'jparticles';
 new JParticles.particle('#demo');
 
 // or using
