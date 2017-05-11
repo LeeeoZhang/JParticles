@@ -1,9 +1,10 @@
-# JParticles [![npm version](https://badge.fury.io/js/JParticles.svg)](https://badge.fury.io/js/JParticles)
+# JParticles [![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles)
 
 > English | [中文](./README.md)
 
 [Homepage & API Documentation](http://barrior.github.io/JParticles/)
 
+> :smile: Developing documentation site, please waiting, thanks.
 
 ### Intro
 
