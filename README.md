@@ -4,7 +4,7 @@
 
 官网：[barrior.github.io/JParticles](http://barrior.github.io/JParticles/)
 
-> :smile: 正在开发官网，请稍等，谢谢。
+> :sparkles: :smile: 正在开发文档官网，请稍等，谢谢。
 
 
 ### 介绍

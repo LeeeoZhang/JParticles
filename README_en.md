@@ -4,7 +4,7 @@
 
 [Homepage & API Documentation](http://barrior.github.io/JParticles/)
 
-> :smile: Developing documentation site, please waiting, thanks.
+> :sparkles: :smile: Developing documentation site, please waiting, thanks.
 
 ### Intro
 
