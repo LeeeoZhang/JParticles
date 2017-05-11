@@ -9,6 +9,13 @@
     dev: 开发目录
     production: 产品目录
 
+### 分支说明
+
+    docs-1.x: 1.x API 文档
+    docs-2.x: 2.x API 文档
+    master: 开发分支
+    npm-publish: 发布代码到 NPM 的分支
+
 ### 流程
 
 ##### 1、运行命令： `npm run dev`
@@ -20,4 +27,6 @@
 
 ##### 3、修改 `package.json` 里的版本号，运行命令：`npm run build`
 将完成好的作品，压缩到 `production` 目录，并进行自动化测试。*
+
+
 
