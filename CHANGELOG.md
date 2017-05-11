@@ -4,7 +4,7 @@
  - 所有特效：增加 `onDestroy()` 方法。
  - 所有特效：事件支持链式操作。
  - particle: 新增 `lineShape` 参数，定义粒子的形状效果。
- - particle: 新增 `parallax` 参数，视差效果。
+ - particle: 新增 `parallax` 系列参数，视差效果。
  - particle: 增加陀螺仪特性，为定位点和视差效果。
  - particle：增强 `range` 和 `proximity` 参数支持 `(0, 1)` 的传值。
  - particle: 修改原来的 `distance` 参数为更接近词意的 `proximity`。
