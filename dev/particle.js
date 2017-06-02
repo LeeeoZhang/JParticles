@@ -43,7 +43,7 @@ class Particle extends Base {
         maxSpeed: 1,
 
         // 粒子最小运动速度(0, +∞)
-        minSpeed: 0,
+        minSpeed: .1,
 
         // 两点连线的最大值
         // 在 range 范围内的两点距离小于 proximity，则两点之间连线

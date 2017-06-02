@@ -2,7 +2,7 @@
 
 > 中文 | [English](./README_en.md)
 
-官网：[barrior.github.io/JParticles](http://barrior.github.io/JParticles/)
+官网：[jparticles.js.org](https://jparticles.js.org/)
 
 
 ### 介绍

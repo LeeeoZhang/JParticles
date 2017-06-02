@@ -2,7 +2,7 @@
 
 > English | [中文](./README.md)
 
-[Homepage & API Documentation](http://barrior.github.io/JParticles/)
+[Homepage & API Documentation](https://jparticles.js.org/)
 
 
 ### Intro
