@@ -543,7 +543,8 @@ const easing = {
 const JParticles = {
     version,
     utils,
-    Base
+    Base,
+    easing
 };
 
 // 设置对外提供的对象的属性及方法
@@ -558,7 +559,6 @@ const JParticles = {
     }
 })(JParticles);
 
-defineReadOnlyProperty(commonConfig, 'commonConfig');
-defineReadOnlyProperty(easing, 'easing');
+JParticles.commonConfig = commonConfig;
 
 win.JParticles = JParticles;
