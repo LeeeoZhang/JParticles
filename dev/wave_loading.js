@@ -241,8 +241,15 @@ class WaveLoading extends Base {
     }
 
     resize() {
-        resize(this, () => {
+        resize(this, (scaleX, scaleY) => {
+            ['offsetLeft', 'offsetTop', 'crestHeight'].forEach(option => {
+                this.set[option] *= option === 'offsetLeft' ? scaleX : scaleY;
+            });
             this.halfCH = this.ch / 2;
+
+            if (this.progress === 100) {
+                this.draw();
+            }
         });
     }
 

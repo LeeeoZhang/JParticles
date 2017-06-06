@@ -244,6 +244,12 @@ class Wave extends Base {
 
     resize() {
         resize(this, (scaleX, scaleY) => {
+            ['offsetLeft', 'offsetTop', 'crestHeight'].forEach(item => {
+                const scale = item === 'offsetLeft' ? scaleX : scaleY;
+                this.set[item].forEach((attr, i, array) => {
+                    array[i] = attr * scale;
+                });
+            });
             this.dots.forEach(line => {
                 line.forEach(dot => {
                     dot.x *= scaleX;
