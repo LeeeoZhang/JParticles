@@ -1,4 +1,4 @@
-### 这里是 `JParticles 1.x` 的 `API` 文档。
+### 这里是 `JParticles 1.x` 的 `API` 文档，`2.x` 文档请参考[这里](https://github.com/JParticles/Documentation)。
 
 > `2.0` 版本之前 `JParticles` 还叫 `Particleground.js`。
 
