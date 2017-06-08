@@ -1,4 +1,4 @@
-# JParticles [![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles) :smile: 正在开发文档官网，请稍等，谢谢。 :smile:
+# JParticles [![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles)
 
 > 中文 | [English](./README_en.md)
 
