@@ -104,9 +104,11 @@
 
         bind('#instance2', function () {
             return new JParticles.particle('#instance2 .demo', {
-                lineShape: 'cube',
                 parallax: true,
-                parallaxPerspective: 1
+                parallaxStrength: 1,
+
+                // 定义四层粒子
+                parallaxLayer: [1, 3, 5, 7]
             });
         });
 
@@ -116,7 +118,7 @@
                 lineShape: 'cube',
                 range: 120,
                 parallax: true,
-                parallaxPerspective: 1
+                parallaxStrength: 1
             });
         });
     </script>

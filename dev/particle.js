@@ -1,5 +1,5 @@
 const {utils, Base} = JParticles;
-const {random, abs, PI, ceil} = Math;
+const {random, abs, PI, floor} = Math;
 const twicePI = PI * 2;
 const {
     pInt, limitRandom, calcSpeed, scaleValue,
@@ -43,7 +43,7 @@ class Particle extends Base {
         maxSpeed: 1,
 
         // 粒子最小运动速度(0, +∞)
-        minSpeed: 0,
+        minSpeed: .1,
 
         // 两点连线的最大值
         // 在 range 范围内的两点距离小于 proximity，则两点之间连线
@@ -67,11 +67,16 @@ class Particle extends Base {
         // null 表示 canvas 画布，或传入原生元素对象，如 document 等
         eventElem: null,
 
-        // 视差效果
+        // 视差效果 {boolean}
         parallax: false,
 
-        // 视差景深，值越小视差效果越强烈
-        parallaxPerspective: 3
+        // 定义粒子在视差图层里的层数及每层的层级大小，类似 css 里的 z-index。
+        // 取值范围: [0, +∞)，值越小视差效果越强烈，0 则不动。
+        // 定义四层粒子示例：[1, 3, 5, 10]
+        parallaxLayer: [1, 2, 3],
+
+        // 视差强度，值越小视差效果越强烈
+        parallaxStrength: 3
     };
 
     get version() {
@@ -152,7 +157,8 @@ class Particle extends Base {
 
     createDots() {
         const {cw, ch, color} = this;
-        let {num, maxR, minR, maxSpeed, minSpeed} = this.set;
+        let {num, maxR, minR, maxSpeed, minSpeed, parallaxLayer} = this.set;
+        let layerLength = parallaxLayer.length;
         let dots = this.dots = [];
 
         while (num--) {
@@ -165,9 +171,8 @@ class Particle extends Base {
                 vy: calcSpeed(maxSpeed, minSpeed),
                 color: color(),
 
-                // 定义粒子在视差图层里的层级关系
-                // 值越小视差效果越强烈：1, 2, 3
-                layer: ceil(limitRandom(3, 1)),
+                // 定义粒子在视差图层里的层数及每层的层级大小
+                parallaxLayer: parallaxLayer[floor(random() * layerLength)],
 
                 // 定义粒子视差的偏移值
                 parallaxOffsetX: 0,
@@ -240,7 +245,7 @@ class Particle extends Base {
 
     updateXY() {
         const {paused, mouseX, mouseY, cw, ch} = this;
-        const {parallax, parallaxPerspective} = this.set;
+        const {parallax, parallaxStrength} = this.set;
 
         this.dots.forEach(dot => {
 
@@ -251,7 +256,7 @@ class Particle extends Base {
                 if (parallax) {
 
                     // https://github.com/jnicol/particleground
-                    const divisor = parallaxPerspective * dot.layer;
+                    const divisor = parallaxStrength * dot.parallaxLayer;
                     dot.parallaxOffsetX += (mouseX / divisor - dot.parallaxOffsetX) / 10;
                     dot.parallaxOffsetY += (mouseY / divisor - dot.parallaxOffsetY) / 10;
                 }

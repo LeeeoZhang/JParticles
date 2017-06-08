@@ -45,7 +45,7 @@
     <script src="../production/jparticles.js"></script>
     <script src="../production/wave_loading.js"></script>
     <script>
-        JParticles.easing = JParticles.utils.extend(JParticles.easing, {
+        JParticles.utils.extend(JParticles.easing, {
             easeOutBounce: function (x, t, b, c, d) {
                 if ((t/=d) < (1/2.75)) {
                     return c*(7.5625*t*t) + b;
@@ -58,8 +58,6 @@
                 }
             }
         });
-
-        console.log(JParticles.easing);
 
         (function () {
             var instance = document.getElementById('instance');

@@ -2,25 +2,26 @@
 
 
 ### Install
-
+```
+npm install jparticles --save
 ```
 
-npm install jparticles --save
-
-// using
+### Using
+```
 import JParticles from 'jparticles';
 new JParticles.particle('#demo');
+```
 
-// or using
+### On-demand using
+```
 import JParticles from 'JParticles/production/jparticles';
 import 'JParticles/production/particle';
 new JParticles.particle('#demo');
-
 ```
 
 
 ### Documentation
-[See more details from the API documentation.](https://barrior.github.io/JParticles/)
+[See more details from the API documentation.](https://jparticles.js.org/)
 
 
 ### Intro

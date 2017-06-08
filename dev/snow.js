@@ -15,7 +15,7 @@ class Snow extends Base {
         maxR: 6.5,
         minR: .4,
         maxSpeed: .6,
-        minSpeed: 0
+        minSpeed: .1
     };
 
     get version() {

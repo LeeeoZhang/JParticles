@@ -1,7 +1,7 @@
 {
   "name": "jparticles",
   "description": "A succinct, efficient, and lightweight Canvas plugin library for building some cool particle effects.",
-  "version": "2.0.0-rc",
+  "version": "2.0.0",
   "main": "production/jparticles.all.js",
   "scripts": {
     "dev": "gulp --gulpfile ./bin/gulpfile.dev.js",
@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/Barrior/JParticles/issues"
   },
-  "homepage": "barrior.github.io/JParticles",
+  "homepage": "jparticles.js.org",
   "keywords": [
     "JParticles",
     "Particle effects"

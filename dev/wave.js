@@ -15,36 +15,36 @@ class Wave extends Base {
         // 线条个数
         num: 3,
 
-        // 是否填充背景色，设置为false相关值无效
+        // 是否填充背景色，设置为 false 相关值无效
         fill: false,
 
-        // 填充的背景色，当fill设置为true时生效
+        // 填充的背景色，当 fill 设置为 true 时生效
         fillColor: [],
 
-        // 是否绘制边框，设置为false相关值无效
+        // 是否绘制边框，设置为 false 相关值无效
         line: true,
 
-        // 边框颜色，当stroke设置为true时生效，下同
+        // 边框颜色，当 line 设置为 true 时生效，下同
         lineColor: [],
 
-        // 边框宽度
+        // 边框宽度，空数组则随机 [.2, 2) 的宽度。
         lineWidth: [],
 
-        // 线条横向偏移值，距离canvas画布左边的偏移值
-        // (0, 1)表示容器宽度的倍数，0 & [1, +∞)表示具体数值
+        // 线条横向偏移值，距离 Canvas 画布左边的偏移值
+        // (0, 1) 表示容器宽度的倍数，0 & [1, +∞) 表示具体数值
         offsetLeft: [],
 
-        // 线条纵向偏移值，线条中点到canvas画布顶部的距离
-        // (0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+        // 线条纵向偏移值，线条中点到 Canvas 画布顶部的距离
+        // (0, 1) 表示容器高度的倍数，0 & [1, +∞) 表示具体数值
         offsetTop: [],
 
-        // 波峰高度，(0, 1)表示容器高度的倍数，0 & [1, +∞)表示具体数值
+        // 波峰高度，(0, 1) 表示容器高度的倍数，0 & [1, +∞) 表示具体数值
         crestHeight: [],
 
-        // 波纹个数，即正弦周期个数
+        // 波纹个数，即正弦周期个数，默认随机 [1, 0.2 * 容器宽度)
         rippleNum: [],
 
-        // 运动速度
+        // 运动速度，默认随机 [.1, .4)
         speed: []
     };
 
@@ -244,6 +244,12 @@ class Wave extends Base {
 
     resize() {
         resize(this, (scaleX, scaleY) => {
+            ['offsetLeft', 'offsetTop', 'crestHeight'].forEach(item => {
+                const scale = item === 'offsetLeft' ? scaleX : scaleY;
+                this.set[item].forEach((attr, i, array) => {
+                    array[i] = attr * scale;
+                });
+            });
             this.dots.forEach(line => {
                 line.forEach(dot => {
                     dot.x *= scaleX;
