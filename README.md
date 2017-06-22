@@ -1,21 +1,24 @@
-[![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles)
+[![npm version](https://badge.fury.io/js/jparticles.svg)](https://badge.fury.io/js/jparticles) [![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://www.npmjs.com/package/jparticles) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Barrior/JParticles/blob/master/LICENSE)
 
 
 ### Install
+
 ```
 npm install jparticles --save
 ```
 
 ### Using
+
 ```
 import JParticles from 'jparticles';
 new JParticles.particle('#demo');
 ```
 
 ### On-demand using
+
 ```
-import JParticles from 'JParticles/production/jparticles';
-import 'JParticles/production/particle';
+import JParticles from 'jparticles/production/jparticles';
+import 'jparticles/production/particle';
 new JParticles.particle('#demo');
 ```
 
