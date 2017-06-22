@@ -47,19 +47,22 @@ test('utils.limitRandom', t => {
 });
 
 test('utils.extend', t => {
-    const obj1 = utils.extend({
+    const a1 = {
         a: 0,
         b: {
             c: 1,
             d: 2
         },
         e: [1, 2, 3]
-    }, {
+    };
+    const b1 = {
         a: 3,
         b: {
             c: 4
         }
-    });
+    };
+    const obj1 = utils.extend(a1, b1);
+    t.true(obj1 === a1);
     t.true(JSON.stringify(obj1) === JSON.stringify({
         a: 3,
         b: {
@@ -69,36 +72,34 @@ test('utils.extend', t => {
     }));
 
     // deep copy
-    const obj2 = extend(true, {}, {
+    const a2 = {
         a: 0,
         b: {
             c: 1,
             d: 2
         },
         e: [1, 2, 3]
-    }, {
+    };
+    const b2 = {
         a: 3,
         b: {
             c: 4
         },
         e: [4, 5]
-    });
-
-    console.log(obj2)
+    };
+    const obj2 = utils.extend(true, a2, b2);
+    t.true(obj2 === a2);
     t.true(JSON.stringify(obj2) === JSON.stringify({
         a: 3,
         b: {
             c: 4,
             d: 2
         },
-        e: [4, 5]
-    }));
-    t.true(JSON.stringify(obj2) !== JSON.stringify({
-        a: 3,
-        b: {
-            c: 4,
-            d: 2
-        },
-        e: [1, 2, 3, 4, 5]
+        e: [4, 5, 3]
+
+        // 未实现通过值扩展，如下
+        // 当前是通过 key 扩展，如上
+        // 这是一种选择，当前选择与 jQuery 保持一致
+        // e: [1, 2, 3, 4, 5]
     }));
 });
