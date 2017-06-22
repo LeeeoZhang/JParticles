@@ -1,11 +1,11 @@
 {
   "name": "JParticles",
   "description": "A succinct, efficient, and lightweight Canvas plugin library for building some cool particle effects.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "production/jparticles.all.js",
   "scripts": {
     "dev": "gulp --gulpfile ./bin/gulpfile.dev.js",
-    "build": "gulp --gulpfile ./bin/gulpfile.build.js",
+    "build": "gulp --gulpfile ./bin/gulpfile.build.js && npm test",
     "test": "ava --verbose",
     "test:watch": "ava --verbose --watch"
   },

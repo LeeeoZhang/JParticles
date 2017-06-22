@@ -84,7 +84,8 @@ function extend() {
         deep = false,
         length = arg.length,
         i = 1,
-        value, attr;
+        value, attr,
+        copyIsArray;
 
     if (isBoolean(target)) {
         deep = target;
@@ -97,14 +98,22 @@ function extend() {
 
             value = arg[i][attr];
 
-            if (deep && (isPlainObject(value) || isArray(value))) {
+            if (deep && (isPlainObject(value) || (copyIsArray = isArray(value)))) {
 
-                target[attr] = extend(deep, isArray(value) ? [] : {}, value);
+                let src = target[attr];
+
+                if (copyIsArray) {
+                    copyIsArray = false;
+                    src = isArray(src) ? src : [];
+                } else {
+                    src = isPlainObject(src) ? src : {};
+                }
+
+                target[attr] = extend(deep, src, value);
 
             } else {
                 target[attr] = value;
             }
-
         }
     }
 
