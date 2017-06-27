@@ -103,3 +103,101 @@ test('utils.extend', t => {
         // e: [1, 2, 3, 4, 5]
     }));
 });
+
++function(){
+    const types = [
+        {type: '[object Function]', value() {}},
+        {type: '[object Object]', value: {}},
+        {type: '[object Array]', value: []},
+        {type: '[object String]', value: 'string'},
+        {type: '[object Boolean]', value: true},
+        {type: '[object Boolean]', value: false},
+        {type: '[object Number]', value: 0},
+        {type: '[object Number]', value: 1},
+        {type: '[object Null]', value: null},
+        {type: '[object Undefined]', value: undefined}
+    ];
+
+    test('utils.typeChecking', t => {
+        types.forEach(item => {
+            t.true(utils.typeChecking(item.value, item.type));
+        });
+    });
+    test('utils.isFunction', t => {
+        types.forEach((item, i) => {
+            t[i == 0 ? 'true' : 'false'](utils.isFunction(item.value));
+        });
+    });
+    test('utils.isPlainObject', t => {
+        types.forEach((item, i) => {
+            t[i == 1 ? 'true' : 'false'](utils.isPlainObject(item.value));
+        });
+    });
+    test('utils.isArray', t => {
+        types.forEach((item, i) => {
+            t[i == 2 ? 'true' : 'false'](utils.isArray(item.value));
+        });
+    });
+    test('utils.isString', t => {
+        types.forEach((item, i) => {
+            t[i == 3 ? 'true' : 'false'](utils.isString(item.value));
+        });
+    });
+    test('utils.isBoolean', t => {
+        types.forEach((item, i) => {
+            t[(i == 4 || i == 5) ? 'true' : 'false'](utils.isBoolean(item.value));
+        });
+    });
+    /*test('utils.isNumber', t => {
+        types.forEach((item, i) => {
+            t[(i == 6 || i == 7) ? 'true' : 'false'](utils.isNumber(item.value));
+        });
+    });*/
+    test('utils.isNull', t => {
+        types.forEach((item, i) => {
+            t[i == 8 ? 'true' : 'false'](utils.isNull(item.value));
+        });
+    });
+    test('utils.isUndefined', t => {
+        types.forEach((item, i) => {
+            t[i == 9 ? 'true' : 'false'](utils.isUndefined(item.value));
+        });
+    });
+
+    // test isElement
+    test('utils.isElement', t => {
+        types.forEach(item => {
+            t.false(utils.isElement(item.value));
+        });
+        t.false(utils.isElement(document));
+        t.false(utils.isElement(document.createTextNode('text')));
+        t.true(utils.isElement(document.body));
+        t.true(utils.isElement(document.querySelector('head')));
+        t.true(utils.isElement(document.querySelector('html')));
+        t.true(utils.isElement(document.createElement('i')));
+    });
+}();
+
+test('utils.observeElementRemoved', async t => {
+    const element = document.createElement('i');
+    document.body.appendChild(element);
+
+    function removeFn() {
+        return new Promise((resolve, reject) => {
+            utils.observeElementRemoved(element, () => {
+                t.pass('Element has been removed');
+                resolve(true);
+            });
+
+            setTimeout(() => {
+                document.body.removeChild(element);
+                setTimeout(() => {
+                    reject(false);
+                }, 50);
+            }, 50);
+        });
+    }
+
+    const res = await removeFn();
+    t.true(res);
+});
