@@ -178,26 +178,22 @@ test('utils.extend', t => {
     });
 }();
 
-test('utils.observeElementRemoved', async t => {
+/*
+test.cb('utils.observeElementRemoved', t => {
     const element = document.createElement('i');
     document.body.appendChild(element);
 
-    function removeFn() {
-        return new Promise((resolve, reject) => {
-            utils.observeElementRemoved(element, () => {
-                t.pass('Element has been removed');
-                resolve(true);
-            });
+    utils.observeElementRemoved(element, () => {
+        t.pass('Element has been removed');
+        t.end();
+    });
 
-            setTimeout(() => {
-                document.body.removeChild(element);
-                setTimeout(() => {
-                    reject(false);
-                }, 50);
-            }, 50);
-        });
-    }
-
-    const res = await removeFn();
-    t.true(res);
+    setTimeout(() => {
+        document.body.removeChild(element);
+        setTimeout(() => {
+            t.fail();
+            t.end();
+        }, 50);
+    }, 50);
 });
+*/
