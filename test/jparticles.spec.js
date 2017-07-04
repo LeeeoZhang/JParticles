@@ -5,7 +5,7 @@ const JParticles = require('../production/jparticles');
 const {utils, Base, version} = JParticles;
 
 test('version', t => {
-    t.true(version === pkg.version);
+    t.is(version, pkg.version);
 });
 
 test('utils.orientationSupport', t => {
@@ -13,37 +13,42 @@ test('utils.orientationSupport', t => {
 });
 
 test('utils.pInt', t => {
-    t.true(utils.pInt('200px') === 200);
-    t.true(utils.pInt('0x200') === 0);
+    t.is(utils.pInt('200px'), 200);
+    t.is(utils.pInt('0x200'), 0);
 });
 
 test('utils.trimAll', t => {
-    t.true(utils.trimAll(' so me st ring ') === 'somestring');
+    t.is(utils.trimAll(' so me st ring '), 'somestring');
 });
 
 test('utils.randomColor', t => {
     const colorRule = /^#[0123456789ABCDEF]{6}$/i;
     for (let i = 0 ; i < 3; i++) {
-        t.true(colorRule.test(utils.randomColor()));
+        t.regex(utils.randomColor(), colorRule);
     }
 });
 
 test('utils.limitRandom', t => {
-    [[1, 10], [-6, 7]].forEach(item => {
-        for (let i = 0; i < 3; i++) {
-            const value = utils.limitRandom(item[0], item[1]);
-            value >= item[0] && value < item[1] ? t.pass() : t.fail();
-        }
-    });
 
-    [[8, 3], [10, -2]].forEach(item => {
+    // 正确格式：(max, min)
+    [[8, 3], [10, -2], [-5, -8]].forEach(item => {
         for (let i = 0; i < 3; i++) {
             const value = utils.limitRandom(item[0], item[1]);
             value >= item[1] && value < item[0] ? t.pass() : t.fail();
         }
     });
 
-    t.true(utils.limitRandom(10, 10) === 10);
+    // 反序格式：(min, max)
+    [[1, 10], [-6, 7], [-8, -5]].forEach(item => {
+        for (let i = 0; i < 3; i++) {
+            const value = utils.limitRandom(item[0], item[1]);
+            value >= item[0] && value < item[1] ? t.pass() : t.fail();
+        }
+    });
+
+    // 等值格式
+    t.is(utils.limitRandom(10, 10), 10);
+    t.is(utils.limitRandom(.1, .1), .1);
 });
 
 test('utils.extend', t => {
@@ -63,13 +68,13 @@ test('utils.extend', t => {
     };
     const obj1 = utils.extend(a1, b1);
     t.true(obj1 === a1);
-    t.true(JSON.stringify(obj1) === JSON.stringify({
+    t.deepEqual(obj1, {
         a: 3,
         b: {
             c: 4
         },
         e: [1, 2, 3]
-    }));
+    });
 
     // deep copy
     const a2 = {
@@ -89,7 +94,7 @@ test('utils.extend', t => {
     };
     const obj2 = utils.extend(true, a2, b2);
     t.true(obj2 === a2);
-    t.true(JSON.stringify(obj2) === JSON.stringify({
+    t.deepEqual(obj2, {
         a: 3,
         b: {
             c: 4,
@@ -101,7 +106,7 @@ test('utils.extend', t => {
         // 当前是通过 key 扩展，如上
         // 这是一种选择，当前选择与 jQuery 保持一致
         // e: [1, 2, 3, 4, 5]
-    }));
+    });
 });
 
 +function(){
@@ -178,8 +183,7 @@ test('utils.extend', t => {
     });
 }();
 
-/*
-test.cb('utils.observeElementRemoved', t => {
+test.skip('utils.observeElementRemoved', t => {
     const element = document.createElement('i');
     document.body.appendChild(element);
 
@@ -196,4 +200,125 @@ test.cb('utils.observeElementRemoved', t => {
         }, 50);
     }, 50);
 });
-*/
+
+test('utils.getCss', t => {
+    const element = document.createElement('div');
+    const background = 'red';
+    const border = '1px solid #ccc';
+    element.style.width = '200px';
+    element.style.background = background;
+    element.style.border = border;
+    document.body.appendChild(element);
+
+    t.is(utils.getCss(element, 'width'), 200);
+    t.is(utils.getCss(element, 'background'), background);
+    t.is(utils.getCss(element, 'border'), border);
+});
+
+test.skip('utils.offset', t => {
+    const element = document.createElement('div');
+    const offset = {
+        left: '100px',
+        top: '200px'
+    };
+    element.style.position = 'absolute';
+    element.style.left = offset.left;
+    element.style.top = offset.top;
+    document.body.appendChild(element);
+
+    t.is(utils.offset(element), offset);
+});
+
+test('utils.on', t => {
+    const element = document.createElement('div');
+    utils.on(element, 'click', () => {
+        t.pass('Event triggered!');
+    });
+    document.body.appendChild(element);
+    element.click();
+});
+
+test.cb('utils.off', t => {
+    const element = document.createElement('div');
+    const handlerClick = () => {
+        t.fail('Event triggered!');
+        t.end();
+    };
+    utils.on(element, 'click', handlerClick);
+    utils.off(element, 'click', handlerClick);
+    document.body.appendChild(element);
+    element.click();
+    setTimeout(() => {
+        t.pass();
+        t.end();
+    }, 100);
+});
+
+test('utils.scaleValue', t => {
+    t.is(utils.scaleValue(0), 0);
+    t.is(utils.scaleValue(1), 1);
+    t.is(utils.scaleValue(0.5, 10), 5);
+    t.is(utils.scaleValue(0.124, 10), 1.24);
+});
+
+test('utils.calcSpeed', t => {
+
+    // 正确格式：(max > 0, min > 0)
+    [[2, 0], [88, 22], [5, 1], [52.31, 1.24]].forEach(item => {
+        for (let i = 0; i < 3; i++) {
+            const speed = utils.calcSpeed(item[0], item[1]);
+            if (speed === 0) {
+                t.fail();
+            } else {
+                speed > -Math.abs(item[0]) && speed < item[0] ? t.pass() : t.fail();
+            }
+        }
+    });
+
+    t.is(utils.calcSpeed(0, 0), 0);
+});
+
+test.todo('utils.pause');
+test.todo('utils.open');
+test.todo('utils.resize');
+test.todo('utils.modifyPrototype');
+
+test('utils.defineReadOnlyProperty', t => {
+    let man = {
+        name: 'Barrior',
+        age: 24
+    };
+
+    // value, prop, object
+    for (const prop in man) {
+        utils.defineReadOnlyProperty(man[prop], prop, man);
+    }
+
+    t.throws(() => {
+        man.name = 'Tom';
+    });
+
+    t.throws(() => {
+        delete man.age;
+    });
+
+    t.is(man.name, 'Barrior');
+    t.is(man.age, 24);
+});
+
+test('utils.registerListener', t => {
+    const emulate = {
+        set: true
+    };
+    const listeners = [];
+    utils.registerListener(
+        emulate, listeners,
+        () => 0,
+        () => 1,
+        () => 2,
+        () => 3
+    );
+    listeners.forEach((item, index) => {
+        t.is(item(), index);
+    });
+});
