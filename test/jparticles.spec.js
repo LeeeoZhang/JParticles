@@ -2,10 +2,26 @@ import './helpers/dom';
 import test from 'ava';
 import pkg from '../package.json';
 const JParticles = require('../production/jparticles');
-const {utils, Base, version} = JParticles;
+const {version, utils, Base, commonConfig} = JParticles;
+
+test('can\'t delete JParticles props', t => {
+    t.throws(() => {
+        for (const prop in JParticles) {
+            delete JParticles[prop];
+        }
+    });
+});
 
 test('version', t => {
     t.is(version, pkg.version);
+});
+
+test('commonConfig', t => {
+    t.deepEqual(commonConfig, {
+        opacity: 1,
+        color: [],
+        resize: true
+    });
 });
 
 test('utils.orientationSupport', t => {
@@ -318,6 +334,7 @@ test('utils.registerListener', t => {
         () => 2,
         () => 3
     );
+    utils.registerListener(emulate, listeners, () => 4);
     listeners.forEach((item, index) => {
         t.is(item(), index);
     });
