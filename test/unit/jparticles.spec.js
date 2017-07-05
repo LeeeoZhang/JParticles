@@ -1,8 +1,8 @@
 import './helpers/dom';
 import test from 'ava';
-import pkg from '../package.json';
-const JParticles = require('../production/jparticles');
-const {version, utils, Base, commonConfig} = JParticles;
+import pkg from '../../package.json';
+const JParticles = require('../../production/jparticles');
+const {version, utils, commonConfig} = JParticles;
 
 test('can\'t delete JParticles props', t => {
     t.throws(() => {
@@ -291,7 +291,7 @@ test('utils.calcSpeed', t => {
         }
     });
 
-    t.is(utils.calcSpeed(0, 0), 0);
+    t.is(Math.abs(utils.calcSpeed(0, 0)), 0);
 });
 
 test.todo('utils.pause');

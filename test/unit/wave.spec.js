@@ -1,10 +1,10 @@
 import './helpers/dom';
 import test from 'ava';
 
-const JParticles = require('../production/jparticles');
+const JParticles = require('../../production/jparticles');
 global.JParticles = JParticles;
 
-require('../production/wave');
+require('../../production/wave');
 const {wave} = JParticles;
 
 test('defaultConfig', t => {
