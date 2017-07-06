@@ -39,7 +39,7 @@
     "through2": "^2.0.3"
   },
   "devEngines": {
-    "node": "< 7.x"
+    "node": "7.1"
   },
   "repository": {
     "type": "git",
