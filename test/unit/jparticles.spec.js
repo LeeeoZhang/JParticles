@@ -24,6 +24,13 @@ test('commonConfig', t => {
     });
 });
 
+test('utils.regExp', t => {
+    t.deepEqual(utils.regExp, {
+        trimAll: /\s/g,
+        styleValue: /^\d+(\.\d+)?[a-z]+$/i
+    });
+});
+
 test('utils.orientationSupport', t => {
     t.false(utils.orientationSupport);
 });
