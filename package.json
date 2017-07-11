@@ -8,6 +8,7 @@
     "build": "gulp --gulpfile ./bin/gulpfile.build.js && npm test",
     "test": "npm run test:unit",
     "test:unit": "nyc ava --verbose",
+    "test:e2e": "testcafe chrome test/e2e/**/*.ts --speed 0.5",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "ava": {
