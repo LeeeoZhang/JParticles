@@ -1,7 +1,6 @@
 import './helpers/dom';
 import test from 'ava';
-
-const JParticles = require('../../production/jparticles');
+import JParticles from '../../production/jparticles';
 global.JParticles = JParticles;
 
 require('../../production/snow');

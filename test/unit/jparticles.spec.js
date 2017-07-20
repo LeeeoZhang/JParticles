@@ -1,15 +1,17 @@
 import './helpers/dom';
 import test from 'ava';
 import pkg from '../../package.json';
-const JParticles = require('../../production/jparticles');
-const {version, utils, commonConfig} = JParticles;
+import JParticles from '../../production/jparticles';
+const {version, utils, commonConfig, Base} = JParticles;
 
 test('can\'t delete JParticles props', t => {
-    t.throws(() => {
-        for (const prop in JParticles) {
-            delete JParticles[prop];
+    for (const prop in JParticles) {
+        if (prop !== 'commonConfig') {
+            t.throws(() => {
+                delete JParticles[prop];
+            });
         }
-    });
+    }
 });
 
 test('version', t => {
@@ -22,6 +24,32 @@ test('commonConfig', t => {
         color: [],
         resize: true
     });
+});
+
+test('Base class', t => {
+    Base.prototype.init = () => {};
+    const constructor = {};
+    const container = document.createElement('div');
+    const base = new Base(constructor, container);
+    t.truthy(base.set);
+
+    // skip the following assertion because of jsdom does not support Canvas drawing environment now.
+    // t.truthy(base.cxt);
+
+    t.false(base.paused);
+    t.true(utils.isElement(base.c));
+    t.true(utils.isElement(base.container));
+    t.true(utils.isArray(base.destructionListeners));
+    t.true(utils.isFunction(base.color));
+    t.true(utils.isFunction(base.requestAnimationFrame));
+    t.true(utils.isFunction(base.observeCanvasRemoved));
+    t.true(utils.isFunction(base.onDestroy));
+    t.true(utils.isFunction(base.pause));
+    t.true(utils.isFunction(base.open));
+    t.true(utils.isFunction(base.resize));
+    t.true(utils.isFunction(base._resizeHandler));
+    t.is(base.ch, 300);
+    t.is(base.cw, 485);
 });
 
 test('utils.regExp', t => {
