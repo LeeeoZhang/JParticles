@@ -1,9 +1,6 @@
 import './helpers/dom';
+import '../../production/snow';
 import test from 'ava';
-import JParticles from '../../production/jparticles';
-global.JParticles = JParticles;
-
-require('../../production/snow');
 const {snow} = JParticles;
 
 test('defaultConfig', t => {

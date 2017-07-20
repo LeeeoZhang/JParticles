@@ -1,9 +1,6 @@
 import './helpers/dom';
+import '../../production/particle';
 import test from 'ava';
-import JParticles from '../../production/jparticles';
-global.JParticles = JParticles;
-
-require('../../production/particle');
 const {particle} = JParticles;
 
 test('defaultConfig', t => {

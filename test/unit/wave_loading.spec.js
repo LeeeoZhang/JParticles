@@ -1,9 +1,6 @@
 import './helpers/dom';
+import '../../production/wave_loading';
 import test from 'ava';
-import JParticles from '../../production/jparticles';
-global.JParticles = JParticles;
-
-require('../../production/wave_loading');
 const {waveLoading} = JParticles;
 
 test('defaultConfig', t => {

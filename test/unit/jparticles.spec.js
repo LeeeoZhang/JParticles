@@ -1,7 +1,6 @@
 import './helpers/dom';
 import test from 'ava';
 import pkg from '../../package.json';
-import JParticles from '../../production/jparticles';
 const {version, utils, commonConfig, Base} = JParticles;
 
 test('can\'t delete JParticles props', t => {
