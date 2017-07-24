@@ -32,8 +32,8 @@ test('Base class', t => {
     const base = new Base(constructor, container);
     t.truthy(base.set);
 
-    // skip the following assertion because of jsdom does not support Canvas drawing environment now.
-    // t.truthy(base.cxt);
+    // skip the following assertion because of JSDOM does not support Canvas drawing environment now.
+    t.skip.truthy(base.cxt);
 
     t.false(base.paused);
     t.true(utils.isElement(base.c));
@@ -152,9 +152,9 @@ test('utils.extend', t => {
         },
         e: [4, 5, 3]
 
-        // 未实现通过值扩展，如下
-        // 当前是通过 key 扩展，如上
-        // 这是一种选择，当前选择与 jQuery 保持一致
+        // 当前是通过 key 扩展，如上。
+        // 未实现通过值扩展，如下。
+        // 这是一种选择，当前选择与 jQuery 保持一致。
         // e: [1, 2, 3, 4, 5]
     });
 });
@@ -170,7 +170,8 @@ test('utils.extend', t => {
         {type: '[object Number]', value: 0},
         {type: '[object Number]', value: 1},
         {type: '[object Null]', value: null},
-        {type: '[object Undefined]', value: undefined}
+        {type: '[object Undefined]', value: undefined},
+        {type: '[object Symbol]', value: Symbol()}
     ];
 
     test('utils.typeChecking', t => {
@@ -203,11 +204,14 @@ test('utils.extend', t => {
             t[(i == 4 || i == 5) ? 'true' : 'false'](utils.isBoolean(item.value));
         });
     });
-    /*test('utils.isNumber', t => {
+
+    // 还未加 utils.isNumber
+    test.skip('utils.isNumber', t => {
         types.forEach((item, i) => {
             t[(i == 6 || i == 7) ? 'true' : 'false'](utils.isNumber(item.value));
         });
-    });*/
+    });
+
     test('utils.isNull', t => {
         types.forEach((item, i) => {
             t[i == 8 ? 'true' : 'false'](utils.isNull(item.value));
