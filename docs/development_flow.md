@@ -4,7 +4,7 @@
 
     bin:         构建任务
     docs:        开发文档需知
-    samples:     样本开发/测试目录
+    samples:     样本目录（开发/测试）
     test:        自动化测试目录
     dev:         开发目录
     production:  产品目录
