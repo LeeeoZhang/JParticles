@@ -34,8 +34,6 @@
  * 继承 Base 父类的事件
  *  onDestroy: 动画被销毁后执行的事件
  */
-// 编译构建时通过 package.json 的 version 生成版本
-const version = null;
 const win = window;
 const doc = document;
 const {random, floor} = Math;
@@ -550,7 +548,6 @@ const easing = {
 };
 
 const JParticles = {
-    version,
     utils,
     Base,
     easing

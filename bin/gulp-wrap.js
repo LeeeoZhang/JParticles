@@ -40,6 +40,9 @@ const UMDHeader = `
     }
 `;
 const UMDFooter = `
+    
+    defineReadOnlyProperty('${VERSION}', 'version', JParticles);
+
     // AMD 加载方式放在头部，factory 函数会比后面的插件延迟执行
     // 导致后面的插件找不到 JParticles 对象而报错
     if (typeof define === 'function' && define.amd) {
@@ -60,7 +63,6 @@ module.exports = (output) => {
         // const filename = file.path.replace(/.+[\\|/](\w+)\.js$/,'$1');
 
         if (file.path.indexOf('jparticles.js') !== -1) {
-            content = content.replace(/(version\s?=\s?)null/, `$1'${VERSION}'`);
             content = UMDHeader + content + UMDFooter;
         } else {
             content = `+function () { ${content} }();`;
