@@ -5,7 +5,7 @@ const {
     pInt, limitRandom, calcSpeed, scaleValue,
     getCss, offset, isElement, isFunction,
     isNull, on, off, orientationSupport,
-    resize, defineReadOnlyProperty
+    resize, readOnly
 } = utils;
 
 /**
@@ -24,6 +24,8 @@ function checkParentsProperty(elem, property, value) {
     return false;
 }
 
+// 挂载插件到 JParticles 对象上
+@readOnly('particle')
 class Particle extends Base {
 
     static defaultConfig = {
@@ -378,6 +380,3 @@ class Particle extends Base {
         });
     }
 }
-
-// 挂载插件到 JParticles 对象上。
-defineReadOnlyProperty(Particle, 'particle');

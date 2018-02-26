@@ -18,7 +18,8 @@ gulp.task('compile', () => {
         .pipe(changed(destPath))
         .pipe(sourcemaps.init())
         .pipe(babel({
-            presets: ['es2015', 'stage-0']
+            presets: ['es2015', 'stage-0'],
+            plugins: ['transform-decorators-legacy']
         }))
         .pipe(wrap())
         .pipe(sourcemaps.write('./maps/', {

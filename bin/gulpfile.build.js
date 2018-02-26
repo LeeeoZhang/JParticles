@@ -26,7 +26,8 @@ const excludeFile = /(jparticles(\.all)?\.js|maps)\s/g;
 gulp.task('compile', () => {
     return gulp.src(`${devPath}*.js`)
         .pipe(babel({
-            presets: ['es2015', 'stage-0']
+            presets: ['es2015', 'stage-0'],
+            plugins: ['transform-decorators-legacy']
         }))
         .pipe(wrap())
         .pipe(gulp.dest(destPath));

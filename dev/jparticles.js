@@ -349,6 +349,27 @@ function defineReadOnlyProperty(value, name, target = JParticles) {
     });
 }
 
+/**
+ * defineReadOnlyProperty 的 decorator 写法，目前仅限用于类
+ *
+ * eg:
+ * @readOnly('particle')
+ * class Particle extend Base {}
+ *
+ * @param name    {string}  属性名称
+ * @param target  {object}  目标对象
+ */
+function readOnly(name, target = JParticles) {
+    return (value) => {
+        Object.defineProperty(target, name, {
+            value,
+            writable: false,
+            enumerable: true,
+            configurable: false
+        });
+    }
+}
+
 class Base {
     constructor(constructor, selector, options) {
 
@@ -513,6 +534,7 @@ const utils = {
     resize,
     modifyPrototype,
     defineReadOnlyProperty,
+    readOnly,
 
     registerListener
 };

@@ -3,12 +3,13 @@ const {random, abs, PI, sin, ceil} = Math;
 const twicePI = PI * 2;
 const {
     pInt, limitRandom, calcSpeed,
-    scaleValue, randomColor, isArray,
-    isFunction, isPlainObject, isUndefined,
-    resize, defineReadOnlyProperty,
+    scaleValue, isArray,
+    isPlainObject, isUndefined,
+    resize, readOnly,
     registerListener
 } = utils;
 
+@readOnly('waveLoading')
 class WaveLoading extends Base {
 
     static defaultConfig = {
@@ -280,5 +281,3 @@ class WaveLoading extends Base {
 
 delete WaveLoading.prototype.pause;
 delete WaveLoading.prototype.open;
-
-defineReadOnlyProperty(WaveLoading, 'waveLoading');

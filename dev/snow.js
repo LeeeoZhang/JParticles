@@ -3,9 +3,10 @@ const {random, abs, PI} = Math;
 const twicePI = PI * 2;
 const {
     pInt, limitRandom, calcSpeed,
-    defineReadOnlyProperty
+    readOnly
 } = utils;
 
+@readOnly('snow')
 class Snow extends Base {
 
     static defaultConfig = {
@@ -102,5 +103,3 @@ class Snow extends Base {
         this.requestAnimationFrame();
     }
 }
-
-defineReadOnlyProperty(Snow, 'snow');

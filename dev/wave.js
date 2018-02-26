@@ -5,9 +5,10 @@ const {
     pInt, limitRandom, calcSpeed,
     scaleValue, randomColor, isArray,
     isPlainObject, isUndefined,
-    resize, defineReadOnlyProperty
+    resize, readOnly
 } = utils;
 
+@readOnly('wave')
 class Wave extends Base {
 
     static defaultConfig = {
@@ -266,5 +267,3 @@ Wave.prototype.dynamicOptions = [
     'lineWidth', 'offsetLeft', 'offsetTop',
     'crestHeight', 'speed'
 ];
-
-defineReadOnlyProperty(Wave, 'wave');
